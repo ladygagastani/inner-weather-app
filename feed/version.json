@@ -1,0 +1,9 @@
+{
+  "web": 1,
+  "appSha256": "56fd4a9aaa2c8c982eed9c06fa629f39d1d32d85630607221760b799943f36ff",
+  "runtimeSha256": "daa494eabd4770deda55e42ca2817645cdec886c4efc95893d960bb45c189515",
+  "apk": 2,
+  "apkName": "2.0",
+  "apkFile": "inner-weather.apk",
+  "apkSha256": "f0b37ad1414eb575b4488e616669119d36babebf9a74f67a0eb82feff817e569"
+}

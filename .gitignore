@@ -1,0 +1,13 @@
+# Signing key and its password: never commit (public repo)
+*.jks
+*.keystore
+keystore/
+password.txt
+# Noa's records: never commit
+seed.json
+android/assets/seed.json
+# Build outputs
+android/build/
+android/assets/web/
+*.apk
+!feed/*.apk

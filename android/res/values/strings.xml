@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Inner Weather</string>
+    <string name="sc_key">API key</string>
+    <string name="sc_key_long">Change the Ask Claude API key</string>
+    <string name="sc_backup">Back up</string>
+    <string name="sc_backup_long">Save a backup to Downloads</string>
+</resources>

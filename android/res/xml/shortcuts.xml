@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="backup" android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/sc_backup"
+        android:shortcutLongLabel="@string/sc_backup_long">
+        <intent android:action="app.innerweather.log.BACKUP"
+            android:targetPackage="app.innerweather.log"
+            android:targetClass="app.innerweather.log.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="key" android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/sc_key"
+        android:shortcutLongLabel="@string/sc_key_long">
+        <intent android:action="app.innerweather.log.API_KEY"
+            android:targetPackage="app.innerweather.log"
+            android:targetClass="app.innerweather.log.MainActivity" />
+    </shortcut>
+</shortcuts>
