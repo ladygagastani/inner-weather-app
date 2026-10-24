@@ -122,6 +122,7 @@ public class MainActivity extends Activity {
         });
         applyBarIcons(edge, edge);
         pendingAction = getIntent() != null ? getIntent().getAction() : null;
+        Reminders.schedule(this);
         checkForUpdates();
     }
 
@@ -731,6 +732,31 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void setKey(String key) { prefs.edit().putString("apiKey", key == null ? "" : key.trim()).apply(); }
+
+        /** {"morning":"08:30","day":"13:00","evening":"21:30"}, null for off. */
+        @JavascriptInterface
+        public void setReminderTimes(String json) {
+            prefs.edit().putString("reminderTimes", json == null ? "{}" : json).apply();
+            Reminders.schedule(MainActivity.this);
+            ui.post(new Runnable() { @Override public void run() { askNotificationPermission(); } });
+        }
+
+        @JavascriptInterface
+        public String getReminderTimes() { return prefs.getString("reminderTimes", ""); }
+
+        /** {"day":"2026-10-24","open":["morning","evening"]}; finished moments lose their reminder notification. */
+        @JavascriptInterface
+        public void setOpenMoments(String json) {
+            prefs.edit().putString("openMoments", json == null ? "{}" : json).apply();
+            for (String m : Reminders.MOMENTS) if (!Reminders.isOpen(MainActivity.this, m)) Reminders.clear(MainActivity.this, m);
+        }
+    }
+
+    void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33
+            && checkSelfPermission("android.permission.POST_NOTIFICATIONS") != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, 9);
+        }
     }
 
     void saveDataUrl(String name, String dataUrl) {
