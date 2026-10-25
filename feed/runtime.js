@@ -252,7 +252,8 @@
 (function () {
   "use strict";
   // The base styles the claude.ai artifact host puts around every page (ref/live-wrapper-head.html); the page relies on them,
-  // e.g. [hidden] must hide sheets whose CSS sets display.
+  // e.g. [hidden] must hide sheets whose CSS sets display. The :root safe-area padding is what keeps the page's
+  // top clear of the status bar while its background still runs behind the bars.
   const base = document.createElement("style");
   base.textContent = ":root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}" +
     "html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}" +
@@ -289,6 +290,29 @@
     const go = () => (pending = sheet(message).then(v => { pending = null; return v; }));
     return document.body ? go() : new Promise(r => addEventListener("DOMContentLoaded", () => r(go())));
   };
+  addEventListener("DOMContentLoaded", () => {
+    const N = window.IWLNative;
+    // Full screen needs env(safe-area-inset-*); an older WebView without it gets margins from the app instead.
+    try {
+      if (N && N.insets) {
+        const ins = JSON.parse(N.insets()), probe = document.createElement("div");
+        probe.style.cssText = "position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top,0px)";
+        document.body.appendChild(probe);
+        const got = parseFloat(getComputedStyle(probe).paddingTop) || 0;
+        probe.remove();
+        if (ins.top > 0 && got === 0) N.needMargins();
+      }
+    } catch (_) {}
+    // Reminders need a page that reports which parts of the day are open. Without one, park the times (and bring them back later).
+    try {
+      if (N && N.getReminderTimes && N.setReminderTimes) {
+        const reports = document.documentElement.innerHTML.indexOf("setOpenMoments") >= 0;
+        const cur = N.getReminderTimes() || "", has = cur && cur !== "{}" && /\d/.test(cur);
+        if (!reports && has) { localStorage.setItem("iwl-reminders-parked", cur); N.setReminderTimes("{}"); }
+        else if (reports && !has && localStorage.getItem("iwl-reminders-parked")) { N.setReminderTimes(localStorage.getItem("iwl-reminders-parked")); localStorage.removeItem("iwl-reminders-parked"); }
+      }
+    } catch (_) {}
+  });
   let data = null;
   try { const s = IWLStore.load(); if (s) data = JSON.parse(s); } catch (e) { console.error("load failed", e); }
   window.__iwlInstall(data && data.cols ? data : { cols: {} }, {});

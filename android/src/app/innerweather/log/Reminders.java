@@ -66,13 +66,14 @@ public class Reminders extends BroadcastReceiver {
         try {
             JSONObject o = new JSONObject(prefs(c).getString("openMoments", "{}"));
             String today = logDay(System.currentTimeMillis());
-            if (!today.equals(o.optString("day"))) return true; // nothing logged yet for this day
+            // Only trust what the page reported today; a page that never reports (or stale data) means no reminder.
+            if (!today.equals(o.optString("day"))) return false;
             JSONArray open = o.optJSONArray("open");
-            if (open == null) return true;
+            if (open == null) return false;
             for (int i = 0; i < open.length(); i++) if (moment.equals(open.optString(i))) return true;
             return false;
         } catch (Exception e) {
-            return true;
+            return false;
         }
     }
 

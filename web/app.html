@@ -741,119 +741,6 @@ html.dl-edit .path, html.dl-edit .crow, html.dl-edit #btnHistory, html.dl-edit #
 .banner.practice { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
 .banner.practice .pbtns { display: flex; gap: 14px; }
 .banner.practice .linkish { font-size: inherit; min-height: 44px; }
-
-/* ---------- HOME START: Today (the home screen), the bar inside a category, and the tab bar (the owner, 24 Oct 2026) ---------- */
-.top .bar, .path, .crow, .pilebtn, .edge, .pile-s { display: none !important; }
-.top { padding-top: max(4px, env(safe-area-inset-top, 0px)); }
-.sbar { display: flex; align-items: center; gap: 6px; height: 48px; margin: 0 -10px 0 -12px; }
-html.dl-edit .sbar .sx { display: none; }
-.sx { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: var(--ink); }
-.sx svg { width: 22px; height: 22px; }
-.dots { flex: 1; min-width: 0; display: flex; align-items: center; gap: 0; overflow: hidden; }
-.dot { flex: 0 1 28px; min-width: 14px; height: 44px; display: grid; place-items: center; }  /* a picture, not a button */
-.dot i { display: block; width: 8px; height: 8px; border-radius: 4px; box-shadow: inset 0 0 0 1.4px color-mix(in oklab, var(--ink) 38%, transparent); transition: width .2s var(--ease), background-color .2s; }
-.dot.on i { background: var(--ink); box-shadow: none; }
-.dot.here i { width: 20px; background: var(--cat-ink, var(--sun)); box-shadow: none; }
-.dots.many .dot { flex-basis: 20px; }
-.sstat { flex: none; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 0; margin: 0 10px 0 4px; font-size: var(--t13); line-height: 1.25; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.svst:empty { display: none; }
-.svst.ok { color: var(--good); }
-.svst.err { color: var(--alert); font-weight: 600; }
-.acts .bk { flex: none; height: 56px; padding: 0 18px; border-radius: 18px; font-weight: 560; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--hair); }
-.acts .bk[hidden] { display: none; }
-.acts .bk:active { background: var(--tile); }
-
-.home { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding-top: max(4px, env(safe-area-inset-top, 0px)); overflow: hidden; container-type: size; container-name: home; }
-.home[hidden] { display: none; }
-.hm-top { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 48px; }
-.hm-top .date { font-size: var(--t16); font-weight: 650; text-overflow: clip; }
-.hm-top .brand { flex: 1; min-width: 0; } .hm-top .nav { flex: none; margin: 0; }
-.hm-sky { flex: none; height: 30px; margin: 0 -4px; }
-.hm-sky svg { width: 100%; height: 100%; overflow: visible; }
-.hm-week { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 30px; }
-.hm-week .lbl { font-size: var(--t13); color: var(--muted); }
-.wdots { display: flex; gap: 6px; }
-.wd { width: 22px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; line-height: 1.1; color: var(--muted); }
-.wd i { display: block; width: 11px; height: 11px; border-radius: 50%; box-shadow: inset 0 0 0 1.4px color-mix(in oklab, var(--ink) 30%, transparent); }
-.wd.full i { background: var(--good); box-shadow: none; }
-.wd.part i { background: conic-gradient(var(--sun) 0 var(--f, 50%), transparent 0); box-shadow: inset 0 0 0 1.4px color-mix(in oklab, var(--ink) 30%, transparent); }
-.wd.today { color: var(--ink); font-weight: 650; }
-.wd.later { opacity: .55; }
-.hm-day:empty { display: none; }
-.hm-day { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: 14px; background: color-mix(in oklab, var(--sun) 16%, var(--card)); font-size: var(--t13); }
-.hm-day b { font-weight: 650; }
-.hm-groups { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
-.hg { display: flex; flex-direction: column; gap: 6px; }
-.hg-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.hg-h h2 { font-size: var(--t16); font-weight: 700; }
-.hg.now .hg-h h2 { font-size: var(--t20); }
-.hg-h span { font-size: var(--t13); color: var(--muted); }
-.tiles-h { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.hg:not(.now) .tiles-h { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.ht { position: relative; display: flex; align-items: stretch; min-width: 0; border-radius: 16px; background: var(--card); box-shadow: 0 1px 2px var(--shadow-near), inset 0 0 0 1px var(--edge); }
-.ht > .go { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 4px; min-height: var(--bt, 70px); padding: 10px 12px; text-align: left; border-radius: inherit; }
-.ht .nm { display: flex; align-items: center; gap: 8px; max-width: 100%; font-size: var(--t16); font-weight: 620; line-height: 1.2; }
-.ht .nm b { min-width: 0; font-weight: inherit; overflow: hidden; white-space: nowrap; }
-.ht .sub { max-width: 100%; font-size: var(--t13); color: var(--muted); line-height: 1.3; overflow: hidden; white-space: nowrap; }
-.ht.done .sub { color: var(--ink); }
-.ht .add { flex: none; width: 44px; display: grid; place-items: center; border-radius: 0 16px 16px 0; color: var(--ink); }
-.ht .add svg { width: 20px; height: 20px; }
-.hring { flex: none; width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 1.6px color-mix(in oklab, var(--ink) 32%, transparent); display: grid; place-items: center; }
-.hring svg { width: 12px; height: 12px; color: var(--card); }
-.ht.done .hring { background: var(--good); box-shadow: none; }
-.ht.started .hring { background: conic-gradient(var(--sun) 0 var(--f, 50%), transparent 0); }
-.ht.skipped .hring { box-shadow: inset 0 0 0 1.6px var(--muted); background: linear-gradient(var(--muted), var(--muted)) center / 8px 1.6px no-repeat; }
-.hg:not(.now) .ht > .go { min-height: 46px; flex-direction: row; align-items: center; justify-content: flex-start; gap: 6px; padding: 0 8px; }
-.hg:not(.now) .ht .nm { font-size: var(--t13); font-weight: 560; gap: 6px; }
-.hg:not(.now) .ht .sub { display: none; }
-.hg:not(.now) .ht .hring { width: 14px; height: 14px; }
-.hg:not(.now) .ht .hring svg { width: 9px; height: 9px; }
-.hg:not(.now) .ht .add { width: 30px; } .hg:not(.now) .ht:has(.add) > .go { padding-right: 0; }
-.hg:not(.now) .ht .add svg { width: 16px; height: 16px; }
-.ht.pulse { animation: htpulse .9s ease-out; }
-@keyframes htpulse { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--good) 45%, transparent), 0 1px 2px var(--shadow-near); } 100% { box-shadow: 0 0 0 12px transparent, 0 1px 2px var(--shadow-near); } }
-.hm-links { flex: none; display: flex; justify-content: center; gap: 4px 18px; flex-wrap: wrap; }
-.hm-links .linkish { min-height: 44px; font-size: var(--t13); text-decoration: underline; text-underline-offset: 3px; }
-/* a short screen: tiles get shorter, then the week and the sky step aside, then the other groups become one line of chips */
-.home.f1 { --bt: 58px; } .home.f1 .hg.now .ht > .go { padding: 8px 12px; gap: 2px; justify-content: center; }
-.home.f2 .hm-sky { display: none; }
-.home.f3 { --bt: 52px; } .home.f3 .hg.now .ht > .go { padding: 5px 12px; gap: 0; } .home.f3 .hm-week .lbl { display: none; } .home.f3 .hm-week { justify-content: center; }
-.home.f4 .hg:not(.now) .ht .nm b { display: none; }   /* the button's label still names it */
-.home.f4 .hg:not(.now) .tiles-h { display: flex; flex-wrap: wrap; gap: 6px; }
-.home.f4 .hg:not(.now) .ht { flex: none; }
-.home.f4 .hg:not(.now) .ht > .go { position: relative; width: 44px; min-height: 44px; justify-content: center; padding: 0; }
-.home.f4 .hg:not(.now) .ht .ci { display: grid; }
-.ht .ci { display: none; }
-.ht .ci svg { width: 18px; height: 18px; }
-.home.f4 .hg:not(.now) .ht .hring { position: absolute; right: 3px; top: 3px; width: 10px; height: 10px; }
-.home.f4 .hg:not(.now) .ht .hring svg { display: none; }
-.home.f4 .hg:not(.now) .ht .add { width: 30px; }
-.home.f5 .hm-week { display: none; }
-.home.f6 { gap: 4px; } .home.f6 .hm-groups { gap: 6px; } .home.f6 .hg { gap: 4px; } .home.f6 .tiles-h, .home.f6 .hg:not(.now) .tiles-h { gap: 6px; } .home.f6 .hg.now .hg-h h2 { font-size: var(--t16); } .home.f6 .hm-top { height: 44px; }
-.home.f7 { --bt: 44px; } .home.f7 .hg.now .ht .sub { display: none; } .home.f7 .hg.now .ht > .go { padding: 0 10px; }
-.hg.now .ht .add { width: 38px; } .hg.now .ht:has(.add) > .go { padding-right: 2px; }
-
-.tabbar { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: calc(58px + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); margin: 0 -20px; border-top: 1px solid var(--hair); background: color-mix(in oklab, var(--card) 70%, var(--ground)); }
-.tabbar[hidden] { display: none; }
-.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 12px; font-weight: 520; color: var(--muted); }
-.tab svg { width: 22px; height: 22px; }
-.tab[aria-current="page"] { color: var(--ink); font-weight: 700; }
-.insights[hidden], .history[hidden] { display: none; }
-.htabs.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.hbar h1 { font-size: var(--t20); font-weight: 700; }
-/* review progress: the answers so far, each one a way back to its question */
-.rvl { display: flex; flex-direction: column; margin-top: 6px; }
-.rvr { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 0; border-bottom: 1px solid var(--hair); text-align: left; width: 100%; }
-.rvr:last-child { border-bottom: 0; }
-.rvr .hring { width: 16px; height: 16px; }
-.rvr.on .hring { background: var(--good); box-shadow: none; }
-.rvr span.t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.rvr b { font-weight: 600; font-size: var(--t16); line-height: 1.25; }
-.rvr em { font-style: normal; font-size: var(--t13); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rvr .ch { flex: none; font-size: var(--t13); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-.rvr .ch.nx { text-decoration: none; color: var(--muted); font-weight: 500; }
-.meal .g.ok { color: var(--good); }
-/* HOME END */
 </style>
 <style>
 /* the live app's CSS, scoped under .lv by build-app.py (src/live.css is the live app's own); live tokens mapped onto Daylight's */
@@ -1691,44 +1578,18 @@ html.ai-lock .lv{overflow:hidden}
     </div>
     <div class="crow" id="crow" role="toolbar" aria-label="Categories in this moment"></div>
     <div class="editbar" id="editbar"><p class="ew"><b id="editWhat">Editing</b><span id="editDay"></span></p><button class="tbtn" type="button" id="editCancel">Cancel</button></div>
-    <!-- HOME: inside a category, the bar above the card: close, the step dots, "2 of 3" and whether it's saved -->
-    <div class="sbar" id="sbar">
-      <button class="sx" type="button" id="sheetX" aria-label="Close and go to Today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-      <div class="dots" id="dots" role="group" aria-label="Questions"></div>
-      <p class="sstat"><span id="stepOf"></span><span class="svst" id="svst" role="status"></span></p>
-    </div>
   </header>
-  <!-- HOME: Today, the home screen: every category, grouped by the time of day, the group for now on top -->
-  <section class="home" id="home" aria-labelledby="homeDate">
-    <div class="hm-top">
-      <div class="brand"><span id="hlogo"></span><h1 class="date" id="homeDate" tabindex="-1"></h1></div>
-      <div class="nav" id="hnav"></div>
-    </div>
-    <div class="hm-sky" id="hmSky" aria-hidden="true"></div>
-    <div class="hm-week" id="hmWeek"></div>
-    <div class="hm-day" id="hmDay"></div>
-    <div class="hm-groups" id="hmGroups"></div>
-    <div class="hm-links" id="hmLinks"></div>
-  </section>
   <main class="today" id="today">
     <div class="lv lv-slot" id="lv-banners"></div>
     <div class="deck" id="dl-deck">
       <button class="pilebtn" type="button" id="pileBtn" aria-label="Previous card" hidden></button>
     </div>
     <div class="acts" id="acts">
-      <button class="bk" type="button" id="actBack" hidden>Back</button>
       <button class="alt" type="button" id="actAlt" hidden></button>
       <button class="main" type="button" id="actMain">Next</button>
     </div>
   </main>
   <section class="history" id="history" aria-label="History" hidden></section>
-  <section class="history insights" id="insights" aria-label="Insights" hidden></section>
-  <!-- HOME: Today, History and Insights; hidden inside a category -->
-  <nav class="tabbar" id="tabbar" aria-label="Main">
-    <button class="tab" type="button" data-tab="home" id="tabHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18"/><path d="M7 17a5 5 0 0 1 10 0"/><path d="M12 6v2M5.6 9.6 7 11M18.4 9.6 17 11"/></svg><span>Today</span></button>
-    <button class="tab" type="button" data-tab="history" id="tabHistory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14" rx="2.5"/><path d="M4 10h16M9 3.5v4M15 3.5v4"/></svg><span>History</span></button>
-    <button class="tab" type="button" data-tab="insights" id="tabInsights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18.5l5.5-6.5 4 3 6.5-8.5"/></svg><span>Insights</span></button>
-  </nav>
 </div>
 <div class="scrim" id="scrim" hidden></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
@@ -4407,7 +4268,6 @@ const AI_GLOSS={
   hygiene:"Hygiene: one entry a day, in two parts. Personal: whether I washed (shower, bath, quick wash or not), times I brushed my teeth 0–3 plus extras (floss, mouthwash), skin, hair and grooming I did (list, incl. fresh clothes), and how fresh and clean I feel 1–5 (5 = fresh and clean). Bedroom: tidiness 1–5 (5 = spotless), upkeep I did that day (list, e.g. made the bed, changed the sheets, aired it out), days since the sheets were last changed (0 = that day), how the room is for the night (list: dark, cool, quiet, fresh air… or too warm, too bright, noisy, stuffy) and room temperature in °C. Screens in bed and late caffeine are logged under Sleep factors, not here.",
   recall:"Recall: an evening memory exercise. Free recall of the day, one moment per line, with a 3-minute timer (moments within the timer are the fairest comparison across days); cued recall of the morning, lunch, a conversation and the evening; one vivid detail; vividness 1–5; ease 1–5; blank stretches; best and hardest moments.",
   intimacy:"Intimacy (private, sexual health): activity that day (none, solo, partnered or both); desire/libido 0–10 (10 = very strong); satisfaction 1–5 (5 = very satisfied); protection or contraception used (list); any pain or issues (list).",
-  partial:"Partly logged: an entry marked this way was started but never finished. A missing answer there means it wasn't given, not that the answer was zero or none.",/* DAYLIGHT */
   later:"Corrections and later notes: I can change a saved entry's answers afterwards. The values shown are the corrected ones, still at the entry's original time, and 'answers corrected on' gives the date of the last change. Notes added later carry their own date and time and sit next to the original note; they may say how something turned out.",
   dietday:"Diet overview: one entry a day, in the evening. How healthy my eating was overall 1–5 (1 = poor, 5 = excellent, a single-item diet-quality rating); portions of fruit and vegetables (a portion is 80 g); the time of my last caffeine, or none.",/* DAYLIGHT: Diet overview */
   plan:"Plan for tomorrow: one entry a day, in the evening. An implementation intention, 'when …, I will …', tagged with the area it is about, and whether the previous evening's plan happened (yes / partly / not really).",/* DAYLIGHT: Plan for tomorrow */
@@ -4465,7 +4325,6 @@ function aiEntry(e){
   if(has("intentionMet"))p.push(`previous intention happened: ${(IW_MET.find(x=>x[0]===e.intentionMet)||[,e.intentionMet])[1].toLowerCase()}`);if(AI.notes&&has("intention"))p.push(`intention for next time: "${aiTxt(e.intention)}"`);
   if(AI.notes&&has("extraNotes"))p.push(`notes added later: ${e.extraNotes.map(n=>`"${aiTxt(n.text)}" (added ${dayKey(n.t)} ${aiHM(n.t)})`).join("; ")}`);
   if(has("editedAt"))p.push(`answers corrected on ${dayKey(e.editedAt)} at ${aiHM(e.editedAt)}`);
-  if(e.partial)p.push("partly logged (left unfinished, so some answers are missing)");/* DAYLIGHT: an entry written from an unfinished draft */
   const name=e.kind==="cog"?({number:"Number memory",verbal:"Verbal memory",visual:"Visual memory",stroop:"Colour-word",timing:"Device timing check",calib:"Hardware calibration"}[e.test]||"Test"):e.kind==="pvt"?"Reaction test":KIND[e.kind]||e.kind;
   return `- ${aiHM(e.t)} ${name}: ${p.join("; ")||"nothing filled in"}`+sub.map(s=>"\n  "+s.replace(/\n/g,"\n  ")).join("")}
 
@@ -4506,7 +4365,7 @@ function aiBuild(sc,question){
     "- This is self-observation, not a medical record. Don't diagnose; if something looks worth raising with a doctor, say so plainly.",
     "","## How to read the data",
     `- Units are metric. Times are 24-hour local time${tz?` (${tz})`:""}. Dates are YYYY-MM-DD.`,
-    ...["body","mood","pvt","cog","diet","dietday","bathroom","sleep","exercise","hobby","intimacy","hygiene","recall","plan","skip"].filter(k=>kinds.has(k)).map(k=>"- "+AI_GLOSS[k]),/* DAYLIGHT: + dietday, plan */...(es.some(e=>["physical","mental","waso","intensity"].some(k=>e[k]!=null))?["- "+AI_GLOSS.daylight]:[]),...(es.some(e=>e.day&&e.day!==dayKey(e.t))?["- "+AI_GLOSS.lateday]:[]),/* DAYLIGHT: the new fields and the late-evening rule, only when the export has them */...(es.some(e=>e.intention||e.intentionMet)?["- "+AI_GLOSS.intention]:[]),...(es.some(e=>e.editedAt||(e.extraNotes&&e.extraNotes.length))?["- "+AI_GLOSS.later]:[]),...(es.some(e=>e.partial)?["- "+AI_GLOSS.partial]:[]),/* DAYLIGHT */
+    ...["body","mood","pvt","cog","diet","dietday","bathroom","sleep","exercise","hobby","intimacy","hygiene","recall","plan","skip"].filter(k=>kinds.has(k)).map(k=>"- "+AI_GLOSS[k]),/* DAYLIGHT: + dietday, plan */...(es.some(e=>["physical","mental","waso","intensity"].some(k=>e[k]!=null))?["- "+AI_GLOSS.daylight]:[]),...(es.some(e=>e.day&&e.day!==dayKey(e.t))?["- "+AI_GLOSS.lateday]:[]),/* DAYLIGHT: the new fields and the late-evening rule, only when the export has them */...(es.some(e=>e.intention||e.intentionMet)?["- "+AI_GLOSS.intention]:[]),...(es.some(e=>e.editedAt||(e.extraNotes&&e.extraNotes.length))?["- "+AI_GLOSS.later]:[]),
     ...(hide.size?[`- For privacy, this export leaves out my ${[...hide].map(c=>CAT_LABEL[c]).join(" and ")} entries${hide.has("mind")?" (pleasantness, activation, stress, self-worth, urges and feeling words)":""}. Missing data there is not a gap in my logging.`]:[]),/* DAYLIGHT: privacy */
     "","Things to keep in mind:",...AI_CAVEATS.map(c=>"- "+c)];
   if(!S.live)L.push("- These are example entries generated by the app, not real data.");
@@ -4745,8 +4604,8 @@ acPast();
 /* DAYLIGHT: the live edit sheet is gone: Edit opens the entry's Daylight card with its answers, Add note appends to extraNotes (window.iwlEdit, set by Daylight). These History helpers stay. */
 function edStamp(t,ref){const d=new Date(t);return (ref!=null&&dayKey(t)===dayKey(ref)?"":d.toLocaleDateString(undefined,{day:"numeric",month:"short"})+", ")+fmtT(d)}
 function edLabel(e){try{return window.iwlEdit&&iwlEdit.label?iwlEdit.label(e):"Edit"}catch(_){return "Edit"}}/* DAYLIGHT: Daylight says which entries its cards can edit (the others take a note) */
-/* later notes and the edit stamp, under an entry in History. DAYLIGHT: and "Partly logged" on an entry left unfinished (partial: true, written from a draft a day later) */
-function edRowExtra(e){return (e.partial?`<br><span class="ed-mark part-mark">Partly logged</span>`:"")+(e.extraNotes||[]).map(n=>`<br><span class="note ed-add"><b>Added ${esc(edStamp(n.t,e.t))}</b>${esc(n.text)}</span>`).join("")+(e.editedAt?`<br><span class="ed-mark">Edited ${esc(edStamp(e.editedAt,e.t))}</span>`:"")}
+/* later notes and the edit stamp, under an entry in History */
+function edRowExtra(e){return (e.extraNotes||[]).map(n=>`<br><span class="note ed-add"><b>Added ${esc(edStamp(n.t,e.t))}</b>${esc(n.text)}</span>`).join("")+(e.editedAt?`<br><span class="ed-mark">Edited ${esc(edStamp(e.editedAt,e.t))}</span>`:"")}
 /* DAYLIGHT: iwlEdit.open/openCat (the live edit sheet) are gone; Daylight sets window.iwlEdit and edits on its own cards */
 /* EDIT END */
 
@@ -4818,20 +4677,11 @@ window.IWL={entries:()=>S.entries,live:()=>S.live,pager:null,
   dayOf,logDay,dayKey,catOf:CAT_OF,render:()=>renderHistory(),clockSwitch:()=>clockSwitch(),fmtT:t=>fmtT(new Date(t)),
   dayRows(k,root){const by={};S.entries.filter(e=>dayOf(e)===k).sort((a,b)=>b.t-a.t).forEach(e=>{const c=CAT_OF(e);(by[c]=by[c]||[]).push(e)});root.innerHTML=dayBody(by,{note:true});wireRows(root);return Object.keys(by).length}};
 const iwlTell=info=>{try{window.dispatchEvent(new CustomEvent("iwl:entries",{detail:info||{}}))}catch(_){}};
-/* DAYLIGHT: drafts (a "drafts" collection, never read by analyses): a category's answers before it is finished, so they resume on any device.
-   One document per day and category, id "<day>~<category>". In memory only when the log isn't the owner's. */
-const DRF={col:null,list:[]};
-const drTell=()=>{try{window.dispatchEvent(new CustomEvent("iwl:drafts"))}catch(_){}};
-window.IWL.drafts=()=>DRF.list;
-window.IWL.draftSet=async(id,d)=>{if(!DRF.col){DRF.list=[Object.assign({id},d),...DRF.list.filter(x=>x.id!==id)];return true}try{await DRF.col.doc(id).set(d);return true}catch(_){return false}};
-window.IWL.draftDel=async id=>{if(!DRF.col){DRF.list=DRF.list.filter(x=>x.id!==id);return true}try{await DRF.col.doc(id).delete();return true}catch(_){return false}};
-function drConnect(db){DRF.col=db.collection("drafts");
-  DRF.col.orderBy("t","desc").limit(200).onSnapshot(s=>{DRF.list=s.docs.map(d=>Object.assign({id:d.id},d.data()));drTell()},()=>{})}
 (async()=>{
   let db=null,owner=false;
   try{if(window.claude){db=await claude.use("db");const u=await claude.use("user");owner=u?await u.isOwner():false}}catch(_){}
   if(db&&owner){
-    S.live=true;S.col=db.collection("log");acConnect(db);drConnect(db);/* DAYLIGHT: drafts */
+    S.live=true;S.col=db.collection("log");acConnect(db);
     /* DAYLIGHT: the whole log, past the runtime's 1,000-document window and still live (src/pager.js: window 0 is the query that was here, orderBy("t","desc").limit(1000)) */
     window.IWL.pager=IWPager.load(S.col,es=>{S.entries=es;renderHistory();iwlTell({})},
       ()=>{$("histStatus").className="status err";$("histStatus").textContent="Lost the connection to your log. Reload the page."});
@@ -5026,7 +4876,7 @@ function looks(P) {
 
 const LIVE_CAT = { body: "body", mind: "mind", cog: "tests", diet: "meals", dietday: "diet", sleep: "sleep", exercise: "exercise", hobby: "hobby", intimacy: "private", hygiene: "hygiene", recall: "recall", bathroom: "bathroom", plan: "plan" };   // APP: live category -> Daylight's
 /* ---------- state ---------- */
-const S = { view: "home", mid: IW.due(), cards: [], pos: 0, detail: {}, el: null, ctl: null };
+const S = { view: "today", mid: IW.due(), cards: [], pos: 0, detail: {}, el: null, ctl: null };
 const ref = i => ({ i });
 const answered = (a, q) => {
   if (!a) return false;
@@ -5163,7 +5013,7 @@ function renderStack() {
   $("#pileBtn").hidden = filed === 0;
 }
 let chromeQueued = false;
-function renderChrome() { chromeQueued = false; if (S.view !== "today") return; renderSbar(); }   // HOME: the bar above the card (the path, icon row and pile are gone)
+function renderChrome() { chromeQueued = false; if (S.view !== "today") return; renderPath(); renderCatRow(); renderStack(); }
 function queueChrome() { if (chromeQueued) return; chromeQueued = true; requestAnimationFrame(renderChrome); }
 
 /* ---------- card shell ---------- */
@@ -5224,10 +5074,10 @@ function renderCard(card, box) {
     ctl = (R[card.q.t] || R.info)(card, body, el) || {};
     // the health note, inside Intimacy only, on its first card
     if (card.cat.private && card.cat.note && S.cards.find(c => c.kind === "q" && c.cat === card.cat) === card) addInfo(el, "A health note", () => card.cat.note);   // APP: behind the info button (Phase D)
+    if (card.cat.repeat && card.cat.id !== "meals" && isLastOfEntryCard(card) && !S.edit) body.append(h("button", { class: "inline-add", type: "button", onclick: () => addAnother(card) }, h("span", { html: IW.icon("plus", "", 2) }), "Add another session"));
     // APP: a saved meal or session can be removed from its last card (its record is deleted); a second tap confirms
     if (card.cat.repeat && card.ref.i != null && isLastOfEntryCard(card) && !S.edit) { const what = card.cat.id === "meals" ? "meal" : "session"; const rb = h("button", { class: "linkish danger", type: "button", style: "align-self:flex-start;margin-top:10px", onclick: () => { if (rb.dataset.arm) removeEntryHere(card.cat.id, card.ref.i); else { rb.dataset.arm = "1"; rb.textContent = `Tap again to remove this ${what}`; setTimeout(() => { if (rb.isConnected) { delete rb.dataset.arm; rb.textContent = `Remove this ${what}`; } }, 3000); } } }, `Remove this ${what}`); body.append(rb); }
-  } else if (card.kind === "meals" || card.kind === "entries") ctl = rEntries(card, el) || {};   // HOME: a repeat category's list (meals, sessions)
-  else if (card.kind === "review") ctl = rReview(card, el) || {};
+  } else if (card.kind === "meals") ctl = rMeals(card, el) || {};
   else if (card.kind === "summary") ctl = rSummary(card, el) || {};
   else if (card.kind === "skipped") ctl = rSkipped(card, el) || {};
   const t = el.querySelector("h2");
@@ -6576,7 +6426,7 @@ function rangeList(list) {
     meterEl(r),
     h("p", { class: "rg-d" }, h("span", { class: "st " + r.status }, h("i"), STW[r.status]), r.detail))));
 }
-function recapRow(c, k = IW.todayKey, onPage) {   // HOME: a row opens its category
+function recapRow(c, k = IW.todayKey, onPage) {
   const s = IW.summary(c.id, k);
   const st = IW.status(c.id, k);
   return h("button", { class: "rc", type: "button", onclick: async () => { if (onPage) await Page.close(); jumpToCat(c.id); } }, h("span", { html: ic(c.icon, 1.8) }), h("b", {}, c.name), h("em", {}, s.length ? s.join(" · ") : st === "skipped" ? "Skipped" : "Not yet"));
@@ -6612,45 +6462,45 @@ function rSummary(card, el) {
 /* ---------- moving through the deck ---------- */
 function actionsFor(card) {
   if (!card) return { main: { label: "Next", fn: () => {} } };
-  if (card.kind === "meals" || card.kind === "entries") { const cat = card.cat || IW.catById("meals"); return { main: { label: cat.id === "meals" ? "Add a meal" : "Add a session", fn: () => addEntry(cat) } }; }
-  if (card.kind === "review") return reviewActs(card);
+  if (card.kind === "meals") {
+    const n = IW.entries("meals").length, st = IW.status("meals");
+    return { main: { label: "Add a meal", fn: addMeal }, alt: n && st !== "done" && st !== "skipped" ? { label: "That's all", fn: () => { IW.done("meals"); tuck(tuckFrom("meals", S.el)); go(S.pos, "jump"); } } : null };
+  }
   if (card.kind === "summary") {
     if (card.mid === "evening") return IW.day().saved ? { main: { label: "Open History", fn: () => showHistory() } } : { main: { label: "Save the day", fn: saveTheDay } };
     return { main: { label: card.mid === "morning" ? "Next: Day" : "Next: Evening", fn: () => switchMoment(card.mid === "morning" ? "day" : "evening") } };
   }
-  if (card.kind === "skipped") return { main: { label: "Close", fn: () => showHome() } };
-  if (S.rv && !S.edit) return { main: { label: "Done", fn: next } };   // HOME: changing one answer from the review page goes back to it
+  if (card.kind === "skipped") return { main: { label: "Next", fn: next } };
   const lastE = isLastOfEntry(S.pos);
   const alt = card.tier === "quick" && lastE && card.cat.detail.length && !detailOpen(card) ? { label: "Add detail", fn: addDetailHere } : null;
   return { main: { label: lastE ? "Done" : "Next", fn: next }, alt };
 }
 function renderActs() {
-  const card = S.cards[S.pos], a = actionsFor(card), main = $("#actMain"), alt = $("#actAlt"), bk = $("#actBack");
+  const a = actionsFor(S.cards[S.pos]), main = $("#actMain"), alt = $("#actAlt");
   main.textContent = a.main.label; main.onclick = a.main.fn;
   if (a.alt) { alt.hidden = false; alt.textContent = a.alt.label; alt.onclick = a.alt.fn; } else alt.hidden = true;
-  // HOME: Back, beside Next, whenever there is a card before this one (swiping right still works too)
-  bk.hidden = !card || !!S.rv || S.view !== "today" || prevIndex(S.pos) < 0 || card.kind === "summary";
-  bk.onclick = back;
 }
 let autoT = null;
 // a single pick files the card by itself, except on the last card of a category, where Done and Add detail wait
-function autoNext(card) { clearTimeout(autoT); if (!S.rv && isLastOfEntry(S.cards.indexOf(card))) return; autoT = setTimeout(() => { if (S.cards[S.pos] === card && S.view === "today") next(); }, 380); }
+function autoNext(card) { clearTimeout(autoT); if (isLastOfEntry(S.cards.indexOf(card))) return; autoT = setTimeout(() => { if (S.cards[S.pos] === card && S.view === "today") next(); }, 380); }
 function next() {
   clearTimeout(autoT);
   const cur = S.cards[S.pos];
-  if (!cur || cur.kind === "summary" || cur.kind === "meals" || cur.kind === "entries" || cur.kind === "review") return;
+  if (!cur || cur.kind === "summary") return;
   if (S.edit && cur.kind === "q" && isLastOfEntry(S.pos)) { editDone(true); return; }   // APP: Done on an edited entry writes it
-  if (S.rv) { const i = S.cards.indexOf(S.rv); S.rv = null; if (i >= 0) { go(i, "back"); return; } }   // HOME: back to the review page
-  if (cur.kind === "q" && isLastOfEntry(S.pos)) { finishEntry(cur); return; }   // HOME: the last question finishes the category (or the meal, the session) and goes back to Today
+  if (cur.kind === "q" && cur.cat.repeat && cur.ref.i != null && isLastOfEntry(S.pos)) svEntryDone(cur.cat.id, cur.ref.i);   // APP: a finished meal or session is written at once
+  if (cur.kind === "q" && cur.cat.id === "meals" && isLastOfEntry(S.pos)) {
+    S.cards.splice(S.pos + 1, S.cards.length, { kind: "meals" });
+    go(S.pos + 1, "next", { tuck: "meals" }); return;
+  }
+  if (cur.kind === "meals") return;
   const n = nextIndex(S.pos);
   if (n < 0) return;
-  go(n, "next");
+  let tuckId = null;
+  if (cur.cat && S.cards[n].cat !== cur.cat) { if (IW.status(cur.cat.id) !== "skipped") IW.done(cur.cat.id); tuckId = cur.cat.id; }
+  go(n, "next", { tuck: tuckId });
 }
-function back() {
-  clearTimeout(autoT);
-  if (S.rv) { const i = S.cards.indexOf(S.rv); S.rv = null; if (i >= 0) { go(i, "back"); return; } }
-  const p = prevIndex(S.pos); if (p >= 0) go(p, "back");
-}
+function back() { clearTimeout(autoT); const p = prevIndex(S.pos); if (p >= 0) go(p, "back"); }
 function addDetailHere() {
   const cur = S.cards[S.pos];
   if (cur.cat.repeat) cur.ref.detail = true; else S.detail[cur.cat.id] = true;
@@ -6667,14 +6517,29 @@ function addMeal() { S.cards.splice(S.pos + 1, S.cards.length, ...quickCards(IW.
 function editMeal(i) { const r = ref(i); const cat = IW.catById("meals"); const list = quickCards(cat, r); if (cat.detail.some(q => answered(IW.entries("meals")[i], q))) { r.detail = true; list.push(...detailCards(cat, r)); } S.cards.splice(S.pos + 1, S.cards.length, ...list); go(S.pos + 1, "next"); }
 function undoSkip(cat) {
   IW.reopen(cat.id);
-  openCat(cat.id);   // HOME: straight back into the category
+  const i = S.cards.findIndex(c => c.kind === "skipped" && c.cat === cat);
+  if (i >= 0) S.cards.splice(i, 1, ...catCards(cat));
+  go(i >= 0 ? i : S.pos, "jump");
 }
 function doSkip(cat, reason) {
   IW.skip(cat.id, reason);
+  if (cat.id === "meals") { go(S.pos, "jump", { tuck: "meals" }); return; }
+  const first = S.cards.findIndex(c => c.cat === cat);
+  S.cards = S.cards.filter(c => c.cat !== cat || c.kind === "skipped");
+  S.cards.splice(first, 0, { kind: "skipped", cat });
+  S.pos = first;
+  const n = nextIndex(first);
+  go(n >= 0 ? n : first, "next", { tuck: cat.id, from: S.el });
   say(`${cat.name} skipped`);
-  if (S.view === "today" && S.cid === cat.id) showHome({ pulse: cat.id });   // HOME: a skipped category goes back to Today
 }
-function jumpToCat(cid) { openCat(cid); }   // HOME: every way to a category opens it
+function jumpToCat(cid) {
+  const cat = IW.catById(cid);
+  if (S.view !== "today") showToday();
+  if (cat.moment !== S.mid) switchMoment(cat.moment, false);
+  if (cid === "meals") return;
+  const i = S.cards.findIndex(c => c.cat === cat && visible(c));
+  if (i >= 0 && i !== S.pos) go(i, i < S.pos ? "back" : "jump");
+}
 function switchMoment(mid, anim = true) {
   buildDeck(mid);
   go(S.pos, anim ? "jump" : "none", { fresh: true });
@@ -6742,7 +6607,7 @@ function swap(old, el, dir, oc, nc, cur) {
 // a finished category's dot flies from its card to its icon: where from and where to are read first (tuckFrom), then it flies (tuck)
 function tuckFrom(cid, fromEl) {
   const target = $(`#crow [data-cat="${cid}"]`);
-  if (!target || !fromEl || !target.getClientRects().length) return null;   // HOME: the icon row is gone, so nothing flies
+  if (!target || !fromEl) return null;
   const r0 = fromEl.getBoundingClientRect(), r1 = target.getBoundingClientRect();
   return { cid, target, x0: r0.left + r0.width / 2, y0: r0.top + Math.min(r0.height * 0.5, 220), x1: r1.left + r1.width / 2, y1: r1.top + r1.height - 6 };
 }
@@ -6796,7 +6661,7 @@ function setupFlick() {
   deck.addEventListener("pointerup", end, true); deck.addEventListener("pointercancel", end, true);
   window.addEventListener("click", ev => { if (performance.now() - block < 120 && deck.contains(ev.target)) { ev.stopPropagation(); ev.preventDefault(); } }, true);
 }
-function canFlickNext() { const c = S.cards[S.pos]; return !!c && c.kind === "q" && nextIndex(S.pos) >= 0; }   // HOME: a flick moves on, never finishes
+function canFlickNext() { const c = S.cards[S.pos]; return !!c && (c.kind === "q" || c.kind === "skipped") && (nextIndex(S.pos) >= 0 || (c.kind === "q" && c.cat.id === "meals")); }
 
 /* ---------- sheets ---------- */
 const Sheet = (() => {
@@ -6950,25 +6815,25 @@ function moodGlyph(d) {
 }
 // APP: History in three tabs, each a normal scrolling page (Phase D, the owner's pick): Week (the week, the last 7 days, All days),
 // Calendar (the calendar and Compare) and Insights (Habit trends, Recent readings, Ask Claude, the AI export and CSV)
-// HOME: Insights is its own place on the tab bar now; History keeps Week and Calendar
-const HTABS = [["week", "Week"], ["cal", "Calendar"]];
+const HTABS = [["week", "Week"], ["cal", "Calendar"], ["ins", "Insights"]];
 function renderHistory() {
   const sec = $("#history");
   let wkBox = $("#dl-week");
   if (!wkBox || !sec.contains(wkBox)) {
     sec.replaceChildren();
-    const bar = h("div", { class: "hbar" }, h("h1", { tabindex: "-1", id: "histHead" }, "History"));
+    const bar = h("div", { class: "hbar" },
+      h("button", { class: "tbtn back", type: "button", onclick: () => showToday(), html: IW.icon("back", "", 2) + "<span>Today</span>" }),
+      h("button", { class: "tbtn", type: "button", id: "btnSettings", onclick: () => openSettings() }, "Settings"));
     wkBox = h("div", { id: "dl-week" });
     const lv = lvHistory();
-    const tabs = h("div", { class: "htabs two", role: "tablist", "aria-label": "History" }, ...HTABS.map(([k, t]) =>
+    const tabs = h("div", { class: "htabs", role: "tablist", "aria-label": "History" }, ...HTABS.map(([k, t]) =>
       h("button", { class: "htab", type: "button", role: "tab", id: `ht-${k}`, "aria-controls": `hp-${k}`, onclick: () => histTab(k, true) }, t)));
     tabs.addEventListener("keydown", e => {   // the arrow keys move between the tabs, as in any tab list
       const i = HTABS.findIndex(([k]) => k === S.htab), n = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : e.key === "Home" ? -i : e.key === "End" ? HTABS.length - 1 - i : 0;
       if (!n) return; e.preventDefault(); const k = HTABS[(i + n + HTABS.length) % HTABS.length][0]; histTab(k, true); $(`#ht-${k}`).focus();
     });
     const panel = (k, ...kids) => h("div", { class: "hpanel", role: "tabpanel", id: `hp-${k}`, "aria-labelledby": `ht-${k}`, tabindex: "-1" }, ...kids);
-    sec.append(bar, tabs, panel("week", wkBox, lv.days), panel("cal", lv.cal));
-    $("#insights").replaceChildren(h("div", { class: "hbar" }, h("h1", { tabindex: "-1", id: "insHead" }, "Insights"), h("button", { class: "tbtn", type: "button", id: "btnSettings", onclick: () => openSettings() }, "Settings")), lv.ins);   // HOME: Insights, its own place
+    sec.append(bar, tabs, panel("week", wkBox, lv.days), panel("cal", lv.cal), panel("ins", lv.ins));
     lvLayer();
     if (window.IWL && IWL.render) IWL.render();
   }
@@ -7048,73 +6913,89 @@ function openDay(k) {
   Page.open(IW.fmtDay(k, "long"), wrap, { onClose: () => { if (S.daySheet === k) S.daySheet = null; } });   // APP: a full page with a back button (Phase D)
 }
 function showHistory(o = {}) {
-  closeCard();
-  S.htab = o.tab || "week";   // History opens on its Week tab
-  setView("history");
+  S.view = "history"; S.htab = o.tab || "week";   // History opens on its Week tab
+  sceneHold(SCN.cur, true);
   renderHistory();
-  const hist = $("#history"); hist.scrollTop = 0;
-  if (!RM()) hist.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 300, easing: EASE });
-  requestAnimationFrame(() => { if (S.drawWeek) S.drawWeek(); const t = $("#histHead"); t && t.focus({ preventScroll: true }); });
+  const hist = $("#history"), top = $("#top"), today = $("#today");
+  const from = o.landing;
+  if (from && !RM()) {
+    const r0 = from.getBoundingClientRect();
+    const ghost = from.cloneNode(true);
+    ghost.classList.add("ghostcard"); ghost.removeAttribute("id");
+    Object.assign(ghost.style, { position: "fixed", left: r0.left + "px", top: r0.top + "px", width: r0.width + "px", height: r0.height + "px", right: "auto", bottom: "auto", margin: "0" });
+    document.body.append(ghost);
+    top.hidden = true; today.hidden = true; hist.hidden = false; hist.scrollTop = 0;
+    requestAnimationFrame(() => {
+      if (S.drawWeek) S.drawWeek();
+      const dot = $(".dot-today", hist), arc = $(".arc-today", hist);
+      const r1 = (dot || hist).getBoundingClientRect();
+      const sc = 34 / r0.width;
+      const tx = r1.left + r1.width / 2 - (r0.left + r0.width * sc / 2), ty = r1.top + r1.height / 2 - (r0.top + r0.height * sc / 2);
+      if (arc) { const L = arc.getTotalLength(); arc.style.strokeDasharray = `${L}`; arc.style.strokeDashoffset = `${L}`; }
+      if (dot) dot.style.opacity = "0";
+      hist.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: "ease-out" });
+      ghost.animate([{ transform: "none", opacity: 1, borderRadius: "24px" }, { transform: `translate(${tx}px, ${ty}px) scale(${sc})`, opacity: 0.85, borderRadius: "200px", offset: 0.92 }, { transform: `translate(${tx}px, ${ty}px) scale(${sc})`, opacity: 0, borderRadius: "200px" }],
+        { duration: 780, easing: "cubic-bezier(.65,0,.25,1)", fill: "forwards" }).finished.then(() => {
+        ghost.remove();
+        if (arc) { arc.animate([{ strokeDashoffset: arc.style.strokeDashoffset }, { strokeDashoffset: 0 }], { duration: 700, easing: EASE, fill: "forwards" }).finished.then(() => { arc.style.strokeDasharray = ""; arc.style.strokeDashoffset = ""; }); }
+        if (dot) dot.animate([{ opacity: 0, transform: "scale(.4)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: 420, easing: EASE, fill: "forwards" });
+      }, () => ghost.remove());
+    });
+  } else {
+    top.hidden = true; today.hidden = true; hist.hidden = false; hist.scrollTop = 0;
+    if (!RM()) hist.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 300, easing: EASE });
+  }
+  requestAnimationFrame(() => { const t = $("#histTitle"); t && t.focus({ preventScroll: true }); });
 }
-// HOME: Insights: Habit trends, Recent readings, Ask Claude, the AI export and CSV, and Settings
-function showInsights() {
-  closeCard();
-  setView("insights");
-  const sec = $("#insights");
-  if (!$("#dl-week")) renderHistory();   // builds Insights too: the live History's parts all need their places
-  sec.scrollTop = 0;
-  if (!RM()) sec.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 300, easing: EASE });
-  requestAnimationFrame(() => { const t = $("#insHead"); t && t.focus({ preventScroll: true }); });
-}
-// the card view, inside a category (or editing an entry from History)
 function showToday() {
-  setView("today");
-  renderChrome(); renderActs();
+  S.view = "today";
+  $("#history").hidden = true; $("#top").hidden = false; $("#today").hidden = false;
+  pathBox = null; renderChrome(); renderActs();
   refitScene();
   if (!SCN.still && !document.hidden) sceneHold(SCN.cur, false);
   if (S.ctl && S.ctl.fit) requestAnimationFrame(S.ctl.fit);
+  if (!RM()) [$("#top"), $("#today")].forEach(x => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260 }));
 }
 
 /* ---------- start ---------- */
 function freshStart() {
   S.detail = {};
-  // HOME: a new day (or the log loaded afresh) goes back to Today, unless a category is open
-  if (S.view === "today" && S.cid && !S.edit) { const cid = S.cid; openCat(cid, { quiet: true }); return; }
-  if (S.view === "home") queueHome();   // queued: the examples start the day before the Today code has run
+  buildDeck(IW.due());
+  if (S.ctl && S.ctl.dispose) S.ctl.dispose();
+  if (S.el) { dropCard(S.el); S.el = null; }
+  S.ctl = null;
+  go(S.pos, S.view === "today" ? "jump" : "none", { noFocus: true });
 }
 $("#logo").innerHTML = IW.logo(22, "dl");
 // the full date, or "Thu 22 October" when the header is too narrow for it
-function fitDate(el = $("#date"), pre = "") {
-  const full = IW.fmtDay(IW.todayKey, "long");
+function fitDate() {
+  const el = $("#date"), full = IW.fmtDay(IW.todayKey, "long");
   // APP: shorter forms until it fits, never "…" (Phase D): "Fri 23 October", "Fri 23 Oct", "23 Oct"
   const short = full.replace(/^(\S{3})\S*/, "$1");
-  for (const t of [full, short, short.replace(/(\d+ \S{3})\S*/, "$1"), short.replace(/^\S+ /, "").replace(/(\d+ \S{3})\S*/, "$1")]) { el.textContent = pre + t; if (el.scrollWidth <= el.clientWidth + 1) break; }
+  for (const t of [full, short, short.replace(/(\d+ \S{3})\S*/, "$1"), short.replace(/^\S+ /, "").replace(/(\d+ \S{3})\S*/, "$1")]) { el.textContent = t; if (el.scrollWidth <= el.clientWidth + 1) break; }
 }
 fitDate();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitDate(); fitCard(S.el); if (S.el) fitScene(S.el, "fonts"); });
 $("#btnHistory").addEventListener("click", () => showHistory());
-$("#tabHome").addEventListener("click", () => showHome());
-$("#tabHistory").addEventListener("click", () => showHistory());
-$("#tabInsights").addEventListener("click", () => showInsights());
-$("#sheetX").addEventListener("click", () => showHome());
 $("#editCancel").addEventListener("click", () => editDone(false));   // APP: leave an edit without saving
 $("#pileBtn").addEventListener("click", back);
 setupFlick();
 IW.on(ev => {
-  if (ev.type === "reset") { if (ev.newDay) { IW.day().saved = closedToday(); fitDate(); if (S.view === "today" && !S.edit) { showHome(); return; } } applyLight(); freshStart(); if (S.view === "history") renderHistory(); }
-  else if (ev.type === "data") { queueChrome(); renderActs(); queueHome(); if (S.view === "history" && $("#dl-week")) renderWeek($("#dl-week")); }   // APP: the log changed (quiet reload)
+  if (ev.type === "reset") { if (ev.newDay) { IW.day().saved = closedToday(); fitDate(); } applyLight(); freshStart(); if (S.view === "history") renderHistory(); }
+  else if (ev.type === "data") { queueChrome(); renderActs(); if (S.view === "history" && $("#dl-week")) renderWeek($("#dl-week")); }   // APP: the log changed (quiet reload)
   else if (ev.type === "theme") { applyLight(); queueChrome(); if (S.ctl && S.ctl.redraw) S.ctl.redraw(); if (SCN.cur && SCN.cur.cid === "mind") paintSky(SCN.cur, moodSky()); if (S.view === "history" && S.drawWeek) requestAnimationFrame(S.drawWeek); }
   else if (ev.type === "saved") { renderActs(); }
   else { queueChrome(); if (ev.type === "event" || ev.type === "status" || ev.type === "entry") renderActs(); }
-  queueHome();
 });
 applyLight();
+buildDeck(IW.due());
+go(S.pos, "jump", { noFocus: true });
 setInterval(() => { if (SCN.still) return; applyLight(); queueChrome(); }, 60000);
-setInterval(() => { if (!LV.testing() && !S.edit && !S.yday) IW.tick(); }, 30000);   // APP: at 04:00 the next day begins (the owner's decision 2)
+setInterval(() => { if (!LV.testing() && !S.edit) IW.tick(); }, 30000);   // APP: at 04:00 the next day begins (the owner's decision 2)
 let rz = null;
-window.addEventListener("resize", () => { pathBox = null; clearTimeout(rz); rz = setTimeout(() => { fitDate(); pathBox = null; renderChrome(); if (S.view === "today") refitScene(); fitCard(S.el); if (S.view === "home") renderHome(); if (S.view === "history" && S.drawWeek) S.drawWeek(); }, 80); });
+window.addEventListener("resize", () => { pathBox = null; clearTimeout(rz); rz = setTimeout(() => { fitDate(); pathBox = null; renderChrome(); if (S.view === "today") refitScene(); fitCard(S.el); if (S.view === "history" && S.drawWeek) S.drawWeek(); }, 80); });
 // for test-daylight.js: put the card before a category's first card in front, then bring the category in as Next would
-function catFirst(cid) { const cat = IW.catById(cid); if (S.view !== "today") showToday(); if (cat.moment !== S.mid || !S.cards.some(c => catOf(c) === cid)) { buildDeck(cat.moment); S.cid = cid; } return S.cards.findIndex(c => catOf(c) === cid && visible(c)); }
+function catFirst(cid) { const cat = IW.catById(cid); if (S.view !== "today") showToday(); if (cat.moment !== S.mid) buildDeck(cat.moment); return S.cards.findIndex(c => catOf(c) === cid && visible(c)); }
 /* ---------- APP: saving as each category is finished (the owner's decision 1) ----------
    Done on a category writes its record at once: a new record, or the same record again by id. Skip writes a skip record at
    once, and undoing the skip deletes it. A change to a finished category updates its record a moment later (editedAt set,
@@ -7154,12 +7035,11 @@ function svBathroom(k) {
   for (const r of others) if (!r.ro) { const kept = evs(r).filter(ev => c.events.includes(ev)); if (kept.length !== evs(r).length) { r.a.events = kept; svQueue(r); } }
   return main;
 }
-function svSoon(card) { clearTimeout(card._st); card._st = setTimeout(() => svQueue(card), 700); queueStat(); }
+function svSoon(card) { clearTimeout(card._st); card._st = setTimeout(() => svQueue(card), 700); }
 function svQueue(card) {
   clearTimeout(card._st); card._st = 0; SV.live++; card._busy = (card._busy || 0) + 1;
   card._q = (card._q || Promise.resolve()).then(() => svWrite(card)).catch(e => { console.error(e); SV.failed.add(card); svBanner(); })
-    .finally(() => { SV.live--; card._busy--; if (SV.failed.has(card)) svRetry(card); else card._tries = 0; queueStat(); if (IWBridge.REPEAT.includes(card.cid)) draftSoon(card.key, card.cid); });   // HOME: the bar's "Saved", a retry, and the drafts drop a finished meal
-  queueStat();
+    .finally(() => { SV.live--; card._busy--; });
   return card._q;
 }
 async function svWrite(card) {
@@ -7317,8 +7197,7 @@ async function editEntry(id) {
   const card = IWBridge.fromDoc(rec), cid = card.cid, cat = IW.catById(cid), k = card.key, rep = IWBridge.REPEAT.includes(cid);
   if (Sheet.isOpen) await Sheet.close();
   if (Page.isOpen) await Page.close();
-  closeCard();   // HOME: an edit starts from History, so no category is open
-  const E = { days: IW.store.days, today: IW.todayKey, cards: [], pos: 0, mid: S.mid, detail: S.detail, back: S.daySheet };
+  const E = { days: IW.store.days, today: IW.todayKey, cards: S.cards, pos: S.pos, mid: S.mid, detail: S.detail, back: S.daySheet };
   const day = { key: k, cats: {}, saved: true }, tmp = { [k]: day };
   day.cats[cid] = { status: "done", a: rep ? {} : card.a, entries: rep ? [card.a] : [], events: cid === "bathroom" ? (card.a.events || (card.a.events = [])) : [], reason: null, note: null, recs: [card] };
   const y = IW.addDays(k, -1); if (E.days[y] && E.days[y].cats.plan) tmp[y] = { key: y, cats: { plan: E.days[y].cats.plan }, saved: true };   // "Did yesterday's plan happen?"
@@ -7326,7 +7205,7 @@ async function editEntry(id) {
   IW.store.days = tmp; IW.todayKey = k;
   S.edit = { id, card, cid, k, E, cat };
   S.detail = {}; S.mid = cat.moment;
-  S.cards = catCards(cat); S.pos = 0; S.cid = cid; S.rv = null;
+  S.cards = catCards(cat); S.pos = 0;
   root.classList.add("dl-edit");
   $("#editWhat").textContent = `Editing ${cat.short || cat.name}`; $("#editDay").textContent = IW.fmtDay(k, "long");   // two short lines, so nothing is cut off at 360 px
   showToday(); fitDate();
@@ -7353,7 +7232,7 @@ async function editDone(save) {
   S.cards = E.cards; S.pos = E.pos; S.mid = E.mid; S.detail = E.detail;
   fitDate();
   if (S.el) { dropCard(S.el); S.el = null; S.ctl = null; }
-  S.cards = []; S.cid = null;
+  if (S.cards.length) go(Math.min(S.pos, S.cards.length - 1), "none", { noFocus: true });
   IW.tick();
   if (S.lvPending) lvLoad();
   showHistory();
@@ -7367,15 +7246,13 @@ function openSettings() {
   const clock = h("div", { class: "lv lv-set" }); if (window.IWL && IWL.clockSwitch) clock.append(IWL.clockSwitch());
   const box = h("div", { class: "lv lv-host lv-set noflick" });
   // APP: Settings is a page (Phase D); the timing check says what it does once, in the live test's own words
-  const rem = reminderRows();   // HOME: on the phone only
-  if (rem) wrap.append(h("h3", { class: "h3", style: "margin-top:0" }, "Reminders"), rem);
-  wrap.append(h("h3", { class: "h3", style: rem ? null : "margin-top:0" }, "Clock"), clock, h("h3", { class: "h3" }, "Timing check and calibration"), box);
+  wrap.append(h("h3", { class: "h3", style: "margin-top:0" }, "Clock"), clock, h("h3", { class: "h3" }, "Timing check and calibration"), box);
   LV.pick("timing");
   LV.host(box, ["testDesc", "st-timing", "ctl-timing", "calibBox", "cogResults", "testLast"]);
   Page.open("Settings", wrap, { beforeClose: () => { if (LV.testing()) LV.stopIn(box); LV.home(wrap); if (S.ctl && S.ctl.rehost) S.ctl.rehost(); } });
   const sb = document.getElementById("pageBody"); if (sb) { sb.scrollTop = 0; requestAnimationFrame(() => { sb.scrollTop = 0; }); }   // the hosted parts can pull the page down; it opens at the top
 }
-window.addEventListener("iwl:clock", () => { CLOCK12 = clock12(); if (S.view === "history") renderHistory(); else if (S.view === "home") renderHome(); else if (S.el) go(S.pos, "none", { noFocus: true }); });
+window.addEventListener("iwl:clock", () => { CLOCK12 = clock12(); if (S.view === "history") renderHistory(); else if (S.el) go(S.pos, "none", { noFocus: true }); });
 
 /* ---------- APP: the practice copy's buttons (the owner's decision 4); never in the real app ---------- */
 async function practiceFill(btn) {
@@ -7409,8 +7286,13 @@ async function practiceClear(btn) {
 function removeEntryHere(cid, i) {
   const cat = IW.catById(cid); if (!cat || !cat.repeat || i == null || !IW.entries(cid)[i]) return false;
   IW.removeEntry(cid, i);
-  S.rv = null; S.cards = [{ kind: "entries", cat }];   // HOME: back to the category's list
-  go(0, "back");
+  if (cid === "meals") { S.cards.splice(S.pos + 1, S.cards.length); S.cards.push({ kind: "meals" }); go(S.cards.length - 1, "back"); }
+  else {
+    const first = S.cards.findIndex(c => c.cat === cat);
+    S.cards = S.cards.filter(c => c.cat !== cat);
+    S.cards.splice(first < 0 ? S.cards.length - 1 : first, 0, ...catCards(cat));
+    go(Math.max(0, first), "back");
+  }
   say(`${cat.entryName === "meal" ? "Meal" : "Session"} removed`);
   return true;
 }
@@ -7431,7 +7313,6 @@ function lvLoad() {
   IW.load(days, { quiet, keep: svUnsaved });
   IW.day().saved = closedToday();
   if (!quiet) renderActs();
-  draftsApply();   // HOME: unfinished answers from the drafts fill what the log doesn't have
 }
 let lvT = 0;
 window.addEventListener("iwl:entries", () => { clearTimeout(lvT); lvT = setTimeout(lvLoad, 120); });
@@ -7453,7 +7334,7 @@ new MutationObserver(ms => { for (const m of ms) for (const n of m.removedNodes)
   const slot = $("#lv-banners"), b = LV.el("banner");
   if (b) slot.append(b);   // the live app still writes its words here; the tag's sheet reads them
   const tag = h("button", { class: "mtag", type: "button", id: "modeTag", hidden: true, "aria-haspopup": "dialog", onclick: () => openModeSheet() }, h("span", {}));
-  $("#hnav").prepend(tag);   // HOME: on Today's top row
+  $(".top .nav").prepend(tag);
   const examples = () => !!b && !b.hidden;
   const sync = () => { tag.hidden = !(PRACTICE || examples()); tag.firstChild.textContent = PRACTICE ? "Practice" : "Examples"; tag.setAttribute("aria-label", PRACTICE ? "Practice copy" : "Example entries"); };
   function openModeSheet() {
@@ -7468,447 +7349,22 @@ new MutationObserver(ms => { for (const m of ms) for (const n of m.removedNodes)
   if (b) new MutationObserver(() => { sync(); fitDate(); }).observe(b, { attributes: true, attributeFilter: ["hidden"], childList: true, characterData: true, subtree: true });
   sync(); fitDate();
 })();
-/* ---------- HOME: Today, the home screen (the owner, 24 Oct 2026) ----------
-   The app opens here: every category, grouped Morning, Day and Evening, the group for now on top with big tiles. A tile shows
-   its state and a key answer. A category opens as a full-screen sheet (the card view) and comes back here when it is finished,
-   skipped or closed. Answers save as they are given: a finished category to the log, an unfinished one to the drafts. */
-const VIEWS = ["home", "today", "history", "insights"];
-function setView(v) {
-  S.view = v;
-  $("#home").hidden = v !== "home";
-  $("#top").hidden = $("#today").hidden = v !== "today";
-  $("#history").hidden = v !== "history";
-  $("#insights").hidden = v !== "insights";
-  $("#tabbar").hidden = v === "today";
-  const tab = { home: "home", history: "history", insights: "insights" }[v];
-  for (const b of $$("#tabbar .tab")) { if (b.dataset.tab === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); }
-  if (v !== "today") sceneHold(SCN.cur, true);
-}
-// leave the open category: its card goes, and its unfinished answers are written to the drafts now
-function closeCard() {
-  clearTimeout(autoT);
-  if (S.ctl && S.ctl.dispose) S.ctl.dispose();
-  leaving.forEach(dropCard); leaving = [];
-  if (S.el) dropCard(S.el);
-  S.el = null; S.ctl = null; S.cards = []; S.pos = 0; S.rv = null;
-  if (S.cid) draftFlush();
-  S.cid = null;
-}
-function showHome(o = {}) {
-  if (S.edit) return;
-  if (Sheet.isOpen) Sheet.close();
-  closeCard();
-  setView("home");
-  renderHome();
-  if (o.pulse) { const t = $(`#home .ht[data-cid="${o.pulse}"]`); if (t && !RM()) { t.classList.remove("pulse"); void t.offsetWidth; t.classList.add("pulse"); } }
-  if (!o.noFocus) requestAnimationFrame(() => { const t = o.pulse && $(`#home .ht[data-cid="${o.pulse}"] .go`); (t || $("#homeDate")).focus({ preventScroll: true }); });
-}
-// open a category: a skipped one shows its skip, a repeat one its list, a started or finished one its answers so far, a new one its first question
-function openCat(cid, o = {}) {
-  const cat = IW.catById(cid); if (!cat) return;
-  if (Sheet.isOpen) Sheet.close();
-  if (Page.isOpen) Page.close();
-  if (S.view === "today" && S.cid !== cid) closeCard();
-  else { if (S.ctl && S.ctl.dispose) S.ctl.dispose(); }
-  const st = IW.status(cid);
-  let cards;
-  if (st === "skipped") cards = [{ kind: "skipped", cat }];
-  else if (cat.repeat) cards = [{ kind: "entries", cat }];
-  else { cards = catCards(cat); if (st === "started" || st === "done") cards.unshift({ kind: "review", cat, ref: null }); }
-  S.cid = cid; S.mid = cat.moment; S.cards = cards; S.rv = null;
-  setView("today");
-  const first = cards[0].kind === "q" ? Math.max(0, cards.findIndex(visible)) : 0;
-  go(first, o.quiet ? "none" : "jump", { fresh: true, noFocus: !!o.quiet });
-}
-// a meal or a session: its answers so far, then its questions; or a new one from its first question
-function entryCards(cat, i) {
-  const r = ref(i), list = quickCards(cat, r), e = i == null ? null : IW.entries(cat.id)[i];
-  if (e && cat.detail.some(q => answered(e, q))) { r.detail = true; list.push(...detailCards(cat, r)); }
-  return i == null ? list : [{ kind: "review", cat, ref: r }, ...list];
-}
-function openEntry(cat, i) { S.rv = null; S.cards = [{ kind: "entries", cat }, ...entryCards(cat, i)]; go(1, "next"); }
-function addEntry(cat) {
-  if (S.view !== "today" || S.cid !== cat.id) { openCat(cat.id, { quiet: true }); }
-  S.rv = null; S.cards = [{ kind: "entries", cat }, ...entryCards(cat, null)]; go(1, "next");
-}
-// the last question of a category (or of a meal, a session) is done: it is saved and Today shows it ticked
-function finishEntry(card) {
-  const cat = card.cat;
-  if (cat.repeat) {
-    if (card.ref.i == null) { S.cards = [{ kind: "entries", cat }]; go(0, "back"); return; }   // nothing answered: back to the list
-    svEntryDone(cat.id, card.ref.i);
-  }
-  if (IW.status(cat.id) !== "skipped") IW.done(cat.id);
-  showHome({ pulse: cat.id });
-}
-const repeatWord = (cat, n) => `${n} ${n === 1 ? cat.entryName : cat.entryName + "s"}`;
-const entrySaved = (cid, e) => { const r = recsOf(IW.cat(cid)).find(x => x.a === e); return !!(r && r.id); };
-function entryTitle(cat, e) { return cat.id === "meals" ? IW.cap(e.meal || "meal") : cat.id === "hobby" ? (e.project || IW.cap(e.activity || "session")) : IW.cap(e.type || "session"); }
-function entryLine(cat, e) {
-  if (cat.id === "meals") return e.food || "No description";
-  const p = cat.id === "hobby" ? [e.project && e.activity ? IW.cap(e.activity) : null, e.minutes ? `${e.minutes} min` : null] : [e.minutes ? `${e.minutes} min` : null, e.intensity ? IW.cap(e.intensity) : null];
-  return p.filter(Boolean).join(", ") || "No details yet";
-}
-// HOME: a repeat category's own page: today's meals (or sessions), each one a way to its answers, and a way to add one
-function rEntries(card, el) {
-  const cat = card.cat || IW.catById("meals"), cid = cat.id;
-  el.classList.add("meals");
-  el.append(head(cat, null));
-  const body = h("div", { class: "cbody" });
-  const ents = IW.entries(cid).map((e, i) => ({ e, i })).sort((x, y) => (x.e.at ?? 0) - (y.e.at ?? 0));
-  const what = cid === "meals" ? "meals" : "sessions";
-  body.append(h("h2", { class: "q", id: uid("q"), tabindex: "-1" }, cid === "meals" ? "Today's meals" : `${cat.name} today`),
-    h("p", { class: "sub", style: "font-size:var(--t16)" }, ents.length ? `${ents.length} logged. Tap one to review or change it.` : `No ${what} yet today.`));
-  const row = ({ e, i }, after) => {
-    const ok = entrySaved(cid, e);
-    return h("button", { class: "meal", type: "button", "aria-label": `${entryTitle(cat, e)}${e.at != null ? " at " + IW.hm(e.at) : ""}: ${entryLine(cat, e)}, ${ok ? "done" : "not finished"}`, onclick: () => { if (after) after(); openEntry(cat, i); } },
-      h("span", { class: "t", html: e.at != null ? tH(IW.hm(e.at)) : "" }), h("span", { class: "m" }, entryTitle(cat, e)), h("span", { html: IW.icon("back", "", 2) }),
-      h("span", { class: "f" }, entryLine(cat, e)), h("span", { class: "g" + (ok ? " ok" : "") }, ok ? "Done" : "Not finished"));
-  };
-  // the latest that fit show here; all of them are behind "All (n)"
-  const list = h("div", { class: "meals-l" }); let room = Infinity;
-  const draw = () => { const shown = ents.slice(Math.max(0, ents.length - room)); list.replaceChildren(...shown.map(x => row(x)), ...(shown.length < ents.length ? [h("button", { class: "more", type: "button", onclick: () => { const box = h("div", {}, ...ents.map(x => row(x, () => Sheet.close()))); Sheet.open(cid === "meals" ? "Meals today" : `${cat.name} today`, box, null, { cat: cid }); } }, cid === "meals" ? "All meals" : "All sessions", h("span", {}, `(${ents.length})`), h("span", { html: IW.icon("back", "", 2), style: "display:flex;transform:rotate(180deg);width:16px;height:16px" }))] : [])); };
-  if (ents.length) { body.append(list); draw(); (el._lists ||= []).push({ all: () => { room = Infinity; draw(); }, less: () => { const n = Math.min(room, ents.length); if (n <= 0) return false; room = n - 1; draw(); return true; } }); }
-  el.append(body);
-}
-// HOME: review progress: the answers so far, each one a way back to its question; then Continue, or Done
-const sameRef = (c, card) => c.kind === "q" && c.cat === card.cat && (!card.cat.repeat || c.ref === card.ref);
-const rvCards = card => S.cards.filter(c => sameRef(c, card) && visible(c));
-function rvAnswered(c) { const a = A(c); return c.q.t === "bathroom" ? IW.events().length > 0 : answered(a, c.q); }
-function rvValue(c) {
-  if (c.q.t === "bathroom") { const v = IW.summary("bathroom"); return IW.events().length ? v.join(", ") : null; }
-  return rvAnswered(c) ? IW.fmtAnswer(c.q, A(c)) || "Answered" : null;
-}
-function rReview(card, el) {
-  const cat = card.cat, all = rvCards(card);
-  el.append(head(cat, card.ref && card.ref.i != null ? { cat, ref: card.ref, tier: null } : null));
-  const body = h("div", { class: "cbody" });
-  const n = all.filter(rvAnswered).length, firstOpen = all.find(c => !rvAnswered(c));
-  const recs = recsOf(IW.cat(cat.id)), saved = recs.filter(r => r.id).length || DR.wrote.has(draftId(IW.todayKey, cat.id));
-  body.append(h("h2", { class: "q", id: uid("q"), tabindex: "-1" }, "Your progress"),
-    h("p", { class: "sub", style: "font-size:var(--t16)" }, `${n} of ${all.length} answered${saved ? ", saved" : ""}. Tap an answer to change it.`));
-  const rowOf = (c, after) => {
-    const on = rvAnswered(c), v = rvValue(c), label = c.q.label || c.q.q;
-    return h("button", { class: "rvr" + (on ? " on" : ""), type: "button", "aria-label": `${label}: ${on ? v + ". Change" : "not answered yet"}`, onclick: () => { if (after) after(); S.rv = card; const i = S.cards.indexOf(c); if (i >= 0) go(i, "next"); } },
-      h("span", { class: "hring", html: on ? TICK : "" }), h("span", { class: "t" }, h("b", {}, label), h("em", {}, on ? v : c === firstOpen ? "Next" : "Not answered yet")),
-      h("span", { class: "ch" + (on ? "" : " nx") }, on ? "Change" : ""));
-  };
-  const list = h("div", { class: "rvl" }); let room = Infinity;
-  const draw = () => { const shown = all.slice(0, room); list.replaceChildren(...shown.map(c => rowOf(c)), ...(shown.length < all.length ? [h("button", { class: "more", type: "button", onclick: () => Sheet.open("Your answers", h("div", { class: "rvl" }, ...all.map(c => rowOf(c, () => Sheet.close()))), null, { cat: cat.id }) }, "All answers", h("span", {}, `(${all.length})`), h("span", { html: IW.icon("back", "", 2), style: "display:flex;transform:rotate(180deg);width:16px;height:16px" }))] : [])); };
-  body.append(list); draw();
-  (el._lists ||= []).push({ all: () => { room = Infinity; draw(); }, less: () => { const k = Math.min(room, all.length); if (k <= 1) return false; room = k - 1; draw(); return true; } });
-  el.append(body);
-}
-function reviewActs(card) {
-  const cat = card.cat, all = rvCards(card), open = all.find(c => c.tier === "quick" && !rvAnswered(c)) || all.find(c => !rvAnswered(c));
-  const openDetail = cat.detail.length && !all.some(c => c.tier === "detail") ? { label: "Add detail", fn: () => {
-    if (cat.repeat) card.ref.detail = true; else S.detail[cat.id] = true;
-    const last = S.cards.reduce((m, c, i) => (sameRef(c, card) ? i : m), S.cards.indexOf(card));
-    S.cards.splice(last + 1, 0, ...detailCards(cat, card.ref));
-    S.rv = null; go(nextIndex(last), "next");
-  } } : null;
-  if (open && open.tier === "quick") return { main: { label: "Continue", fn: () => { S.rv = null; go(S.cards.indexOf(open), "next"); } } };
-  return { main: { label: "Done", fn: () => finishEntry(all[all.length - 1] || { cat, ref: card.ref }) }, alt: openDetail || (open ? { label: "Continue", fn: () => { S.rv = null; go(S.cards.indexOf(open), "next"); } } : null) };
-}
-// the bar above the card: the step dots (the quick questions, or the detail ones), "2 of 3", and whether it's saved
-function renderSbar() {
-  const dots = $("#dots"), cur = S.cards[S.pos];
-  const steps = cur && cur.kind === "q" ? S.cards.filter(c => sameRef(c, cur) && c.tier === cur.tier && visible(c)) : [];
-  // the dots only show where you are ("2 of 3" says it aloud); Back, Next and the review page do the moving
-  dots.replaceChildren(...steps.map(c => h("span", { class: "dot" + (rvAnswered(c) ? " on" : "") + (c === cur ? " here" : "") }, h("i"))));
-  dots.classList.toggle("many", steps.length > 8);
-  dots.setAttribute("aria-hidden", "true"); dots.removeAttribute("aria-label");
-  const j = steps.indexOf(cur);
-  $("#stepOf").textContent = j >= 0 && steps.length > 1 ? `${j + 1} of ${steps.length}` : "";
-  svStat();
-}
-// "Saving…" while a write is on its way, "Saved" once the log or the drafts have it, "Not saved, retrying" when one failed
-function svStat() {
-  const el = $("#svst"); if (!el) return;
-  const cid = S.cid; let t = "", cls = "";
-  if (cid && !S.edit && svOn()) {
-    const recs = recsOf(IW.cat(cid)), id = draftId(IW.todayKey, cid);
-    const failed = recs.some(r => SV.failed.has(r)) || DR.failed.has(id);
-    const busy = recs.some(r => r._st || r._busy) || DR.pending.has(id) || DR.t[id];
-    if (failed) { t = "Not saved, retrying"; cls = "err"; }
-    else if (busy) t = "Saving…";
-    else if (recs.some(r => r.id) || DR.wrote.has(id)) { t = "Saved"; cls = "ok"; }
-  }
-  if (el.textContent !== t) el.textContent = t;
-  el.className = "svst" + (cls ? " " + cls : "");
-}
-let svsQ = 0;
-const queueStat = () => { if (!svsQ) svsQ = requestAnimationFrame(() => { svsQ = 0; svStat(); }); };
-// a write that failed is tried again by itself, a little later each time
-const RETRY = [3000, 8000, 20000, 45000];
-function svRetry(card) {
-  const n = card._tries = (card._tries || 0) + 1;
-  clearTimeout(card._rt);
-  card._rt = setTimeout(() => { if (SV.failed.has(card) && !card.gone) svQueue(card); }, RETRY[Math.min(n, RETRY.length) - 1]);
-}
-
-/* ---------- HOME: the screen itself ---------- */
-const momentNow = () => (S.yday ? "evening" : IW.due());
-// a tile's line under its name: the longest that fits (fitHome), from the key answers down to one word
-function tileState(cat) {
-  const cid = cat.id, st = IW.status(cid);
-  if (st === "skipped") return { st, subs: ["Skipped"], f: 0 };
-  if (cat.repeat) {
-    const es = IW.entries(cid), n = es.length, open = es.filter(e => !entrySaved(cid, e)).length;
-    if (!n) return { st: null, subs: ["Not yet"], f: 0 };
-    const last = es.reduce((a, e) => ((e.at ?? -1) >= (a.at ?? -1) ? e : a), es[0]);
-    if (open && n - open === 0) return { st: "started", subs: [`${repeatWord(cat, n)}, not finished`, "Not finished"], f: 50 };
-    return { st: "done", subs: [`${repeatWord(cat, n)} · ${entryTitle(cat, last)}`, repeatWord(cat, n), String(n)], f: 100 };
-  }
-  if (st === "done") {
-    const s = IW.summary(cid), p = cid === "sleep" ? [s[1], s[2]].filter(Boolean) : s.slice(0, 2);
-    return { st, subs: [p.join(" · "), p[0], "Done"].filter(Boolean), f: 100 };
-  }
-  if (st === "started") {
-    const qs = IW.questions(cat, "quick", IW.cat(cid).a), a = IW.cat(cid).a;
-    const n = cid === "bathroom" ? 1 : qs.filter(q => answered(a, q)).length;
-    return { st, subs: cid === "bathroom" ? [IW.summary("bathroom").join(", "), "Started"] : [`${n} of ${qs.length}`], f: Math.round(100 * n / Math.max(1, qs.length)) };
-  }
-  return { st: null, subs: ["Not yet"], f: 0 };
-}
-function homeTile(cat) {
-  const { st, subs, f } = tileState(cat), sub = subs[0], word = st === "done" ? "done" : st === "skipped" ? "skipped" : st === "started" ? "started" : "not started";
-  const t = h("div", { class: `ht ${st || ""}`, "data-cid": cat.id, "data-cat": cat.id, style: `--f:${f}%` },
-    h("button", { class: "go", type: "button", "aria-label": `${cat.name}, ${word}${sub && st ? ": " + sub : ""}`, onclick: () => openCat(cat.id) },
-      h("span", { class: "nm" }, h("span", { class: "hring", html: st === "done" ? TICK : "" }), h("span", { class: "ci", html: ic(cat.icon, 1.8) }), h("b", {}, cat.short || cat.name)),
-      h("span", { class: "sub", "data-subs": JSON.stringify(subs), html: tH(sub) })));
-  if (cat.repeat && st !== "skipped" && !S.edit) t.append(h("button", { class: "add", type: "button", "aria-label": { meals: "Add a meal", exercise: "Add an exercise session", hobby: "Add a hobby session" }[cat.id] || `Add to ${cat.name}`, html: IW.icon("plus", "", 2), onclick: () => addEntry(cat) }));
-  return t;
-}
-function weekStart(k) { const d = IW.dateOf(k).getDay(); return IW.addDays(k, -((d + 6) % 7)); }
-function renderHome() {
-  homeQ = 0;
-  if (S.view !== "home") return;
-  const k = IW.todayKey, now = momentNow();
-  $("#hlogo").innerHTML = IW.logo(22, "hm");
-  $("#homeDate").textContent = S.yday ? `Yesterday, ${IW.fmtDay(k, "long")}` : IW.fmtDay(k, "long");
-  // the sun's arc, just for the look of the hour
-  const sky = $("#hmSky"), W = Math.max(200, sky.clientWidth || 340), H = 30, u = S.yday ? 0.98 : arcU(IW.nowMinutes());
-  const X = v => 6 + v * (W - 12), Y = v => H - 4 - (H - 10) * Math.sin(Math.PI * IW.clamp(v, 0, 1));
-  let d = ""; for (let i = 0; i <= 48; i++) { const v = i / 48; d += (i ? "L" : "M") + X(v).toFixed(1) + " " + Y(v).toFixed(1); }
-  let dn = ""; for (let i = 0; i <= 48; i++) { const v = u * i / 48; dn += (i ? "L" : "M") + X(v).toFixed(1) + " " + Y(v).toFixed(1); }
-  sky.innerHTML = `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true" focusable="false"><line x1="0" y1="${H - 4}" x2="${W}" y2="${H - 4}" stroke="var(--hair)"/><path d="${d}" fill="none" stroke="var(--hair)" stroke-width="1.5" stroke-dasharray="0.1 4.5" stroke-linecap="round"/><path d="${dn}" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" opacity=".6"/><circle cx="${X(u).toFixed(1)}" cy="${Y(u).toFixed(1)}" r="10" fill="var(--sun)" opacity=".18"/><circle cx="${X(u).toFixed(1)}" cy="${Y(u).toFixed(1)}" r="5.5" fill="var(--sun)"/></svg>`;
-  // the week, Monday to Sunday: a dot fills as a day's categories are logged
-  const w0 = weekStart(k), wk = $("#hmWeek"), dots = h("div", { class: "wdots", role: "list" });
-  for (let i = 0; i < 7; i++) {
-    const dk = IW.addDays(w0, i), later = dk > (S.yday ? S.yday.today : k), p = IW.progress(null, dk), frac = later ? 0 : p.frac;
-    const cls = ["wd", frac >= 1 ? "full" : frac > 0 ? "part" : "", dk === k ? "today" : "", later ? "later" : ""].filter(Boolean).join(" ");
-    dots.append(h("span", { class: cls, role: "listitem", style: `--f:${Math.round(frac * 100)}%`, "aria-label": `${IW.fmtDay(dk, "long")}: ${later ? "to come" : p.done ? `${p.done} of ${p.total} logged` : "nothing logged"}` }, h("i"), IW.fmtDay(dk, "wd").slice(0, 1)));
-  }
-  wk.replaceChildren(h("span", { class: "lbl" }, "This week"), dots);
-  // finishing yesterday: a line that says so, and the way back
-  const day = $("#hmDay");
-  day.replaceChildren(...(S.yday ? [h("span", {}, h("b", {}, "Finishing yesterday."), " Answers go on ", IW.fmtDay(k, "long"), "."), h("button", { class: "linkish", type: "button", onclick: () => endYesterday() }, "Back to today")] : []));
-  // the groups: the one for now on top, the others in the order of the day
-  const order = [now, ...IW.MOMENTS.map(m => m.id).filter(id => id !== now)];
-  $("#hmGroups").replaceChildren(...order.map(mid => {
-    const M = IW.momentById(mid), cats = IW.catsIn(mid), p = IW.progress(mid, k);
-    return h("section", { class: "hg" + (mid === now ? " now" : ""), "aria-labelledby": `hg-${mid}` },
-      h("div", { class: "hg-h" }, h("h2", { id: `hg-${mid}` }, M.name), h("span", {}, `${p.done} of ${p.total} done`)),
-      h("div", { class: "tiles-h" }, ...cats.map(homeTile)));
-  }));
-  // the links: the day so far, and yesterday's unfinished categories
-  const y = IW.addDays(IW.todayKey, -1), yOpen = !S.yday && IW.CATS.some(c => IW.status(c.id, y) === "started");
-  $("#hmLinks").replaceChildren(h("button", { class: "linkish", type: "button", onclick: () => openYourDay() }, S.yday ? "Yesterday so far" : "Your day so far"),
-    ...(yOpen ? [h("button", { class: "linkish", type: "button", onclick: () => startYesterday() }, "Finish yesterday")] : []));
-  fitHome();
-}
-var homeQ = 0;   // var: the examples fire events before this line runs
-function queueHome() { if (S.view !== "home" || homeQ) return; homeQ = requestAnimationFrame(renderHome); }
-// a short screen: the tiles get shorter, then the sky and the week step aside, then the other groups become a row of icons
-function fitHome() {
-  const home = $("#home"), groups = $("#hmGroups");
-  // too tall, or a tile's name doesn't fit beside its +: the next step
-  const cut = el => el.getClientRects().length && el.scrollWidth > el.clientWidth + 1;
-  const over = () => home.scrollHeight > home.clientHeight + 1 || groups.scrollHeight > groups.clientHeight + 1 || $$(".ht .nm b", home).some(cut);
-  for (let n = 1; n <= 7; n++) home.classList.remove("f" + n);
-  for (let n = 1; n <= 7 && over(); n++) home.classList.add("f" + n);
-  // each tile's line: the longest form that fits, never "…"
-  for (const sp of $$(".ht .sub", home)) { const subs = JSON.parse(sp.dataset.subs || "[]"); for (const t of subs) { sp.innerHTML = tH(t); if (!cut(sp)) break; } }
-  fitDate($("#homeDate"), S.yday ? "Yesterday, " : "");
-}
-// the day so far: the healthy ranges, then every category's answers, each a way into it
-function openYourDay() {
-  const k = IW.todayKey, rg = IW.ranges("all", k);
-  const page = h("div", { class: "sumpage" }, h("p", { class: "sub", style: "margin:0" }, IW.fmtDay(k, "long")));
-  if (rg.length) page.append(h("h3", { class: "h3" }, "Healthy ranges"), rangeList(rg));
-  page.append(h("h3", { class: "h3" }, "Your answers"), h("div", { class: "recap" }, ...IW.CATS.map(c => recapRow(c, k, true))));
-  Page.open(S.yday ? "Yesterday so far" : "Your day so far", page);
-}
-// Finish yesterday: Today shows yesterday's categories, and answers go on yesterday, until Back to today
-function startYesterday() {
-  S.yday = { today: IW.todayKey };
-  IW.todayKey = IW.addDays(IW.todayKey, -1); IW.day(IW.todayKey);
-  S.detail = {};
-  showHome();
-  say("Finishing yesterday");
-}
-function endYesterday() {
-  if (!S.yday) return;
-  draftFlush();
-  IW.todayKey = IW.logKey(new Date()); IW.day(IW.todayKey);
-  S.yday = null; S.detail = {};
-  showHome();
-  say("Back to today");
-}
-
-/* ---------- HOME: drafts: a category's answers before it is finished, in the log's "drafts" collection ----------
-   One document per day and category (id "<day>~<category>"): the answers of an unfinished category, the meals and sessions not
-   finished yet, or the bathroom times before Bathroom is done. A finished category's draft is deleted (the log has it). Drafts
-   fill a category the log doesn't have when the app opens, on any device. A draft from before yesterday is written to the log
-   as a partial entry (partial: true, "Partly logged" in History) and deleted. Analyses read only the log. */
-const DR = { t: {}, q: {}, pending: new Set(), failed: new Set(), wrote: new Set(), conv: new Set(), tries: {} };
-const draftId = (k, cid) => `${k}~${cid}`;
-const drOn = () => svOn() && !!IWL.draftSet;
-const clone = v => JSON.parse(JSON.stringify(v));
-function draftOf(k, cid) {
-  const cat = IW.catById(cid), c = IW.store.days[k] && IW.store.days[k].cats[cid];
-  if (!cat || !c || cid === "tests" || c.status === "skipped") return null;
-  if (cat.repeat) { const es = c.entries.filter(e => { const r = recsOf(c).find(x => x.a === e); return !r || !r.id; }); return es.length ? { entries: clone(es) } : null; }
-  if (c.status === "done") return null;
-  if (cid === "bathroom") return c.events.length ? { events: clone(c.events) } : null;
-  return Object.keys(c.a).length ? { a: clone(c.a), detail: !!S.detail[cid] } : null;
-}
-function draftSoon(k, cid) {
-  if (!drOn() || !cid || cid === "tests") return;
-  const id = draftId(k, cid);
-  clearTimeout(DR.t[id]); DR.t[id] = setTimeout(() => { delete DR.t[id]; draftWrite(k, cid); }, 600);
-  queueStat();
-}
-function draftFlush() { for (const id of Object.keys(DR.t)) { clearTimeout(DR.t[id]); delete DR.t[id]; const [k, cid] = id.split("~"); draftWrite(k, cid); } }
-function draftWrite(k, cid) {
-  const id = draftId(k, cid);
-  DR.q[id] = (DR.q[id] || Promise.resolve()).then(async () => {
-    const d = draftOf(k, cid), known = DR.wrote.has(id) || IWL.drafts().some(x => x.id === id);
-    if (!d && !known) { DR.failed.delete(id); return; }
-    DR.pending.add(id); queueStat();
-    const ok = d ? await IWL.draftSet(id, { day: k, cid, t: Date.now(), v: 1, ...d }) : await IWL.draftDel(id);
-    DR.pending.delete(id);
-    if (ok) { DR.failed.delete(id); DR.tries[id] = 0; if (d) DR.wrote.add(id); else DR.wrote.delete(id); }
-    else { DR.failed.add(id); const n = DR.tries[id] = (DR.tries[id] || 0) + 1; setTimeout(() => { if (DR.failed.has(id)) draftWrite(k, cid); }, RETRY[Math.min(n, RETRY.length) - 1]); }
-    queueStat();
-  }).catch(e => { console.error(e); DR.pending.delete(id); DR.failed.add(id); queueStat(); });
-}
-// the drafts fill what the log doesn't have: a category with no answers here yet, or meals and sessions not finished
-function draftsApply() {
-  if (!window.IWL || !IWL.drafts || S.edit || LV.testing()) return;
-  const today = S.yday ? S.yday.today : IW.todayKey, y = IW.addDays(today, -1);
-  let changed = false;
-  for (const d of IWL.drafts()) {
-    let got = false;
-    if (!d || !d.day || !d.cid || !IW.catById(d.cid)) continue;
-    if (d.day < y) { if (IWL.live()) draftToLog(d); continue; }
-    if (d.day > today) continue;
-    const cat = IW.catById(d.cid), c = IW.cat(d.cid, d.day);
-    if (c.status === "done" || c.status === "skipped") { if (!cat.repeat && drOn()) draftWrite(d.day, d.cid); continue; }   // finished elsewhere: the draft goes
-    if (cat.repeat) {
-      if (svUnsaved(d.day, d.cid) || !Array.isArray(d.entries)) continue;
-      const have = new Set(c.entries.map(e => JSON.stringify(sortKeys(e))));
-      for (const e of d.entries) if (!have.has(JSON.stringify(sortKeys(e)))) { c.entries.push(clone(e)); got = true; }
-    } else if (d.cid === "bathroom") {
-      if (!c.events.length && Array.isArray(d.events) && d.events.length) { c.events.push(...clone(d.events)); got = true; }
-    } else if (!Object.keys(c.a).length && d.a && Object.keys(d.a).length) {
-      Object.assign(c.a, clone(d.a)); if (d.detail && d.day === IW.todayKey) S.detail[d.cid] = true; got = true;
-    }
-    if (got) { DR.wrote.add(d.id); changed = true; }
-  }
-  if (changed) IW.emit({ type: "data" });
-}
-// a draft left for more than a day: what it has goes to the log, marked as partly logged
-async function draftToLog(d) {
-  if (DR.conv.has(d.id)) return; DR.conv.add(d.id);
-  const cat = IW.catById(d.cid), kind = KIND_OF[d.cid];
-  if (!cat || !kind) { await IWL.draftDel(d.id); return; }
-  const t0 = IWBridge.timeOn(d.day, { morning: 450, day: 780, evening: 1260 }[cat.moment] ?? 720);
-  const sets = cat.repeat ? (d.entries || []) : [d.cid === "bathroom" ? { events: d.events || [] } : (d.a || {})];
-  let ok = true;
-  for (const [j, a] of sets.entries()) {
-    if (!a || !Object.keys(a).length || (d.cid === "bathroom" && !a.events.length)) continue;
-    const card = Object.assign(svNew(kind, d.cid, d.day, clone(a)), { t: a.at != null ? IWBridge.timeOn(d.day, a.at) : t0 + j * 60000 });
-    const data = IWBridge.toDocs(card)[0].data; data.day = d.day; data.partial = true;
-    const r = await IWL.save(data); if (!r || !r.id) ok = false;
-  }
-  if (ok) await IWL.draftDel(d.id); else DR.conv.delete(d.id);
-}
-IW.on(ev => {
-  if (!drOn()) return;
-  const k = ev.key || IW.todayKey;
-  if (ev.type === "answer" || ev.type === "entry" || ev.type === "status") draftSoon(k, ev.cid);
-  else if (ev.type === "event") draftSoon(k, "bathroom");
-  if (ev.type === "answer" || ev.type === "status" || ev.type === "event") queueStat();
-});
-window.addEventListener("iwl:drafts", () => { clearTimeout(DR.ap); DR.ap = setTimeout(draftsApply, 120); });
-// leaving the app (another app, the phone locked, the page closed): what's waiting is written now
-document.addEventListener("visibilitychange", () => { if (document.hidden) draftFlush(); });
-window.addEventListener("pagehide", () => draftFlush());
-
-/* ---------- HOME: reminders on the phone. The Android app sends them at the times set here, and only for a part of the day that
-   still has something open, so the page tells it which parts are open (by the log's day: 00:00 to 03:59 is the evening before) ---------- */
-const NATIVE = () => (window.IWLNative && typeof IWLNative.setOpenMoments === "function" ? IWLNative : null);
-const realToday = () => (S.yday ? S.yday.today : IW.todayKey);
-function openMoments(k = realToday()) { return IW.MOMENTS.map(m => m.id).filter(mid => IW.catsIn(mid).some(c => { const st = IW.status(c.id, k); return st !== "done" && st !== "skipped"; })); }
-let nativeLast = "", nativeT = 0;
-function tellNative() {
-  const n = NATIVE(); if (!n || S.edit) return;
-  const msg = JSON.stringify({ day: realToday(), open: openMoments() });
-  if (msg === nativeLast) return;
-  nativeLast = msg;
-  try { n.setOpenMoments(msg); } catch (e) { console.error(e); }
-}
-IW.on(ev => { if (ev.type === "status" || ev.type === "data" || ev.type === "reset" || ev.type === "entry" || ev.type === "answer") { clearTimeout(nativeT); nativeT = setTimeout(tellNative, 300); } });
-const fmtClock = m => (CLOCK12 ? to12(IW.hm(m)) : IW.hm(m));
-function reminderRows() {
-  const n = NATIVE(); if (!n || typeof n.setReminderTimes !== "function") return null;
-  let cur = {}; try { cur = JSON.parse((n.getReminderTimes && n.getReminderTimes()) || "{}") || {}; } catch (_) {}
-  const DEF = { morning: 510, day: 780, evening: 1290 };
-  const toM = v => (typeof v === "string" && /^\d\d:\d\d$/.test(v) ? +v.slice(0, 2) * 60 + +v.slice(3) : null);
-  const T = {}; for (const M of IW.MOMENTS) T[M.id] = toM(cur[M.id]);
-  const send = () => { const o = {}; for (const M of IW.MOMENTS) o[M.id] = T[M.id] == null ? null : IW.hm(T[M.id]); try { n.setReminderTimes(JSON.stringify(o)); } catch (e) { console.error(e); } };
-  const wrap = h("div", { class: "reminders" }, h("p", { class: "sub", style: "margin:0" }, "A reminder comes only when that part of the day still has something open."));
-  for (const M of IW.MOMENTS) {
-    const row = h("div", { class: "sgroup" });
-    const draw = () => {
-      const on = T[M.id] != null;
-      const tog = h("button", { class: "choice", type: "button", role: "switch", "aria-checked": String(on), html: TICK, onclick: () => { T[M.id] = on ? null : DEF[M.id]; send(); draw(); } },
-        h("b", {}, M.name), h("small", {}, on ? `Reminder at ${fmtClock(T[M.id])}` : "Off"));
-      const kids = [tog];
-      if (on) {
-        const tf = timeField({ label: `${M.name} reminder time`, value: T[M.id], start: DEF[M.id], onChange: v => { T[M.id] = v; send(); tog.querySelector("small").textContent = `Reminder at ${fmtClock(v)}`; } });
-        kids.push(h("div", { class: "timeline", style: "margin-top:8px" }, tf.minus, tf.out, tf.plus));
-      }
-      row.replaceChildren(...kids);
-    };
-    draw(); wrap.append(row);
-  }
-  return wrap;
-}
-
-// the app opens on Today
-showHome({ noFocus: true });
-tellNative();
 window.__daylight = {
   prep(cid) { const i = catFirst(cid); if (i < 0) return false; const p = prevIndex(i); go(p >= 0 ? p : i, "none", { noFocus: true }); if (p < 0) { if (S.ctl && S.ctl.dispose) S.ctl.dispose(); dropCard(S.el); S.el = null; S.ctl = null; } return true; },
   show(cid) { const i = S.cards.findIndex(c => catOf(c) === cid && visible(c)); if (i < 0) return false; go(i, prevIndex(i) >= 0 ? "next" : "jump", { noFocus: true }); return true; },
   // the front card's text and controls, in its own coordinates
   boxes() { return S.el ? restingBoxes(S.el) : null; },
   // APP: for test/saving.js and test/history-parity.js: drive the deck the way a tap would, and read where it stands
-  front() { if (S.view === "home") return { kind: "home", cat: null, q: null, i: null, tier: null, mid: momentNow(), view: "home", today: IW.todayKey }; const c = S.cards[S.pos]; return c ? { kind: c.kind, cat: c.cat ? c.cat.id : null, q: c.q ? c.q.id : null, i: c.ref ? c.ref.i : null, tier: c.tier || null, mid: S.mid, view: S.view, today: IW.todayKey } : null; },
+  front() { const c = S.cards[S.pos]; return c ? { kind: c.kind, cat: c.cat ? c.cat.id : null, q: c.q ? c.q.id : null, i: c.ref ? c.ref.i : null, tier: c.tier || null, mid: S.mid, view: S.view, today: IW.todayKey } : null; },
   answer(qid, v) { const c = S.cards[S.pos]; if (!c || c.kind !== "q") return false; setA(c, qid, v); return true; },
   main() { $("#actMain").click(); }, alt() { if ($("#actAlt").hidden) return false; $("#actAlt").click(); return true; },
-  jump(cid) { openCat(cid, { quiet: true }); if (S.cards[S.pos] && S.cards[S.pos].kind === "review") go(S.pos + 1, "none"); return this.front(); },   // HOME: to the category's first question
-  // HOME: from Today, the first category of now that is still open (as the old deck opened on it); on a category, where it stands
-  resume() { if (S.view === "home") { const cid = IW.nextCat(momentNow()); if (cid) this.jump(cid); } return this.front(); },
+  jump(cid) { jumpToCat(cid); return this.front(); },
   moment(mid) { if (S.view !== "today") showToday(); switchMoment(mid, false); return this.front(); },
-  skip(cid, reason) { const cat = IW.catById(cid); if (S.view !== "today" || S.cid !== cid) openCat(cid, { quiet: true }); doSkip(cat, reason); return true; },   // HOME: from inside the category
+  skip(cid, reason) { const cat = IW.catById(cid); if (cat.moment !== S.mid || S.view !== "today") this.moment(cat.moment); doSkip(cat, reason); return true; },
   undoSkip(cid) { undoSkip(IW.catById(cid)); },
-  addMeal() { addEntry(IW.catById("meals")); }, editMeal(i) { if (S.view !== "today" || S.cid !== "meals") openCat("meals", { quiet: true }); openEntry(IW.catById("meals"), i); go(S.pos + 1, "none"); },   // HOME
+  addMeal() { addMeal(); }, editMeal(i) { editMeal(i); },
   removeEntry: typeof removeEntryHere === "function" ? (cid, i) => removeEntryHere(cid, i) : undefined,
-  saveDay() { closeToday(); IW.saveDay(); },   // HOME: there is no Save the day any more; it never wrote anything
+  saveDay() { return saveTheDay(); },
   history() { showHistory(); }, today() { showToday(); },
   openDay(k) { openDay(k); },
   // APP: for test/full.js: a moment's deck with every card a viewer can reach (the detail cards open, a skipped card, the summary), and a step to each
@@ -7926,20 +7382,9 @@ window.__daylight = {
   goTo(i) { go(i, "none"); return this.front(); },
   deck() { return S.cards.map(c => ({ kind: c.kind, cat: c.cat ? c.cat.id : null, q: c.q ? c.q.id : null, tier: c.tier || null, shown: visible(c) })); },
   skipSheet(cid) { openSkip(IW.catById(cid)); },
-  // HOME: for test/home.js: Today, a category, its review page and what the bar above the card says
-  home() { showHome({ noFocus: true }); return S.view; },
-  open(cid) { openCat(cid, { quiet: true }); return this.front(); },
-  add(cid) { addEntry(IW.catById(cid)); return this.front(); },
-  close() { $("#sheetX").click(); return S.view; },
-  back() { if ($("#actBack").hidden) return false; $("#actBack").click(); return true; },
-  tiles() { return $$("#home .ht").map(t => ({ cid: t.dataset.cid, st: ["done", "started", "skipped"].find(c => t.classList.contains(c)) || null, sub: t.querySelector(".sub").textContent, group: t.closest(".hg").querySelector("h2").textContent, now: t.closest(".hg").classList.contains("now") })); },
-  rows() { return $$("#dl-deck .card:not(.leaving) .rvr, #dl-deck .card:not(.leaving) .meal").map(r => r.textContent); },
-  row(i) { const r = $$("#dl-deck .card:not(.leaving) .rvr, #dl-deck .card:not(.leaving) .meal")[i]; if (!r) return false; r.click(); return true; },
-  bar() { return { dots: $$("#dots .dot").length, cur: $$("#dots .dot").findIndex(d => d.classList.contains("here")), step: $("#stepOf").textContent, saved: $("#svst").textContent, back: !$("#actBack").hidden, main: $("#actMain").textContent, alt: $("#actAlt").hidden ? null : $("#actAlt").textContent }; },
-  links() { return $$("#hmLinks button").map(b => b.textContent); },
-  link(t) { const b = $$("#hmLinks button").find(x => x.textContent === t); if (!b) return false; b.click(); return true; },
-  flush() { draftFlush(); },
   eventSheet(i) { if (!IW.events()[i]) return false; openEvent(i); return true; }
 };
 })();
 </script>
+
+</body></html>

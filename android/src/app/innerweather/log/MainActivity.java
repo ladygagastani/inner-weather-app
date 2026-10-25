@@ -88,7 +88,8 @@ public class MainActivity extends Activity {
     ValueAnimator topAnim, bottomAnim;
     ValueCallback<Uri[]> fileCallback;
     final Handler ui = new Handler(Looper.getMainLooper());
-    boolean resumed, loaded;
+    boolean resumed, loaded, fallbackMargins;
+    int[] insets = new int[5];
     String pendingAction;
     SharedPreferences prefs;
 
@@ -444,14 +445,25 @@ public class MainActivity extends Activity {
                 r = Math.max(r, in.getDisplayCutout().getSafeInsetRight());
             }
         }
-        int bottom = Math.max(b, ime);
+        insets = new int[]{l, t, r, b, ime};
         FrameLayout.LayoutParams wl = (FrameLayout.LayoutParams) web.getLayoutParams();
-        wl.setMargins(l, t, r, bottom);
+        if (fallbackMargins) {
+            // Old WebView without env(safe-area-inset-*): keep the page clear of the bars ourselves.
+            wl.setMargins(l, t, r, Math.max(b, ime));
+            place(stripTop, -1, t, Gravity.TOP);
+            place(stripBottom, -1, b, Gravity.BOTTOM);
+            place(stripLeft, l, -1, Gravity.LEFT);
+            place(stripRight, r, -1, Gravity.RIGHT);
+        } else {
+            // Full screen: the page draws behind the status and navigation bars and pads itself with env(safe-area-inset-*).
+            // Only the keyboard takes space away.
+            wl.setMargins(0, 0, 0, ime > b ? ime : 0);
+            place(stripTop, 0, 0, Gravity.TOP);
+            place(stripBottom, 0, 0, Gravity.BOTTOM);
+            place(stripLeft, 0, 0, Gravity.LEFT);
+            place(stripRight, 0, 0, Gravity.RIGHT);
+        }
         web.setLayoutParams(wl);
-        place(stripTop, -1, t, Gravity.TOP);
-        place(stripBottom, -1, b, Gravity.BOTTOM);
-        place(stripLeft, l, -1, Gravity.LEFT);
-        place(stripRight, r, -1, Gravity.RIGHT);
         scheduleSample(150);
     }
 
@@ -481,8 +493,8 @@ public class MainActivity extends Activity {
         web.getLocationInWindow(loc);
         final int w = web.getWidth();
         final int h = web.getHeight();
-        final int y1 = loc[1] + 1;
-        final int y2 = loc[1] + h - 2;
+        final int y1 = loc[1] + (fallbackMargins ? 1 : Math.max(1, insets[1] / 2));
+        final int y2 = loc[1] + h - (fallbackMargins ? 2 : Math.max(2, insets[3] / 2));
         final Bitmap top = Bitmap.createBitmap(w, 1, Bitmap.Config.ARGB_8888);
         final Bitmap bot = Bitmap.createBitmap(w, 1, Bitmap.Config.ARGB_8888);
         try {
@@ -743,6 +755,23 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public String getReminderTimes() { return prefs.getString("reminderTimes", ""); }
+
+        /** Status and navigation bar heights in CSS px, so the page can check that env(safe-area-inset-*) works. */
+        @JavascriptInterface
+        public String insets() {
+            float d = getResources().getDisplayMetrics().density;
+            return "{\"top\":" + Math.round(insets[1] / d) + ",\"bottom\":" + Math.round(insets[3] / d) + "}";
+        }
+
+        /** This WebView doesn't report safe-area insets: fall back to keeping the page clear of the bars. */
+        @JavascriptInterface
+        public void needMargins() {
+            ui.post(new Runnable() { @Override public void run() {
+                if (fallbackMargins) return;
+                fallbackMargins = true;
+                root.requestApplyInsets();
+            } });
+        }
 
         /** {"day":"2026-10-24","open":["morning","evening"]}; finished moments lose their reminder notification. */
         @JavascriptInterface
