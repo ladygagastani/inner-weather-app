@@ -251,6 +251,13 @@
 /* Inner Weather on the phone: the claude.ai runtime surface (db, user, sample, downloads), kept on this device. */
 (function () {
   "use strict";
+  // The base styles the claude.ai artifact host puts around every page (ref/live-wrapper-head.html); the page relies on them,
+  // e.g. [hidden] must hide sheets whose CSS sets display.
+  const base = document.createElement("style");
+  base.textContent = ":root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}" +
+    "html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}" +
+    "img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}";
+  (document.head || document.documentElement).appendChild(base);
   let pending = null;
   function sheet(message) {
     const dark = matchMedia("(prefers-color-scheme: dark)").matches;
