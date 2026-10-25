@@ -543,6 +543,8 @@ input.bignum { min-width: 44px; min-height: 44px; }
 #hp-cal > .lv-hist, #hp-ins > .lv-hist { margin-top: 20px; }
 .htitle { font-size: var(--t28); font-weight: 700; letter-spacing: -.02em; margin-top: 8px; }
 .hsub { display: flex; justify-content: space-between; gap: 12px; font-size: var(--t13); color: var(--muted); margin-top: 4px; }
+.hfull { margin-top: 14px; padding: 12px 14px; border-radius: 16px; background: var(--tile); font-size: var(--t13); line-height: 1.45; }
+.hfull b { display: block; font-size: var(--t16); font-weight: 650; margin-bottom: 2px; }
 .wk { position: relative; margin-top: 14px; }
 .arcs { width: 100%; height: 66px; overflow: visible; }
 .wkdays, .wkrow { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
@@ -1757,6 +1759,9 @@ html.ai-lock .lv{overflow:hidden}
       <div class="ai-sec"><label class="hlabel" for="aiQ">Your question</label><textarea id="aiQ" rows="3"></textarea><div class="chips ai-sugg" id="aiSugg" role="group" aria-label="Question ideas"></div></div>
       <div class="ai-sec"><span class="hlabel">Also include</span><div class="chips" id="aiOpts" role="group" aria-label="Also include">
         <button type="button" class="chip" data-o="notes" aria-pressed="true">Notes and written answers</button><button type="button" class="chip" data-o="rts" aria-pressed="false">Every reaction time</button></div></div>
+      <div class="ai-sec"><span class="hlabel">Private: tick to include</span><div class="chips" id="aiPriv" role="group" aria-label="Private categories, left out unless ticked"><!-- DAYLIGHT: AI export privacy (the owner, 24 Oct 2026) -->
+        <button type="button" class="chip" data-p="intimacy" aria-pressed="false">Intimacy</button><button type="button" class="chip" data-p="mind" aria-pressed="false">Mind and mood</button></div><!-- DAYLIGHT: AI export privacy (the owner, 24 Oct 2026) -->
+        <p class="calc">Left out unless you tick them, and unticked again every time you open this.</p></div><!-- DAYLIGHT: AI export privacy (the owner, 24 Oct 2026) -->
       <!-- ASK CLAUDE START -->
       <div class="ac-ask" id="acAsk" hidden><button type="button" class="primary" id="acGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg>Ask Claude here</button>
         <p class="hint ai-priv">Claude answers on this page with your Claude account. You can ask follow-ups, and the conversation is saved with your log.</p></div>
@@ -4157,6 +4162,11 @@ function renderCompare(){
   if(!CMP.a||!CMP.b||CMP.a===CMP.b){card.innerHTML=h+`<p class="cmp-foot">${days.length<2?"Log a second day and you can compare the two here.":"Pick two different days to compare."}</p>`;queueMicrotask(cmpDayBtns);return}
   const A=cmpDay(CMP.a),B=cmpDay(CMP.b),pills=[],none=[];let body="";
   CATS.forEach(c=>{const ca=A[c],cb=B[c];if(!ca&&!cb){if(!DL_NEW.includes(c)||CMP.b>=DL_SINCE||CMP.a>=DL_SINCE)none.push(CAT_LABEL[c]);return}/* DAYLIGHT: Daylight's new categories aren't listed as not logged on days before they existed */
+    if(c==="intimacy"){/* DAYLIGHT: the owner's pick (24 Oct 2026): Compare shows Intimacy only as "Logged", plus a skip's reason; never its answers or notes */
+      const both=[[ca,CMP.a],[cb,CMP.b]],on=both.filter(([x])=>x&&x.v).map(([,k])=>keyDate(k).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}));
+      if(CMP.only&&on.length===2)return;
+      const sk=both.filter(([x])=>x&&x.skip).map(([x,k])=>`<p class="cmp-skip"><b>${esc(cmpLabel(k))}:</b> skipped · ${esc(x.skip.reason||"no reason")}</p>`).join("");
+      body+=`<div class="cmp-cat"><div class="cmp-cat-h"><span class="sic s-${c}">${icon(c)}</span>${CAT_LABEL[c]}</div>${sk}${on.length?`<p class="cmp-skip">${on.length===2?"Logged on both days":"Logged on "+esc(on[0])}</p>`:""}</div>`;return}
     const va=ca&&ca.v||{},vb=cb&&cb.v||{};
     if(c==="cog"){const pa=va.pvt,pb=vb.pvt,corr=pa&&pb&&pa.medianCorr!=null&&pb.medianCorr!=null;
       va.rt=pa?(corr?pa.medianCorr:pa.median):null;vb.rt=pb?(corr?pb.medianCorr:pb.median):null}
@@ -4201,7 +4211,10 @@ window.iwlCompare={
    Context (what each measure means, units, caveats) comes first, then the data. Nothing leaves the page
    until the viewer copies, downloads or picks a chat service. Claude and ChatGPT links pre-fill short prompts;
    long ones (and Gemini) open the site after copying, for pasting. */
-const AI={scope:null,notes:true,rts:false,qEdited:false,text:"",opener:null};
+const AI={scope:null,notes:true,rts:false,inc:{intimacy:false,mind:false},qEdited:false,text:"",opener:null};
+/* DAYLIGHT: privacy: Intimacy and Mind are left out of every AI export unless ticked, and the ticks reset each time the sheet opens */
+const AI_PRIV=["intimacy","mind"];
+const aiHide=()=>new Set(AI_PRIV.filter(c=>!AI.inc[c]));
 const AI_URL_MAX=7000;
 const AI_SVC=[
   {k:"claude",n:"Claude",url:"https://claude.ai/new",pre:q=>"https://claude.ai/new?q="+q},
@@ -4219,7 +4232,7 @@ const AI_Q={
   one:"How did this day go overall? Does anything stand out, or seem to link together?",
   range:"What patterns do you see across these days? Which measures seem to move together, and what might be worth trying or tracking more closely?"};
 const AI_SUGG=[["Spot patterns",AI_Q.range],["What affects my sleep?","What seems to affect my sleep: time in bed, quality and how rested I feel? Look at caffeine, alcohol, exercise, stress and the sleep factors I ticked."],
-  ["What drives my mood?","What tends to go with better or worse mood (pleasantness), clarity and stress in these days?"],
+  ["What drives my mood?","What tends to go with better or worse mood (pleasantness), clarity and stress in these days?","mind"],/* DAYLIGHT: privacy, the mood suggestion needs Mind ticked */
   ["Reaction time","How is my reaction time (PVT) changing, and what might it be tracking: sleep, stress, time of day, device?"],
   ["Gut and bladder","What patterns do you see in my bowel movements and urination (Bristol type, urgency, pain, urine colour, signs I ticked)? How might they relate to what I ate and drank, stress and sleep? Is anything worth raising with a doctor?"],
   ["Hobbies and flow","When am I most absorbed and making progress in my hobbies and research (flow, enjoyment, progress by project)? How does that relate to sleep, mood, stress and exercise?"],
@@ -4318,7 +4331,8 @@ function aiEntry(e){
 function aiCompare(a,b){
   const A=cmpDay(a),B=cmpDay(b),la=aiDate(a),lb=aiDate(b),nul=v=>v==null||v===""||(Array.isArray(v)&&!v.length),none=[];
   const out=[`## Comparison: ${la} → ${lb}`,`Each line reads earlier → later, with the change as later minus earlier. Where one direction is healthier, the change is marked "healthier" or "less healthy".`];
-  CATS.forEach(c=>{const ca=A[c],cb=B[c];if(!ca&&!cb){if(!DL_NEW.includes(c)||b>=DL_SINCE||a>=DL_SINCE)none.push(CAT_LABEL[c]);return}/* DAYLIGHT: Daylight's new categories aren't listed as not logged on days before they existed */
+  const hide=aiHide();
+  CATS.forEach(c=>{if(hide.has(c))return;/* DAYLIGHT: privacy */const ca=A[c],cb=B[c];if(!ca&&!cb){if(!DL_NEW.includes(c)||b>=DL_SINCE||a>=DL_SINCE)none.push(CAT_LABEL[c]);return}/* DAYLIGHT: Daylight's new categories aren't listed as not logged on days before they existed */
     const va=ca&&ca.v||{},vb=cb&&cb.v||{},lines=[];let basis="raw";
     if(c==="cog"){const pa=va.pvt,pb=vb.pvt,corr=pa&&pb&&pa.medianCorr!=null&&pb.medianCorr!=null;basis=corr?"corrected":"raw";
       va.rt=pa?(corr?pa.medianCorr:pa.median):null;vb.rt=pb?(corr?pb.medianCorr:pb.median):null;
@@ -4339,7 +4353,7 @@ function aiCompare(a,b){
   return out.join("\n")}
 
 function aiBuild(sc,question){
-  const set=new Set(sc.days),es=S.entries.filter(e=>set.has(dayOf(e))).sort((a,b)=>dayOf(a)<dayOf(b)?-1:dayOf(a)>dayOf(b)?1:a.t-b.t);/* DAYLIGHT: by dayOf, then time (the same order as before for records without day) */
+  const set=new Set(sc.days),hide=aiHide(),es=S.entries.filter(e=>set.has(dayOf(e))&&!hide.has(CAT_OF(e))).sort((a,b)=>dayOf(a)<dayOf(b)?-1:dayOf(a)>dayOf(b)?1:a.t-b.t);/* DAYLIGHT: by dayOf, then time (the same order as before for records without day) */
   const kinds=new Set(es.map(e=>e.kind)),hm=hmDays(),tz=(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone}catch(_){return ""}})();
   const L=[`# Inner Weather Log: ${sc.k==="cmp"?"comparing two days":sc.l}`,"",
     `I keep a private daily self-tracking log called Inner Weather Log. Each day I log my body, mind (mood), a few short cognition tests, what I ate, bathroom visits (urine and bowel movements), last night's sleep, exercise, hobbies, intimacy, personal and bedroom hygiene, and an evening memory exercise. Below is my data for ${sc.k==="cmp"?"two days I want to compare":sc.days.length===1?"one day":`${sc.days.length} logged days`} (${sc.sub}). Please help me understand it.`,
@@ -4352,14 +4366,18 @@ function aiBuild(sc,question){
     "","## How to read the data",
     `- Units are metric. Times are 24-hour local time${tz?` (${tz})`:""}. Dates are YYYY-MM-DD.`,
     ...["body","mood","pvt","cog","diet","dietday","bathroom","sleep","exercise","hobby","intimacy","hygiene","recall","plan","skip"].filter(k=>kinds.has(k)).map(k=>"- "+AI_GLOSS[k]),/* DAYLIGHT: + dietday, plan */...(es.some(e=>["physical","mental","waso","intensity"].some(k=>e[k]!=null))?["- "+AI_GLOSS.daylight]:[]),...(es.some(e=>e.day&&e.day!==dayKey(e.t))?["- "+AI_GLOSS.lateday]:[]),/* DAYLIGHT: the new fields and the late-evening rule, only when the export has them */...(es.some(e=>e.intention||e.intentionMet)?["- "+AI_GLOSS.intention]:[]),...(es.some(e=>e.editedAt||(e.extraNotes&&e.extraNotes.length))?["- "+AI_GLOSS.later]:[]),
+    ...(hide.size?[`- For privacy, this export leaves out my ${[...hide].map(c=>CAT_LABEL[c]).join(" and ")} entries${hide.has("mind")?" (pleasantness, activation, stress, self-worth, urges and feeling words)":""}. Missing data there is not a gap in my logging.`]:[]),/* DAYLIGHT: privacy */
     "","Things to keep in mind:",...AI_CAVEATS.map(c=>"- "+c)];
   if(!S.live)L.push("- These are example entries generated by the app, not real data.");
   if(sc.cmp)L.push("",aiCompare(sc.cmp[0],sc.cmp[1]));
   if(sc.days.length>1){
     L.push("","## Daily overview","Day averages. Reaction is the median of the day's 3-min runs, raw ms. Logged = categories with an entry or a deliberate skip, out of the categories the app had that day. Fresh = how fresh and clean I felt, Room = bedroom tidiness (both 1–5). Stool = average Bristol type of the day's bowel movements.","",
-      "| Date | Logged | Skipped | Pleasantness (−4…+4) | Energy (/10) | Stress (/10) | Time in bed (h) | Reaction (ms) | Exercise (min) | Hobbies (min) | Fresh (/5) | Room (/5) | Stool (Bristol) |","|---|---|---|---|---|---|---|---|---|---|---|---|---|");
+      ...(()=>{const h=["Date","Logged","Skipped","Pleasantness (−4…+4)","Energy (/10)","Stress (/10)","Time in bed (h)","Reaction (ms)","Exercise (min)","Hobbies (min)","Fresh (/5)","Room (/5)","Stool (Bristol)"].filter(x=>!(hide.has("mind")&&/^(Pleasantness|Stress)/.test(x)));
+        return [`| ${h.join(" | ")} |`,`|${h.map(()=>"---").join("|")}|`]})());/* DAYLIGHT: privacy: no mood columns when Mind is left out */
     sc.days.forEach(k=>{const d=hm.get(k);if(!d)return;const v=x=>d.v[x]==null?"–":aiN(d.v[x]);
-      L.push(`| ${aiDate(k)} | ${d.covered}/${d.total} | ${Object.keys(d.skip).filter(c=>!d.real[c]).map(c=>CAT_LABEL[c]).join(", ")||"–"} | ${d.v.mood==null?"–":fmtS(Math.round(d.v.mood*10)/10)} | ${v("energy")} | ${v("stress")} | ${v("sleep")} | ${d.v.rt==null?"–":Math.round(d.v.rt)} | ${v("exercise")} | ${v("hobby")} | ${v("fresh")} | ${v("tidy")} | ${v("stool")} |`)})}
+      const off=catsOn(k).filter(c=>hide.has(c)),cov=d.covered-off.filter(c=>d.real[c]||d.skip[c]).length,tot=d.total-off.length;/* DAYLIGHT: privacy: left-out categories don't count either way */
+      const row=[aiDate(k),`${cov}/${tot}`,Object.keys(d.skip).filter(c=>!d.real[c]&&!hide.has(c)).map(c=>CAT_LABEL[c]).join(", ")||"–",...(hide.has("mind")?[v("energy")]:[d.v.mood==null?"–":fmtS(Math.round(d.v.mood*10)/10),v("energy"),v("stress")]),v("sleep"),d.v.rt==null?"–":Math.round(d.v.rt),v("exercise"),v("hobby"),v("fresh"),v("tidy"),v("stool")];
+      L.push(`| ${row.join(" | ")} |`)})}
   L.push("","## Entries, day by day");
   if(!es.length)L.push("","Nothing logged in this range.");
   let cur=null;es.forEach(e=>{const k=dayOf(e);/* DAYLIGHT: dayOf */if(k!==cur){cur=k;L.push("",`### ${aiDate(k)}`)}L.push(aiEntry(e))});
@@ -4370,6 +4388,8 @@ function aiRender(){
   const scopes=aiScopes();let sc=scopes.find(s=>s.k===AI.scope);if(!sc){sc=scopes.find(s=>s.k==="7");AI.scope=sc.k}
   $("aiScopes").innerHTML=scopes.map(s=>`<button type="button" class="chip" data-s="${s.k}" aria-pressed="${s.k===sc.k}">${esc(s.l)}</button>`).join("");
   if(!AI.qEdited)$("aiQ").value=AI_Q[sc.q];
+  $("aiPriv").querySelectorAll("[data-p]").forEach(b=>b.setAttribute("aria-pressed",String(!!AI.inc[b.dataset.p])));
+  $("aiSugg").querySelectorAll("[data-need]").forEach(b=>{b.hidden=!AI.inc[b.dataset.need]});/* DAYLIGHT: privacy */
   const {text,n}=aiBuild(sc,$("aiQ").value);AI.text=text;
   const empty=!n;
   $("aiCount").textContent=empty?`${sc.sub}: nothing logged here yet.`:`${sc.sub} · ${sc.days.length} day${sc.days.length===1?"":"s"}, ${n} entr${n===1?"y":"ies"}`;
@@ -4388,8 +4408,8 @@ function aiNoCopy(){aiSay("err","Copying isn't allowed in this view. Open the pr
 function aiOpen(pref,from){
   const scopes=aiScopes(),has=k=>scopes.some(s=>s.k===k);
   AI.scope=pref==="cmp"&&has("cmp")?"cmp":pref==="day"&&HM.sel?(has("day")?"day":"today"):pref==="auto"&&!CMP.auto&&has("cmp")?"cmp":"7";
-  AI.qEdited=false;AI.opener=from||null;aiSay("","");$("aiPrev").open=false;
-  $("aiSugg").innerHTML=AI_SUGG.map(([l],i)=>`<button type="button" class="chip" data-q="${i}">${esc(l)}</button>`).join("");
+  AI.qEdited=false;AI.opener=from||null;AI.inc={intimacy:false,mind:false};/* DAYLIGHT: privacy: asked again every time */aiSay("","");$("aiPrev").open=false;
+  $("aiSugg").innerHTML=AI_SUGG.map(([l,,need],i)=>`<button type="button" class="chip" data-q="${i}"${need?` data-need="${need}"`:""}>${esc(l)}</button>`).join("");
   aiRender();
   const back=$("aiBack");back.hidden=false;document.documentElement.classList.add("ai-lock");
   requestAnimationFrame(()=>requestAnimationFrame(()=>{back.classList.add("on");$("aiSheet").scrollTop=0;$("aiSheet").focus()}));
@@ -4405,6 +4425,7 @@ document.addEventListener("keydown",e=>{if($("aiBack").hidden)return;if(e.key===
 $("aiScopes").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b)return;AI.scope=b.dataset.s;aiSay("","");aiRender();const f=$("aiScopes").querySelector(`[data-s="${AI.scope}"]`);if(f)f.focus()});
 $("aiSugg").addEventListener("click",e=>{const b=e.target.closest("[data-q]");if(!b)return;$("aiQ").value=AI_SUGG[+b.dataset.q][1];AI.qEdited=true;aiRender()});
 $("aiQ").addEventListener("input",()=>{AI.qEdited=$("aiQ").value.trim()!=="";clearTimeout(AI._t);AI._t=setTimeout(aiRender,250)});
+$("aiPriv").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;AI.inc[b.dataset.p]=!AI.inc[b.dataset.p];aiRender();b.focus()});/* DAYLIGHT: privacy ticks */
 $("aiOpts").addEventListener("click",e=>{const b=e.target.closest("[data-o]");if(!b)return;const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",String(on));AI[b.dataset.o]=on;aiRender()});
 $("aiPrev").addEventListener("toggle",()=>{if($("aiPrev").open)$("aiPre").textContent=AI.text});
 $("aiCopy").addEventListener("click",async()=>{if(await aiCopyText(AI.text))aiSay("ok","Copied. Paste it into any AI chat.");else aiNoCopy()});
@@ -4474,7 +4495,7 @@ function acMd(src){
 /* the prompt for a conversation: the export's own prompt for its days (with the options it was asked with), then the reply rules */
 function acPrompt(c){
   if(c.scope.k==="custom")return (c.prompt||"")+AC_RULES;
-  const keep={notes:AI.notes,rts:AI.rts};AI.notes=c.opts.notes!==false;AI.rts=!!c.opts.rts;
+  const keep={notes:AI.notes,rts:AI.rts,inc:AI.inc};AI.notes=c.opts.notes!==false;AI.rts=!!c.opts.rts;AI.inc=c.opts.inc||{intimacy:true,mind:true};/* DAYLIGHT: privacy: conversations from before this choice existed had both */
   try{return aiBuild(Object.assign({},c.scope),c.turns[0].content).text+AC_RULES}finally{Object.assign(AI,keep)}}
 function acInput(c){
   const turns=c.turns.map((x,i)=>({role:x.role,content:i===0?acPrompt(c):x.content})).filter(x=>x.content&&x.content.trim());
@@ -4487,7 +4508,7 @@ const AC_WHO=()=>`<span class="ac-who">${aiSvg("spark")}Claude</span>`;
 function acBot(content,cut){return `<div class="ac-msg ac-bot">${AC_WHO()}<div class="ac-md">${acMd(content)}</div>${cut?`<p class="ac-cut">${cut==="stopped"?"You stopped this answer.":cut==="long"?"Cut short at the length limit. Ask Claude to continue.":"This answer was interrupted."}</p>`:""}</div>`}
 function acCtx(c){const sc=c.scope,n=(sc.days||[]).length;
   if(sc.k==="custom")return `<div class="ac-ctx"><b>${esc(sc.l||"From your log")}</b>${sc.sub?`<span>${esc(sc.sub)}</span>`:""}</div>`;
-  return `<div class="ac-ctx"><b>Your log · ${esc(sc.k==="cmp"?"two days compared":sc.l)}</b><span>${esc(sc.sub||"")}${sc.k==="cmp"?"":` · ${n} day${n===1?"":"s"}`}${c.opts.notes===false?" · without notes":""}</span></div>`}
+  return `<div class="ac-ctx"><b>Your log · ${esc(sc.k==="cmp"?"two days compared":sc.l)}</b><span>${esc(sc.sub||"")}${sc.k==="cmp"?"":` · ${n} day${n===1?"":"s"}`}${c.opts.notes===false?" · without notes":""}${(o=>o.length?` · without ${o.join(" or ").toLowerCase()}`:"")(AI_PRIV.filter(k=>c.opts.inc&&!c.opts.inc[k]).map(k=>CAT_LABEL[k]))}</span></div>`}/* DAYLIGHT: privacy, says what was left out */
 function acRender(){
   const list=AC.view==="list",c=AC.cur;
   $("acList").hidden=!list;$("acLog").hidden=list||!c;$("acComp").hidden=list||!c;
@@ -4533,7 +4554,7 @@ async function acRun(){
   if(got)await acSave(c)}
 function acStart(c,opener){AC.cur=c;acShow("chat",opener);acRun()}
 function acNew(sc,question,opener){const now=Date.now(),q=question.trim()||AI_Q[sc.q];
-  acStart({id:null,t:now,updated:now,title:trunc(q,90),scope:acClone({k:sc.k,l:sc.l,sub:sc.sub,q:sc.q,days:sc.days,cmp:sc.cmp||null}),opts:{notes:AI.notes,rts:AI.rts},turns:[{role:"user",content:q,t:now}]},opener)}
+  acStart({id:null,t:now,updated:now,title:trunc(q,90),scope:acClone({k:sc.k,l:sc.l,sub:sc.sub,q:sc.q,days:sc.days,cmp:sc.cmp||null}),opts:{notes:AI.notes,rts:AI.rts,inc:Object.assign({},AI.inc)},turns:[{role:"user",content:q,t:now}]},opener)}/* DAYLIGHT: privacy, the ticks go with the conversation */
 function acShow(view,opener){AC.view=view;if(opener!==undefined)AC.opener=opener||null;acSay("","");acRender();
   const back=$("acBack");back.hidden=false;document.documentElement.classList.add("ai-lock");
   requestAnimationFrame(()=>requestAnimationFrame(()=>{back.classList.add("on");$("acSheet").focus();if(view==="chat")acEnd();else $("acSheet").scrollTop=0}))}
@@ -4650,6 +4671,7 @@ function examples(){
 renderHistory();
 /* DAYLIGHT: Daylight reads the engine's records (IWL.entries()) and is told when they change (window event "iwl:entries") */
 window.IWL={entries:()=>S.entries,live:()=>S.live,pager:null,
+  size:()=>S.entries.length+(S.live&&AC.col?AC.list.length:0),/* DAYLIGHT: documents stored (log + conversations), for the size warning */
   /* DAYLIGHT: Daylight writes through the engine (save, remove), groups by its day rule, shows its History rows and its clock switch */
   save:(e,id)=>{const st=document.createElement("p");return save(e,st,id).then(r=>({id:r,msg:st.textContent}))},remove:id=>remove(id),
   dayOf,logDay,dayKey,catOf:CAT_OF,render:()=>renderHistory(),clockSwitch:()=>clockSwitch(),fmtT:t=>fmtT(new Date(t)),
@@ -6823,11 +6845,25 @@ function histTab(k, user) {
   for (const [t] of HTABS) { const on = t === k, b = $(`#ht-${t}`), p = $(`#hp-${t}`); if (b) { b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; } if (p) p.hidden = !on; }
   if (user) { $("#history").scrollTop = 0; if (k === "week" && S.drawWeek) requestAnimationFrame(S.drawWeek); }
 }
+// APP: the log holds about 25,000 documents (runtime limit). the owner's pick (24 Oct 2026): warn from 15,000 and decide then.
+// The pace comes from the last 90 days. IWL.sizeWarn can lower the threshold for the checks.
+const SIZE_WARN = 15000, SIZE_MAX = 25000;
+function sizeNotice() {
+  if (!window.IWL || !IWL.size) return null;
+  const n = IWL.size(), at = IWL.sizeWarn || SIZE_WARN;
+  if (n < at) return null;
+  const since = Date.now() - 90 * 864e5, recent = IWL.entries().filter(e => typeof e.t === "number" && e.t >= since).length;
+  const left = Math.max(0, SIZE_MAX - n), days = recent ? left / (recent / 90) : null;
+  const pace = days == null ? "" : days < 60 ? ` At your pace that's about ${Math.max(1, Math.round(days / 7))} weeks left.` : days < 730 ? ` At your pace that's about ${Math.round(days / 30.4)} months left.` : ` At your pace that's about ${Math.round(days / 365)} years left.`;
+  return h("div", { class: "hfull", role: "note" }, h("b", {}, "Your log is getting full"),
+    h("p", {}, `It holds ${n.toLocaleString("en-GB")} of about ${SIZE_MAX.toLocaleString("en-GB")} records.${pace} Ask Claude in your Inner Weather project how to keep your older days.`));
+}
 function renderWeek(sec) {
   const wk = IW.week();
   sec.replaceChildren();
   sec.append(h("h1", { class: "htitle", id: "histTitle", tabindex: "-1" }, "This week"),
     h("p", { class: "hsub" }, h("span", {}, `${IW.fmtDay(wk[0].key)} to ${IW.fmtDay(wk[6].key)}`), (window.IWL && IWL.live() ? null : h("span", {}, "Example days"))));
+  const full = sizeNotice(); if (full) sec.append(full);
   const box = h("div", { class: "wk" });
   const svg = sv("svg", { class: "arcs", "aria-hidden": "true" });
   box.append(svg);
