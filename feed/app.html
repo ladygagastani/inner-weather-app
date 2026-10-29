@@ -98,14 +98,22 @@ svg { display: block; }
 .crow { display: flex; justify-content: center; align-items: center; gap: 0; height: 52px; margin: 0 -12px; }   /* eight 44 px icons fit at 360 px */
 .cbtn { position: relative; width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); transition: color .25s, background-color .25s; }
 .cbtn svg { width: 20px; height: 20px; }
-.cbtn::after { content: ""; position: absolute; left: 50%; bottom: 1px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: transparent; transition: background-color .3s; }
+/* POLISH: each category's state reads at a glance: a ticked badge when done, a dash when skipped, a ring when started (was a 5 px dot under the icon) */
+.cbtn::after { content: ""; position: absolute; top: 4px; right: 3px; width: 13px; height: 13px; border-radius: 50%; background: transparent no-repeat center / 9px 9px; transition: background-color .3s; }
 .cbtn.done { color: var(--ink); }
-.cbtn.done::after { background: var(--sun); }
-.cbtn.started::after { box-shadow: inset 0 0 0 1.5px var(--sun); }
-.cbtn.skipped::after { width: 9px; height: 1.5px; margin-left: -4.5px; bottom: 3px; border-radius: 1px; background: var(--muted); }
+.cbtn.done::after { background-color: var(--sun); background-image: var(--tick-w); box-shadow: 0 0 0 1.5px var(--ground-top); }
+.cbtn.started::after { width: 9px; height: 9px; top: 6px; right: 5px; box-shadow: inset 0 0 0 1.5px var(--sun), 0 0 0 1.5px var(--ground-top); }
+.cbtn.skipped { color: color-mix(in oklab, var(--muted) 70%, transparent); }
+.cbtn.skipped::after { background-color: var(--muted); -webkit-mask: var(--skip-m) center / 13px 13px no-repeat; mask: var(--skip-m) center / 13px 13px no-repeat; }
 .cbtn.cur { background: color-mix(in oklab, var(--cat, var(--ink)) 14%, transparent); color: var(--cat-ink, var(--ink)); }
-.cbtn.cur.done::after { background: var(--cat-ink, var(--sun)); }
-.cbtn.cur.started::after { box-shadow: inset 0 0 0 1.5px var(--cat-ink, var(--sun)); }
+.cbtn.cur.done::after { background-color: var(--cat-ink, var(--sun)); }
+.cbtn.cur.started::after { box-shadow: inset 0 0 0 1.5px var(--cat-ink, var(--sun)), 0 0 0 1.5px var(--ground-top); }
+:root { --tick-w: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
+  --skip-m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='10' stroke-width='2.6'/%3E%3Cpath d='M7.5 12h9' stroke-width='3'/%3E%3C/svg%3E"); }
+/* POLISH: a moment whose categories are all done or skipped gets a small tick after its name */
+.mtab .mlab { display: inline-flex; align-items: center; gap: 3px; }
+.mtab .mdone { display: inline-flex; width: 13px; height: 13px; color: var(--sun); }
+.mtab .mdone svg { position: static; width: 13px; height: 13px; }   /* not the path's own svg rule (absolute, full width) */
 
 /* ---------- the deck ---------- */
 .today { flex: 1; min-height: 0; display: flex; flex-direction: column; }
@@ -255,7 +263,7 @@ svg { display: block; }
 
 /* numbers, counters, time: the figure, then − and + under it in reach of the thumb */
 .numbody { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; touch-action: none; cursor: ns-resize; }
-.numfig { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+.numfig { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 10px; width: 100%; }   /* POLISH: safe: a figure too tall for its room spills downward, where fitCard sees it and the drag note gives way, never up over the question */
 .numval { display: flex; align-items: baseline; justify-content: center; gap: 10px; max-width: 100%; }
 .bignum { width: 3.4ch; min-width: 1.2ch; max-width: 100%; border: 0; background: none; padding: 0 4px; text-align: center;
   font-size: clamp(40px, 19cqh, 76px); font-weight: 720; letter-spacing: -.035em; line-height: 1.04; border-radius: 12px; caret-color: var(--sun); }
@@ -318,7 +326,7 @@ input.bignum { min-width: 44px; min-height: 44px; }
 .count { padding: 0 6px; font-size: var(--t13); color: var(--muted); }
 .recalltop .tbtn { min-height: 44px; }
 .recallfield { flex: 1; display: flex; min-height: 0; }
-.recallfield .lined { min-height: 102px; }
+.recallfield .lined { min-height: 102px; flex: none; height: 100%; }   /* POLISH: JS snaps the height to whole lines */
 
 /* sleep dial */
 /* APP: the dial takes the room the card has (Phase D); under 200 px its hour labels go and the duration moves to the keys row */
@@ -343,6 +351,9 @@ input.bignum { min-width: 44px; min-height: 44px; }
 /* APP: the square and its four axis labels in a 3 × 3 layout, nothing positioned over anything else (Phase D) */
 .gframe { display: grid; grid-template-columns: auto var(--gs, 260px) auto; grid-template-rows: auto var(--gs, 260px) auto; gap: 6px 8px; align-items: center; justify-items: center; }
 .gsq { position: relative; grid-area: 2 / 2; width: var(--gs, 260px); height: var(--gs, 260px); }
+/* POLISH: the grid sits on its own soft panel, so the drifting clouds pass behind it and never hide a dot or a corner word */
+.gsq { border-radius: 14px; background: color-mix(in oklab, var(--card) 62%, transparent); box-shadow: 0 0 0 6px color-mix(in oklab, var(--card) 62%, transparent); }
+.card:has(.gridbox) .m-cl { --cl-op: .5; }
 .grid { position: absolute; inset: 0; touch-action: none; cursor: crosshair; border-radius: 18px; }
 .grid:focus-visible { outline-offset: 6px; }
 .grid i { position: absolute; width: 4px; height: 4px; margin: -2px; border-radius: 50%; background: var(--hair); }
@@ -452,7 +463,7 @@ input.bignum { min-width: 44px; min-height: 44px; }
 .heads { display: flex; flex-direction: column; }
 .hd { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; padding: 9px 0; border-bottom: 1px solid var(--hair); }
 .hd:last-child { border-bottom: 0; }
-.hd-l { font-weight: 600; flex: 1; min-width: 0; }
+.hd-l { font-weight: 600; flex: 1; min-width: 0; text-wrap: balance; }   /* POLISH: "Strength, / last 7 days", never "days" alone */
 .hd-v { font-weight: 560; }
 .hd .st { margin-right: 0; font-size: var(--t13); }
 .summary .seeall { margin-top: auto; align-self: flex-start; }
@@ -1559,7 +1570,10 @@ html.ai-lock .lv{overflow:hidden}
 /* Compare's two day pickers sit side by side only when each has room for its whole label ("Yesterday, 22 Oct"), never "…" */
 .lv .cmp-days { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.5rem), 1fr)); }
 /* one typeface: Compare's figures in the UI font with tabular numbers (AUDIT-D rule 11) */
-.lv .cmp-card, .lv .cmp-pill b, .lv .cmp-d { font-variant-numeric: tabular-nums; }
+/* POLISH: but not tabular: in this typeface tabular figures also widen the point, colon and comma ("36 .7", "08 :22"), so values that
+   are read, not lined up in a column, use the normal figures. Counters that change under a finger keep tabular figures. */
+.lv .cmp-card, .lv .cmp-pill b, .lv .cmp-d, .lv .cmp-vals, .lv .tr-nm span, .lv .tr-tbl table, .lv .stat b, .lv .row .when,
+.dialmid .dm-t, .wkrow, .ev .t, .meal .t, .lv .bt-n { font-variant-numeric: normal; }
 /* Insights has the big "Ask Claude about your log" button right above, so the second, plain one goes */
 #lv-ins .tools > [data-ai] { display: none; }
 /* an open day's header in All days stays in its place, not stuck over the day's own rows as they scroll by (AUDIT-D rule 9) */
@@ -2023,7 +2037,7 @@ const CATS = [
   { id: "tests", name: "Reaction test", short: "Tests", moment: "morning", icon: "tests",
     skip: ["No time for tests"],
     quick: [
-      { id: "pvt", t: "pvt", label: "Reaction time", q: "Reaction test", src: "PVT-B: 3 minutes, gaps of 1–4 s, lapses over 355 ms (Basner, Mollicone and Dinges 2011)" }   // APP: the live test, unchanged
+      { id: "pvt", t: "pvt", label: "Reaction time", q: "How alert are you right now?", src: "PVT-B: 3 minutes, gaps of 1–4 s, lapses over 355 ms (Basner, Mollicone and Dinges 2011)" }   // APP: the live test, unchanged
     ],
     detail: [
       { id: "cog", t: "cogtests", label: "More tests", q: "More tests", src: "Digit span, word recognition, spatial span (Corsi) and Stroop" }   // APP: the live tests, unchanged
@@ -2032,7 +2046,7 @@ const CATS = [
     skip: ["Didn't track food today", "Fasting"],
     quick: [
       { id: "meal", t: "choice", opts: L.meal.map(v => ({ v, label: IW.cap(v) })), label: "Meal", q: "What was it?" },
-      { id: "food", t: "text", suggest: "foods", placeholder: "Lentil soup and rye bread", label: "Food", q: "What did you have?" },
+      { id: "food", t: "text", suggest: "foods", placeholder: "e.g. Lentil soup and rye bread", label: "Food", q: "What did you have?" },
       { id: "groups", t: "tiles", opts: L.groups, label: "Food groups", q: "Which food groups were in it?", src: "Food groups after the Diet Quality Questionnaire (Global Diet Quality Project) and WHO healthy diet advice" }
     ],
     detail: [
@@ -2046,8 +2060,8 @@ const CATS = [
     skip: ["Didn't track food today", "Fasting"],
     quick: [
       { id: "dietDay", t: "scale", min: 1, max: 5, words: W.health, label: "Diet", q: "In general, how healthy was your eating today?", src: "Single-item diet quality: NHANES question DBQ700, validated by Loftfield et al. 2015", isNew: true },
-      { id: "fruitVeg", t: "count", min: 0, max: 15, unit: "portions", unit1: "portion", note: "A portion is 80 g, about a handful", label: "Fruit and veg", q: "Portions of fruit and vegetables today", src: "WHO: at least 400 g, about 5 portions, a day", isNew: true },
-      { id: "lastCaffeine", t: "time", none: "No caffeine today", start: 840, label: "Last caffeine", q: "Last caffeine at", src: "Consensus Sleep Diary, item 13b; Drake et al. 2013", isNew: true }
+      { id: "fruitVeg", t: "count", min: 0, max: 15, unit: "portions", unit1: "portion", note: "A portion is 80 g, about a handful", label: "Fruit and veg", q: "How many portions of fruit and veg did you have today?", src: "WHO: at least 400 g, about 5 portions, a day", isNew: true },
+      { id: "lastCaffeine", t: "time", none: "No caffeine today", start: 840, label: "Last caffeine", q: "When did you have your last caffeine?", src: "Consensus Sleep Diary, item 13b; Drake et al. 2013", isNew: true }
     ],
     detail: [
       { id: "note", t: "text", placeholder: "Anything worth remembering", label: "Note", q: "A note", app: true }   // APP: the live app's optional note on every category, saved as note
@@ -2070,15 +2084,15 @@ const CATS = [
   { id: "hobby", name: "Hobbies", entryName: "session", moment: "evening", icon: "hobby", repeat: true,
     skip: ["Didn't do any today", "No energy for it"],
     quick: [
-      { id: "activity", t: "tiles", single: true, opts: L.hobby, text: { id: "what", placeholder: "Recording the dawn chorus" }, label: "Activity", q: "What did you do?" },
-      { id: "project", t: "text", suggest: "projects", placeholder: "Project or topic", label: "Project", q: "Project or topic" },
+      { id: "activity", t: "tiles", single: true, opts: L.hobby, text: { id: "what", placeholder: "e.g. Recording the dawn chorus" }, label: "Activity", q: "What did you do?" },
+      { id: "project", t: "text", suggest: "projects", placeholder: "e.g. Whale codas", label: "Project", q: "Which project or topic?" },
       { id: "minutes", t: "number", unit: "min", min: 0, max: 600, step: 5, start: 30, label: "Time", q: "How long?" },
       { id: "enjoy", t: "scale", min: 1, max: 5, words: W.enjoy, label: "Enjoyment", q: "How much did you enjoy it?", src: "Enjoyable leisure and health (Pressman et al. 2009)" }
     ],
     detail: [
       { id: "at", t: "time", label: "When", q: "When was it?", prefill: true, app: true },   // APP: the live app's "When", saved as t (it starts at the time the entry was begun)
       { id: "flow", t: "scale", min: 1, max: 5, words: W.flow, label: "Absorbed", q: "How absorbed were you?", src: "Flow Short Scale (Engeser and Rheinberg 2008)" },
-      { id: "output", t: "tiles", opts: L.output, text: { id: "outputNote", placeholder: "A line about it" }, label: "Came out of it", q: "What came out of it?" },
+      { id: "output", t: "tiles", opts: L.output, text: { id: "outputNote", placeholder: "e.g. Three new questions" }, label: "Came out of it", q: "What came out of it?" },
       { id: "progress", t: "scale", min: 1, max: 5, words: W.progress, label: "Progress", q: "How far did it move?" },
       { id: "note", t: "text", placeholder: "Anything worth remembering", label: "Note", q: "A note", app: true }   // APP: the live app's optional note on every category, saved as note
     ] },
@@ -2098,7 +2112,7 @@ const CATS = [
   { id: "hygiene", name: "Hygiene", moment: "evening", icon: "hygiene",
     skip: ["Nothing to note today", "Away from home"],
     quick: [
-      { id: "brush", t: "choice", opts: [0, 1, 2, 3].map(v => ({ v, label: String(v) })), label: "Teeth brushed", q: "Times you brushed your teeth", src: "NHS: twice a day for 2 minutes" },
+      { id: "brush", t: "choice", opts: [0, 1, 2, 3].map(v => ({ v, label: String(v) })), label: "Teeth brushed", q: "How many times did you brush your teeth today?", src: "NHS: twice a day for 2 minutes" },
       { id: "fresh", t: "scale", min: 1, max: 5, words: W.fresh, label: "Fresh", q: "How fresh and clean do you feel?", src: "No validated version; kept for your history", noStandard: true },
       { id: "tidy", t: "scale", min: 1, max: 5, words: W.tidy, label: "Bedroom", q: "How tidy is your bedroom?", src: "No validated version; kept for your history", noStandard: true }
     ],
@@ -2123,7 +2137,7 @@ const CATS = [
       // APP: four cue fields don't fit one card on a small phone (Phase D): two cards of two, the same answers
       { id: "cues", t: "texts", fields: [{ id: "cueMorning", label: "The morning" }, { id: "cueLunch", label: "Lunch" }], label: "Cued recall", q: "Cued recall: the morning and lunch", src: "Cued recall (Tulving and Pearlstone 1966)" },
       { id: "cues2", t: "texts", fields: [{ id: "cueTalk", label: "A conversation" }, { id: "cueEvening", label: "The evening" }], label: "Cued recall", q: "Cued recall: a conversation and the evening", src: "Cued recall (Tulving and Pearlstone 1966)" },
-      { id: "detail", t: "text", placeholder: "The smell of rain on the tram", label: "A detail", q: "One detail only you would know" },
+      { id: "detail", t: "text", placeholder: "e.g. The smell of rain on the tram", label: "A detail", q: "One detail only you would know" },
       { id: "gaps", t: "tiles", opts: L.gaps, label: "Blank stretches", q: "Any blank stretches?" },
       { id: "best", t: "text", placeholder: "Best moment", label: "Best moment", q: "Best moment", src: "Three good things (Seligman et al. 2005)" },
       { id: "hardest", t: "text", placeholder: "Hardest moment", label: "Hardest moment", q: "Hardest moment", src: "Expressive writing (Pennebaker 1997)" },
@@ -2132,7 +2146,7 @@ const CATS = [
   { id: "bathroom", name: "Bathroom", moment: "evening", icon: "bathroom",
     skip: ["Didn't keep track today", "Nothing unusual to note"],
     quick: [
-      { id: "counts", t: "bathroom", label: "Times", q: "Times you peed and pooped today", src: "Bladder and bowel diaries" }
+      { id: "counts", t: "bathroom", label: "Times", q: "How many times did you pee and poop today?", src: "Bladder and bowel diaries" }
     ],
     detail: [
       { id: "note", t: "text", placeholder: "Anything worth remembering", label: "Note", q: "A note", app: true }   // APP: the live app's optional note on every category, saved as note
@@ -2495,7 +2509,9 @@ IW.sleepWindow = a => (a && a.bed != null && a.wake != null ? ((a.wake - a.bed) 
 IW.exerciseMinutes = (k = IW.todayKey) => {
   const c = IW.day(k).cats.exercise; if (!c || c.status === "skipped") return { moderate: 0, vigorous: 0, light: 0, equiv: 0, strength: false };
   let mod = 0, vig = 0, light = 0, strength = false;
-  for (const e of c.entries) { const m = e.minutes || 0; if (e.intensity === "vigorous") vig += m; else if (e.intensity === "moderate") mod += m; else light += m; if (e.type === "strength") strength = true; }
+  // POLISH: a session saved before intensity was asked (no intensity) counts by its effort (RPE 7+ vigorous, 5-6 moderate, WHO), so older
+  // weeks are not shown as "0 min" next to a week row full of active minutes
+  for (const e of c.entries) { const m = e.minutes || 0, it = e.intensity || (e.rpe >= 7 ? "vigorous" : e.rpe >= 5 ? "moderate" : null); if (it === "vigorous") vig += m; else if (it === "moderate") mod += m; else light += m; if (e.type === "strength") strength = true; }
   return { moderate: mod, vigorous: vig, light, equiv: mod + 2 * vig, strength };
 };
 IW.drinks = (field, k = IW.todayKey) => (IW.day(k).cats.meals?.entries || []).reduce((s, e) => s + (Number(e[field]) || 0), 0);
@@ -2566,7 +2582,7 @@ IW.ranges = (scope = "all", k = IW.todayKey) => {
     out.push(R("alcohol", "diet", "Alcohol, last 7 days", drinks ? `${drinks} ${drinks === 1 ? "drink" : "drinks"}, about ${units} units` : "None", `UK low-risk limit: 14 units a week, spread over 3 or more days. WHO: less is better, none is best.${drinks ? ` On ${drinkDays} ${drinkDays === 1 ? "day" : "days"}.` : ""}`, units <= 14 ? "good" : "caution", "UK Chief Medical Officers; WHO", { amount: units, limit: 14, max: 21, unit: "units" }));
     let equiv = 0, strengthDays = 0;
     for (const x of week) { const e = IW.exerciseMinutes(x); equiv += e.equiv; if (e.strength) strengthDays++; }
-    out.push(R("activity", "exercise", "Activity, last 7 days", `${equiv} min`, equiv >= 150 ? "Meets the 150 minutes a week of moderate activity. Vigorous minutes count double." : `${150 - equiv} min short of 150 a week. Vigorous minutes count double.`, equiv >= 150 ? "good" : "caution", "WHO 2020", { amount: equiv, goal: 150, max: 300, unit: "min" }));
+    out.push(R("activity", "exercise", "Activity, last 7 days", `${equiv} min`, equiv >= 150 ? "Meets the 150 minutes a week of moderate activity. Vigorous minutes count double." : `${150 - equiv} min to go to reach 150 a week. Vigorous minutes count double.`, equiv >= 150 ? "good" : "caution", "WHO 2020", { amount: equiv, goal: 150, max: 300, unit: "min" }));
     out.push(R("strength", "exercise", "Strength, last 7 days", `${strengthDays} ${strengthDays === 1 ? "day" : "days"}`, "Muscle-strengthening on 2 or more days a week", strengthDays >= 2 ? "good" : "caution", "WHO 2020", { amount: strengthDays, goal: 2, max: 7, unit: "days" }));
     const br = IW.dayVal("hygiene", "brush", k);
     if (br != null) out.push(R("brush", "hygiene", "Teeth", `Brushed ${br === 0 ? "no times" : br === 1 ? "once" : br === 2 ? "twice" : br + " times"}`, "Twice a day, for 2 minutes", br >= 2 ? "good" : br === 1 ? "caution" : "alert", "NHS inform", { amount: br, goal: 2, max: 3, unit: "times" }));
@@ -3154,7 +3170,7 @@ const TESTS=[
   ["verbal","Verbal memory","Word recognition memory. How many words you correctly judge as seen or new before three mistakes."],
   ["visual","Visual memory","Visuospatial memory. How many lit squares you can recall as the grid grows."],
   ["stroop","Colour-word","Word processing and focus (Stroop). Interference is how much slower you are when the word and its ink disagree; lower is better."],
-  ["timing","Timing check","Measures this device: screen refresh rate, dropped frames, and how long the phone takes to hand a touch to the page. Run it once per device, and again if results look off."]
+  ["timing","Timing check","Run it once on each phone, and again if results look off."]/* POLISH: the panel below already says what it checks; said once */
 ];
 /* run generation per test: Stop/Restart bumps it so timers left over from an earlier run do nothing */
 const GEN={pvt:0,number:0,verbal:0,visual:0,stroop:0,timing:0};
@@ -3484,6 +3500,9 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;","
 function fmtWhen(t){const d=new Date(t);return esc(d.toLocaleDateString(undefined,{month:"short",day:"numeric"}))+"<br>"+esc(fmtT(d))}
 const join=a=>Array.isArray(a)?a.join(", "):a;
 const cap1=s=>{s=String(s);return s.charAt(0).toUpperCase()+s.slice(1)};
+/* POLISH: hours as hours and minutes ("8 h 50 min", short "8h 50"), never "8.83 h"; counts with the right plural ("1 lapse") */
+const fmtHrs=(x,short)=>{const m=Math.round(x*60),hh=Math.floor(m/60),mm=m%60;return short?`${hh}h${mm?" "+String(mm).padStart(2,"0"):""}`:`${hh} h${mm?` ${mm} min`:""}`};
+const nOf=(n,one,many)=>`${n} ${n==1?one:(many||one+"s")}`;
 function summary(e){
   const p=[];const add=(cond,s)=>{if(cond)p.push(s)};
   switch(e.kind){
@@ -3493,19 +3512,19 @@ function summary(e){
     case"mood":add(e.mental!=null,`Mental health ${e.mental}/5`);if(e.v!=null||e.a!=null||e.mental==null)p.push(`Pleasantness ${fmtS(e.v)} · Activation ${fmtS(e.a)}`);/* DAYLIGHT: + mental; the grid line as before unless a record has only the new question */add(e.clarity!=null,`Clarity ${e.clarity}`);add(e.stress!=null,`Stress ${e.stress}`);add(e.worth!=null,`Self-worth ${e.worth}`);add(e.urge!=null,`Urges ${e.urge}`);
       return p.join(" · ")+(e.words?`<br>${esc(join(e.words))}`:"");
     case"cog":if(e.test==="calib")return `Hardware delay for ${esc(e.phone||"phone")}: ${e.offset} ms`;if(e.test==="timing")return `Timing check: ${e.hz??"–"} Hz, ${e.inputLag} ms code delay, ${e.dropped}% dropped frames`;return e.test==="number"?`Number memory: ${e.score} digits`:e.test==="verbal"?`Verbal memory: ${e.score} words`:e.test==="visual"?`Visual memory: level ${e.score}`:`Colour-word: ${e.interference??"–"} ms interference, ${e.accuracy}% correct`;
-    case"pvt":return `Median ${e.medianCorr!=null?e.medianCorr+" ms corrected, raw "+e.median:e.median??"–"} ms · ${e.lapses} lapses · ${e.fs} false starts · ${Math.round(e.dur/60)} min${e.hz?` · ${e.hz} Hz`:""}`;
-    case"diet":add(e.meal,esc(e.meal));add(e.food,esc(e.food));add(e.caffeine,`${e.caffeine} caffeine`);add(e.alcohol,`${e.alcohol} alcohol`);add(e.water,`${e.water} water`);
+    case"pvt":return `Median ${e.medianCorr!=null?e.medianCorr+" ms corrected, raw "+e.median:e.median??"–"} ms · ${nOf(e.lapses,"lapse")} · ${nOf(e.fs,"false start")} · ${Math.round(e.dur/60)} min${e.hz?` · ${e.hz} Hz`:""}`;/* POLISH: plurals */
+    case"diet":add(e.meal,esc(cap1(e.meal)));/* POLISH: sentence case */add(e.food,esc(e.food));add(e.caffeine,`${e.caffeine} caffeine`);add(e.alcohol,`${e.alcohol} alcohol`);add(e.water,`${e.water} water`);
       return p.join(" · ")+(e.after?`<br>After: ${esc(join(e.after))}`:"");
-    case"sleep":add(e.hours,`${e.hours} h in bed (${esc(fmtHM(e.bed))}–${esc(fmtHM(e.wake))})`);add(e.quality!=null,`Quality ${e.quality}/5`);add(e.rested!=null,`Rested ${e.rested}/5`);add(e.awakenings!=null,`Woke ${e.awakenings}×`);add(e.waso!=null,`Awake ${e.waso} min`);/* DAYLIGHT: + waso */
+    case"sleep":add(e.hours,`${fmtHrs(e.hours)} in bed (${esc(fmtHM(e.bed))}–${esc(fmtHM(e.wake))})`);/* POLISH: hours and minutes */add(e.quality!=null,`Quality ${e.quality}/5`);add(e.rested!=null,`Rested ${e.rested}/5`);add(e.awakenings!=null,`Woke ${e.awakenings}×`);add(e.waso!=null,`Awake ${e.waso} min`);/* DAYLIGHT: + waso */
       return p.join(" · ")+(e.factors?`<br>${esc(join(e.factors))}`:"");
     case"recall":add(e.moments!=null,`${e.moments} moments recalled`+(e.momentsTimed?` (${e.momentsTimed} in 3 min)`:""));add(e.vivid!=null,`Vividness ${e.vivid}/5`);add(e.ease!=null,`Ease ${e.ease}/5`);add(e.gaps,`Gaps: ${esc(join(e.gaps))}`);
       return p.join(" · ")+(e.best?`<br>Best: ${esc(e.best)}`:"")+(e.hardest?`<br>Hardest: ${esc(e.hardest)}`:"");
     case"bathroom":return esc(btLine(e))+btDetails(e).map(([k,v])=>`<br>${esc(k)}: ${esc(v)}`).join("");
-    case"hobby":add(e.activity,esc(join(e.activity)));add(e.project,esc(e.project));add(e.minutes,`${e.minutes} min`);add(e.flow!=null,`Flow ${e.flow}/5`);add(e.enjoy!=null,`Enjoyment ${e.enjoy}/5`);add(e.progress!=null,`Progress ${e.progress}/5`);
+    case"hobby":add(e.activity,esc(cap1(join(e.activity))));/* POLISH: sentence case */add(e.project,esc(e.project));add(e.minutes,`${e.minutes} min`);add(e.flow!=null,`Flow ${e.flow}/5`);add(e.enjoy!=null,`Enjoyment ${e.enjoy}/5`);add(e.progress!=null,`Progress ${e.progress}/5`);
       return p.join(" · ")+(e.what?`<br>${esc(e.what)}`:"")+(e.output||e.outputNote?`<br>Came out of it: ${esc([e.output?join(e.output):"",e.outputNote||""].filter(Boolean).join(" · "))}`:"");
-    case"hygiene":add(e.wash,esc(cap1(e.wash)));add(e.brush!=null,`Teeth ${e.brush}×`);add(e.fresh!=null,`Fresh ${e.fresh}/5`);add(e.tidy!=null,`Room tidy ${e.tidy}/5`);add(e.sheetDays!=null,`Sheets ${e.sheetDays===0?"changed today":e.sheetDays+" d ago"}`);add(e.roomTemp!=null,`Room ${e.roomTemp} °C`);
+    case"hygiene":add(e.wash,esc(cap1(e.wash)));add(e.brush!=null,`Teeth ${e.brush}×`);add(e.fresh!=null,`Fresh ${e.fresh}/5`);add(e.tidy!=null,`Room tidy ${e.tidy}/5`);add(e.sheetDays!=null,`Sheets changed ${e.sheetDays===0?"today":nOf(e.sheetDays,"day")+" ago"}`)/* POLISH: no "d ago" */;add(e.roomTemp!=null,`Room ${e.roomTemp} °C`);
       return p.join(" · ")+(e.oral||e.care?`<br>${esc([].concat(e.oral||[],e.care||[]).join(", "))}`:"")+(e.room?`<br>Room: ${esc(join(e.room))}`:"")+(e.setting?`<br>Tonight: ${esc(join(e.setting))}`:"");
-    case"exercise":add(e.type,esc(e.type));add(e.minutes,`${e.minutes} min`);add(e.intensity,esc(cap1(e.intensity)));/* DAYLIGHT: + intensity */add(e.rpe!=null,`RPE ${e.rpe}`);add(e.km,`${e.km} km`);add(e.moodAfter!=null,`Mood after ${e.moodAfter}/5`);return p.join(" · ");
+    case"exercise":add(e.type,esc(cap1(e.type)));/* POLISH: sentence case */add(e.minutes,`${e.minutes} min`);add(e.intensity,esc(cap1(e.intensity)));/* DAYLIGHT: + intensity */add(e.rpe!=null,`RPE ${e.rpe}`);add(e.km,`${e.km} km`);add(e.moodAfter!=null,`Mood after ${e.moodAfter}/5`);return p.join(" · ");
     case"dietday":add(e.dietDay!=null,`Diet ${e.dietDay}/5`);add(e.fruitVeg!=null,`Fruit and veg ${e.fruitVeg} portion${e.fruitVeg==1?"":"s"}`);add(e.lastCaffeine,e.lastCaffeine==="none"?"No caffeine":`Last caffeine ${esc(fmtHM(e.lastCaffeine))}`);return p.join(" · ");/* DAYLIGHT: Diet overview */
     case"plan":add(e.planMet,`Yesterday's plan: ${esc((IW_MET.find(x=>x[0]===e.planMet)||[,e.planMet])[1])}`);return p.join(" · ")+(e.when||e.then?`${p.length?"<br>":""}When ${esc(e.when||"…")}, I will ${esc(e.then||"…")}`:"")+(e.tag?` <span class="k">${esc(CAT_LABEL[e.tag]||e.tag)}</span>`:"");/* DAYLIGHT: Plan for tomorrow */
     case"intimacy":add(e.activity,`Activity: ${esc(e.activity)}`);add(e.desire!=null,`Desire ${e.desire}/10`);add(e.satisfaction!=null,`Satisfaction ${e.satisfaction}/5`);
@@ -3542,17 +3561,17 @@ function chipFor(c,list){
   let v="";const last=real[0];
   if(c==="body")v=last.energy!=null?`${last.energy}/10`:"✓";
   else if(c==="mind")v=last.v!=null?fmtS(last.v):(last.clarity!=null?`${last.clarity}/10`:"✓");
-  else if(c==="cog"){const p=real.find(e=>e.kind==="pvt");v=p?`${p.medianCorr??p.median}ms`:`${real.length} test${real.length>1?"s":""}`}
+  else if(c==="cog"){const p=real.find(e=>e.kind==="pvt");v=p?`${p.medianCorr??p.median} ms`:`${real.length} test${real.length>1?"s":""}`}
   else if(c==="diet")v=`${real.length} meal${real.length>1?"s":""}`;
-  else if(c==="sleep")v=last.hours!=null?`${last.hours}h`:"✓";
+  else if(c==="sleep")v=last.hours!=null?fmtHrs(last.hours,true):"✓";/* POLISH: "8h 50", not "8.83h" */
   else if(c==="intimacy")v="✓";
   else if(c==="hygiene")v=last.fresh!=null?`${last.fresh}/5`:"✓";
   else if(c==="recall")v=last.moments!=null?`${last.moments} moments`:"✓";
-  else if(c==="bathroom"){const T=btTally(real),b=T.stool.filter(e=>e.bristol!=null).map(e=>e.bristol).sort((x,y)=>Math.abs(y-4)-Math.abs(x-4))[0];v=`${T.pees+T.poops}×`+(b!=null?` B${b}`:"")}
-  else if(c==="hobby"){const m=real.reduce((n,e)=>n+(e.minutes||0),0);v=m?`${m}m`:"✓"}
+  else if(c==="bathroom"){const T=btTally(real),b=T.stool.filter(e=>e.bristol!=null).map(e=>e.bristol).sort((x,y)=>Math.abs(y-4)-Math.abs(x-4))[0];v=`${T.pees+T.poops}×`+(b!=null?` · type ${b}`:"")}/* POLISH: "type 7" (Bristol), not "B7" */
+  else if(c==="hobby"){const m=real.reduce((n,e)=>n+(e.minutes||0),0);v=m?`${m} min`:"✓"}/* POLISH: "85 min", not "85m" */
   else if(c==="dietday")v=last.dietDay!=null?`${last.dietDay}/5`:"✓";/* DAYLIGHT: Diet overview */
   else if(c==="plan")v="✓";/* DAYLIGHT: Plan for tomorrow */
-  else if(c==="exercise")v=real.reduce((n,e)=>n+(e.minutes||0),0)?`${real.reduce((n,e)=>n+(e.minutes||0),0)}m`:"✓";
+  else if(c==="exercise")v=real.reduce((n,e)=>n+(e.minutes||0),0)?`${real.reduce((n,e)=>n+(e.minutes||0),0)} min`:"✓";/* POLISH: "min", not "m" */
   return `<span class="dchip s-${c}" title="${CAT_LABEL[c]}">${icon(c)}<span>${esc(v)}</span></span>`;
 }
 function renderHistory(){
@@ -3584,7 +3603,7 @@ function renderHistory(){
 /* DAYLIGHT: a day's entries as the live History rows, by category (from renderHistory, unchanged). o.note adds an "Add note" button to rows that also have Edit (Daylight's day sheet) */
 function dayBody(by,o){o=o||{};
   return CATS.filter(c=>by[c]).map(c=>`<div class="dcat"><div class="dcat-h"><span class="sic s-${c}">${icon(c)}</span>${CAT_LABEL[c]}</div>${by[c].map(e=>
-      `<div class="row"><div class="when">${esc(fmtT(new Date(e.t)))}</div><div class="what">${e.kind==="skip"?`<span class="k skip">Skipped</span>${esc(e.reason||"")}`:summary(e)}${e.ex?'<span class="ex">Example</span>':""}${e.note?`<br><span class="note">${esc(e.note)}</span>`:""}${edRowExtra(e)}${e.intention||e.intentionMet?`<br><span class="iw-note">${e.intentionMet?`<b>Last intention</b>${esc((IW_MET.find(x=>x[0]===e.intentionMet)||[,e.intentionMet])[1])} `:""}${e.intention?`<b>Intention</b>${esc(e.intention)}`:""}</span>`:""}</div><span class="row-act">${o.note&&edLabel(e)==="Edit"?`<button type="button" class="note-btn" data-id="${esc(e.id)}">Add note</button>`:""}<button type="button" class="ed-btn" data-id="${esc(e.id)}">${edLabel(e)}</button><button class="del" data-id="${esc(e.id)}">Delete</button></span></div>`).join("")}</div>`).join("")}
+      `<div class="row"><div class="when">${esc(fmtT(new Date(e.t)))}</div><div class="what">${e.kind==="skip"?`<span class="k skip">Skipped</span>${esc(e.reason||"")}`:summary(e)}${e.ex?'<span class="ex">Example</span>':""}${e.note?`<br><span class="note">${esc(e.note)}</span>`:""}${edRowExtra(e)}${e.intention||e.intentionMet?`<br><span class="iw-note">${e.intentionMet?`<b>Last intention</b>${esc((IW_MET.find(x=>x[0]===e.intentionMet)||[,e.intentionMet])[1])}${e.intention?"<br>":""}`:""}${e.intention?`<b>Intention</b>${esc(e.intention)}`:""}</span>`:""}</div><span class="row-act">${o.note&&edLabel(e)==="Edit"?`<button type="button" class="note-btn" data-id="${esc(e.id)}">Add note</button>`:""}<button type="button" class="ed-btn" data-id="${esc(e.id)}">${edLabel(e)}</button><button class="del" data-id="${esc(e.id)}">Delete</button></span></div>`).join("")}</div>`).join("")}
 /* DAYLIGHT: the rows' buttons, as renderHistory wired them; Edit and Add note open Daylight's (window.iwlEdit) */
 function wireRows(root){
   root.querySelectorAll(".del").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();if(b.classList.contains("arm"))remove(b.dataset.id);else{b.classList.add("arm");b.textContent="Confirm";setTimeout(()=>{b.classList.remove("arm");b.textContent="Delete"},3000)}}));
@@ -3598,7 +3617,7 @@ const HM_SPEC={
   cov:{name:"Coverage"},
   mood:{name:"Mood",label:"Pleasantness",lo:-4,hi:4,div:true,fmt:v=>fmtS(Math.round(v*10)/10),ends:["Unpleasant","Pleasant"]},
   energy:{name:"Energy",label:"Physical energy",lo:1,hi:10,col:"var(--c-body)",fmt:v=>`${Math.round(v*10)/10}/10`,ends:["Drained","Full of energy"]},
-  sleep:{name:"Sleep",label:"Time in bed",lo:4,hi:10,col:"var(--c-sleep)",fmt:v=>`${Math.round(v*10)/10} h`,ends:["4 h","10 h"]},
+  sleep:{name:"Sleep",label:"Time in bed",lo:4,hi:10,col:"var(--c-sleep)",fmt:v=>fmtHrs(v),ends:["4 h","10 h"]},/* POLISH: hours and minutes */
   rt:{name:"Reaction",label:"Median reaction time",col:"var(--c-cog)",invert:true,fmt:v=>`${Math.round(v)} ms`},
   stress:{name:"Stress",label:"Stress",lo:0,hi:10,col:"var(--c-mind)",fmt:v=>`${Math.round(v*10)/10}/10`,ends:["None","Overwhelming"]},
   exercise:{name:"Exercise",label:"Exercise",lo:0,col:"var(--c-move)",fmt:v=>`${Math.round(v)} min`},
@@ -4052,7 +4071,7 @@ const CMP_SPEC={
     cN("visual","Visual memory, best level","",1,4),cN("interf","Colour-word interference"," ms",-1,80),cN("acc","Colour-word accuracy","%",1,10)],
   diet:[cN("meals","Meals and drinks logged","",0,3),cN("hunger","Hunger before, average","/5",0,2,{dp:1}),cN("caffeine","Caffeine"," cups",0,3,{dp:1}),cN("alcohol","Alcohol"," drinks",0,3,{dp:1}),
     cN("water","Water"," glasses",0,4),cL("groups","Food groups"),cL("after","An hour after"),cT("food","What you had")],
-  sleep:[cN("hours","Time in bed"," h",0,2,{dp:2}),cH("bed","Lights out",{bed:1}),cH("wake","Woke up"),cN("latency","Time to fall asleep"," min",-1,30),cN("awakenings","Times woken","",-1,3),cN("waso","Awake in the night"," min",-1,20)/* DAYLIGHT: + waso */,
+  sleep:[cN("hours","Time in bed"," h",0,2,{dp:2,hrs:1})/* POLISH: hrs shows h and min */,cH("bed","Lights out",{bed:1}),cH("wake","Woke up"),cN("latency","Time to fall asleep"," min",-1,30),cN("awakenings","Times woken","",-1,3),cN("waso","Awake in the night"," min",-1,20)/* DAYLIGHT: + waso */,
     cN("nap","Naps"," min",0,40),cN("quality","Sleep quality","/5",1,3),cN("rested","How rested","/5",1,3),cL("factors","Factors"),cT("note","Context")],
   exercise:[cN("sessions","Sessions","",0,2),cN("minutes","Total time"," min",0,45),cN("km","Distance"," km",0,8,{dp:1}),cN("avghr","Avg heart rate"," bpm",0,20),
     cN("rpe","Effort (RPE)","/10",0,4,{dp:1}),cN("moodAfter","Mood afterwards","/5",1,3,{dp:1}),cL("type","Type"),cL("intensity","Intensity")/* DAYLIGHT: + intensity */,cT("note","Context")],
@@ -4110,6 +4129,8 @@ const cRound=(x,dp)=>{const f=10**(dp??1);return Math.round(x*f)/f};
 const cU=(u,v)=>/[a-z]s$/.test(u)&&Math.abs(+v)===1?u.slice(0,-1):u;
 const cSign=n=>(n>0?"+":n<0?"−":"")+Math.abs(n);
 function cMin(v,bed){const[h,m]=String(v).split(":").map(Number);if(isNaN(h))return null;const x=h*60+(m||0);return bed?(x+720)%1440:x}
+/* POLISH: a change in hours as "−40 min" or "+1 h 10 min" */
+const cHrs=m=>(m>0?"+":"−")+(Math.abs(m)>=60?fmtHrs(Math.abs(m)/60):`${Math.abs(m)} min`);
 function cDur(m){const a=Math.abs(m),h=Math.floor(a/60),r=a%60;return (m>0?"+":"−")+(h?`${h} h${r?" "+pad(r):""}`:`${r} min`)}
 /* one comparison row → {html, cls, score, pill} or null when neither day has it */
 function cmpRow(s,x,y){
@@ -4117,10 +4138,10 @@ function cmpRow(s,x,y){
   if(nul(x)&&nul(y))return null;
   let cls="same",d="same",score=0,vals="",extra="",pill=null;
   if(s.t==="num"){
-    const f=v=>nul(v)?"–":esc((s.sg?fmtS(+v):s.dp!=null?String(cRound(+v,s.dp)):String(v))+cU(s.u,v));
+    const f=v=>nul(v)?"–":s.hrs?esc(fmtHrs(+v)):esc((s.sg?fmtS(+v):s.dp!=null?String(cRound(+v,s.dp)):String(v))+cU(s.u,v));
     vals=`<span>${f(x)}</span><span class="cmp-ar">→</span><b>${f(y)}</b>`;
     if(nul(x)||nul(y)){cls="chg";d=nul(x)?"new":"not logged"}
-    else{const r=cRound(+y-+x,s.dp!=null?s.dp:1);if(r){d=cSign(r)+(s.u&&!s.u.startsWith("/")?cU(s.u,r):"");cls=s.dir===0?"chg":s.dir*r>0?"good":"bad";score=Math.abs(r)/s.span;pill=[s.l,d,cls]}}
+    else{const r=cRound(+y-+x,s.dp!=null?s.dp:1);if(r){d=s.hrs?cHrs(Math.round((+y-+x)*60)):cSign(r)+(s.u&&!s.u.startsWith("/")?cU(s.u,r):"");cls=s.dir===0?"chg":s.dir*r>0?"good":"bad";score=Math.abs(r)/s.span;pill=[s.l,d,cls]}}
   }else if(s.t==="time"){
     vals=`<span>${nul(x)?"–":esc(fmtHM(x))}</span><span class="cmp-ar">→</span><b>${nul(y)?"–":esc(fmtHM(y))}</b>`;
     if(nul(x)||nul(y)){cls="chg";d=nul(x)?"new":"not logged"}
@@ -4157,7 +4178,7 @@ function renderCompare(){
   const quick=[["Yesterday vs today",keyShift(today,-1),today],["A week ago vs today",keyShift(today,-7),today],["Last two logged days",days[1],days[0]]].filter(q=>q[1]&&q[2]);
   let h=`<div class="cmp-days">${sel("a","Earlier")}${sel("b","Later")}</div>`;
   if(CMP.picking)h+=`<p class="cmp-note">Tap a day on the calendar for the ${CMP.picking==="a"?"earlier":"later"} day.<button type="button" data-cancel>Cancel</button></p>`;
-  h+=`<div class="chips cmp-quick" role="group" aria-label="Quick comparisons">${quick.map(([l,a,b])=>`<button type="button" class="chip" data-qa="${a}" data-qb="${b}" aria-pressed="${a===CMP.a&&b===CMP.b}">${esc(l)}</button>`).join("")}
+  h+=`<div class="chips cmp-quick" role="group" aria-label="Quick comparisons">${quick.map(([l,a,b],i)=>`<button type="button" class="chip" data-qa="${a}" data-qb="${b}" aria-pressed="${a===CMP.a&&b===CMP.b&&quick.findIndex(([,x,y])=>x===CMP.a&&y===CMP.b)===i}">${esc(l)}</button>`).join("")}
     <button type="button" class="chip" data-only aria-pressed="${CMP.only}">Changes only</button></div>`;
   if(!CMP.a||!CMP.b||CMP.a===CMP.b){card.innerHTML=h+`<p class="cmp-foot">${days.length<2?"Log a second day and you can compare the two here.":"Pick two different days to compare."}</p>`;queueMicrotask(cmpDayBtns);return}
   const A=cmpDay(CMP.a),B=cmpDay(CMP.b),pills=[],none=[];let body="";
@@ -4192,8 +4213,8 @@ function renderCompare(){
 /* a "Compare this day" button inside every open day card */
 function cmpDayBtns(){$("list").querySelectorAll(".day").forEach(a=>{const b=a.querySelector(".day-body"),k=a.dataset.day;if(!b)return;
   let r=b.querySelector(".cmp-dayrow");if(!r){b.insertAdjacentHTML("afterbegin",`<div class="cmp-dayrow"><button type="button" class="ghost cmp-daybtn" data-day="${esc(k)}"></button></div>`);r=b.querySelector(".cmp-dayrow")}
-  const on=k===CMP.a||k===CMP.b,btn=r.querySelector("button");btn.textContent=on?"In the comparison above":"Compare this day";btn.setAttribute("aria-pressed",String(on))})}
-$("list").addEventListener("click",e=>{const b=e.target.closest(".cmp-daybtn");if(!b)return;e.stopPropagation();cmpAdd(b.dataset.day)});
+  const on=k===CMP.a||k===CMP.b,btn=r.querySelector("button");btn.textContent=on?"Open the comparison":"Compare this day";/* POLISH: Compare is on the Calendar tab now, not "above" */btn.setAttribute("aria-pressed",String(on))})}
+$("list").addEventListener("click",e=>{const b=e.target.closest(".cmp-daybtn");if(!b)return;e.stopPropagation();cmpAdd(b.dataset.day);try{window.dispatchEvent(new CustomEvent("iwl:show-compare"))}catch(_){}});/* POLISH: and Daylight shows it */
 $("cmpCard").addEventListener("change",e=>{const s=e.target.closest(".cmp-sel");if(!s||!s.value)return;cmpSet(s.dataset.slot,s.value);renderCompare()});
 $("cmpCard").addEventListener("click",e=>{const t=e.target;
   const q=t.closest("[data-qa]");if(q){CMP.auto=false;CMP.a=q.dataset.qa;CMP.b=q.dataset.qb;CMP.last="b";CMP.picking=null;renderCompare();return}
@@ -4239,18 +4260,20 @@ const AI_SUGG=[["Spot patterns",AI_Q.range],["What affects my sleep?","What seem
   ["Hygiene and sleep","How do my personal hygiene and my bedroom (tidiness, how recently the sheets were changed, a dark, cool, quiet room, room temperature) relate to my sleep, mood and energy?"],
   ["Memory","How is my evening recall going (moments recalled, vividness, ease), and does it relate to sleep, stress or exercise?"]];
 
+/* POLISH: on screen the ranges read in words ("17 Oct to 23 Oct", as ui); the prompt keeps its exact dates (sub) */
+const aiNice=(k,y)=>keyDate(k).toLocaleDateString("en-GB",y?{day:"numeric",month:"short",year:"numeric"}:{day:"numeric",month:"short"});
 function aiScopes(){
   const days=cmpDays(),today=logDay(Date.now()),out=[];/* DAYLIGHT: logDay */
   const wk=keyShift(today,-((keyDate(today).getDay()+6)%7));
   const mk=HM.month||hmMonthStart(new Date()),ym=`${mk.getFullYear()}-${pad(mk.getMonth()+1)}`;
-  out.push({k:"today",l:"Today",q:"one",sub:aiDate(today),days:days.filter(k=>k===today)});
+  out.push({k:"today",l:"Today",q:"one",sub:aiDate(today),ui:keyDate(today).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}),days:days.filter(k=>k===today)});
   if(CMP.a&&CMP.b&&CMP.a!==CMP.b)out.push({k:"cmp",l:"This comparison",q:"cmp",sub:`${cmpLabel(CMP.a)} → ${cmpLabel(CMP.b)}`,days:[CMP.a,CMP.b],cmp:[CMP.a,CMP.b]});
   if(HM.sel&&HM.sel!==today)out.push({k:"day",l:cmpLabel(HM.sel),q:"one",sub:"The day picked on the calendar",days:days.filter(k=>k===HM.sel)});
-  out.push({k:"week",l:"This week",q:"range",sub:`Monday ${wk} to today`,days:days.filter(k=>k>=wk)});
-  out.push({k:"7",l:"Last 7 days",q:"range",sub:`${keyShift(today,-6)} to ${today}`,days:days.filter(k=>k>keyShift(today,-7))});
+  out.push({k:"week",l:"This week",q:"range",sub:`Monday ${wk} to today`,ui:`Since Monday ${aiNice(wk)}`,days:days.filter(k=>k>=wk)});
+  out.push({k:"7",l:"Last 7 days",q:"range",sub:`${keyShift(today,-6)} to ${today}`,ui:`${aiNice(keyShift(today,-6))} to ${aiNice(today)}`,days:days.filter(k=>k>keyShift(today,-7))});
   out.push({k:"month",l:mk.toLocaleDateString(undefined,{month:"long",year:"numeric"}),q:"range",sub:"The month shown on the calendar",days:days.filter(k=>k.startsWith(ym))});
-  out.push({k:"30",l:"Last 30 days",q:"range",sub:`${keyShift(today,-29)} to ${today}`,days:days.filter(k=>k>keyShift(today,-30))});
-  out.push({k:"all",l:"Everything",q:"range",sub:days.length?`${days[days.length-1]} to ${days[0]}`:"",days});
+  out.push({k:"30",l:"Last 30 days",q:"range",sub:`${keyShift(today,-29)} to ${today}`,ui:`${aiNice(keyShift(today,-29))} to ${aiNice(today)}`,days:days.filter(k=>k>keyShift(today,-30))});
+  out.push({k:"all",l:"Everything",q:"range",sub:days.length?`${days[days.length-1]} to ${days[0]}`:"",ui:days.length?`${aiNice(days[days.length-1],1)} to ${aiNice(days[0],1)}`:"",days});
   out.forEach(s=>s.days=[...s.days].sort());
   return out}
 
@@ -4392,12 +4415,12 @@ function aiRender(){
   $("aiSugg").querySelectorAll("[data-need]").forEach(b=>{b.hidden=!AI.inc[b.dataset.need]});/* DAYLIGHT: privacy */
   const {text,n}=aiBuild(sc,$("aiQ").value);AI.text=text;
   const empty=!n;
-  $("aiCount").textContent=empty?`${sc.sub}: nothing logged here yet.`:`${sc.sub} · ${sc.days.length} day${sc.days.length===1?"":"s"}, ${n} entr${n===1?"y":"ies"}`;
+  $("aiCount").textContent=empty?`${sc.ui||sc.sub}: nothing logged here yet.`:`${sc.ui||sc.sub} · ${sc.days.length} day${sc.days.length===1?"":"s"}, ${n} entr${n===1?"y":"ies"}`;
   $("aiSize").textContent=`${text.length.toLocaleString()} characters, about ${Math.round(text.length/4).toLocaleString()} tokens`;
   if($("aiPrev").open)$("aiPre").textContent=text;
   const q=encodeURIComponent(text);
   $("aiSvcs").innerHTML=AI_SVC.map(s=>{const pre=s.pre&&q.length<=AI_URL_MAX;
-    return `<a class="ai-svc" data-svc="${s.k}" data-pre="${pre?1:0}" href="${esc(pre?s.pre(q):s.url)}" target="_blank" rel="noopener noreferrer"${empty?' aria-disabled="true" tabindex="-1"':""}><b>${esc(s.n)}${aiSvg("out")}</b><small>${pre?"Opens with the prompt filled in":"Copies, then opens. Paste it in"}</small></a>`}).join("");
+    return `<a class="ai-svc" data-svc="${s.k}" data-pre="${pre?1:0}" href="${esc(pre?s.pre(q):s.url)}" target="_blank" rel="noopener noreferrer"${empty?' aria-disabled="true" tabindex="-1"':""}><b>${esc(s.n)}${aiSvg("out")}</b><small>${pre?"Opens with the prompt filled in":"Copy, open, paste"}</small></a>`}).join("");
   $("aiCopy").disabled=empty;$("aiDl").disabled=empty;
 }
 function aiCopyText(text){
@@ -4988,8 +5011,10 @@ function renderPath() {
   const tabs = $("#mtabs"); tabs.replaceChildren();
   for (const M of IW.MOMENTS) {
     const [a, b] = MU[M.id], left = X(a) + (a > 0 ? 2 : -P), right = X(b) - (b < 1 ? 2 : -P);
-    tabs.append(h("button", { class: "mtab", type: "button", role: "tab", "aria-selected": String(M.id === S.mid), style: `left:${left.toFixed(1)}px;width:${(right - left).toFixed(1)}px`,
-      onclick: () => { if (S.view !== "today") showToday(); if (M.id !== S.mid) switchMoment(M.id); } }, M.name));
+    // POLISH: a moment that is finished (every category done or skipped) says so with a tick
+    const fin = IW.catsIn(M.id).every(c => { const st = IW.status(c.id); return st === "done" || st === "skipped"; });
+    tabs.append(h("button", { class: "mtab", type: "button", role: "tab", "aria-selected": String(M.id === S.mid), "aria-label": fin ? `${M.name}, done` : null, style: `left:${left.toFixed(1)}px;width:${(right - left).toFixed(1)}px`,
+      onclick: () => { if (S.view !== "today") showToday(); if (M.id !== S.mid) switchMoment(M.id); } }, h("span", { class: "mlab" }, M.name, fin ? h("span", { class: "mdone", html: IW.icon("check", "", 2.8) }) : null)));
   }
 }
 function renderCatRow() {
@@ -5037,7 +5062,9 @@ function qh(card, text) { return h("h2", { class: "q", id: uid("q"), tabindex: "
    of its options (the rest under More). A list registers itself on el._lists as { all(), less() }. */
 function fitCard(el) {
   const body = el && el.querySelector(":scope > .cbody"); if (!body || !body.isConnected) return;
-  const over = () => body.scrollHeight - body.clientHeight > 1;
+  // POLISH: also a big figure squeezed inside its own room (it spills down onto the − and + buttons without making the card taller)
+  const figs = [...body.querySelectorAll(".numfig")];
+  const over = () => body.scrollHeight - body.clientHeight > 1 || figs.some(f => f.scrollHeight - f.clientHeight > 1);
   const gives = [...body.querySelectorAll("[data-give]")].sort((a, b) => a.dataset.give - b.dataset.give);
   gives.forEach(g => g.classList.remove("gave"));
   (el._lists || []).forEach(l => l.all());
@@ -5836,7 +5863,7 @@ R.scale = (card, body, el) => {
   }
   sky.append(h("div", { class: "sunbox" }, h("div", { class: "glow" }), sun), h("div", { class: "land" }), ladder);
   // APP: unanswered, the sun rests on the horizon with "Drag to answer"; the number and its word appear once answered (Phase D)
-  const rest = h("p", { class: "rest" }, h("span", { html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>' }), "Drag to answer");
+  const rest = h("p", { class: "rest" }, h("span", { html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>' }), "Drag or tap a line");   // POLISH: the lines are tap targets too; say so
   const wrap = h("div", { class: "scalebody" }, qh(card), h("div", { class: "readout", "aria-hidden": "true" }, h("div", { class: "rv" }, num, word), rest), sky);
   body.append(wrap);
   let was = v0, riseT = null;
@@ -5978,7 +6005,7 @@ R.grid = (card, body, el) => {
     if (has) {
       const x = (v - 0.5) / 9 * 100, y = (9.5 - ar) / 9 * 100;
       gsun.style.left = x + "%"; gsun.style.top = y + "%"; ch.style.top = y + "%"; cv.style.left = x + "%";
-      read.replaceChildren(IW.moodWord(v, ar), h("span", {}, `  ·  ${v}, ${ar}`));
+      read.replaceChildren(IW.moodWord(v, ar));   // POLISH: the word alone; the grid position ("7, 4") meant nothing to read
       el.style.setProperty("--p", ((v - 1) / 8 * 0.7 + (ar - 1) / 8 * 0.3).toFixed(2));
       const sky = moodSky(v, ar);
       if (el._scene) paintSky(el._scene, sky);
@@ -6310,9 +6337,13 @@ R.recall = (card, body, el) => {
     else { timer.start(); started = true; ended = false; setA(card, "momentsTimed", IWBridge.countMoments(ta.value)); btn.textContent = "Pause"; ta.focus({ preventScroll: true }); }   // APP: momentsTimed is a number
   } }, "Start the 3-minute timer");
   ta.addEventListener("input", () => { setA(card, "recall", ta.value || undefined); setA(card, "moments", lines() || undefined); if (started && !ended) setA(card, "momentsTimed", IWBridge.countMoments(ta.value)); upd(); });   // APP: moments written while the timer runs
-  body.append(qh(card), h("div", { class: "recalltop" }, ring, h("div", { class: "rt-col" }, btn, cnt)), h("div", { class: "field recallfield" }, ta));
+  const field = h("div", { class: "field recallfield" }, ta);
+  body.append(qh(card), h("div", { class: "recalltop" }, ring, h("div", { class: "rt-col" }, btn, cnt)), field);
+  // POLISH: the field is a whole number of lines tall, so no line is cut in half at the bottom
+  const snap = () => { const fh = field.clientHeight; if (fh) ta.style.height = Math.max(102, Math.floor(fh / 34) * 34) + "px"; };
+  const ro = typeof ResizeObserver === "function" ? new ResizeObserver(snap) : null; if (ro) ro.observe(field);
   upd();
-  return { dispose: () => timer.stop() };
+  return { dispose: () => { timer.stop(); if (ro) ro.disconnect(); } };
 };
 
 /* plan for tomorrow: When …, I will … tagged with a category */
@@ -6325,7 +6356,8 @@ R.plan = (card, body, el) => {
     inp.addEventListener("input", () => { const p = cur(); p[key] = inp.value.trim(); save(p); });
     return h("div", { class: "field" }, h("label", { for: id }, lbl), inp);
   };
-  body.append(qh(card, "Plan for tomorrow"), h("p", { class: "sub" }, "When …, I will …"), mk("when", "When", "I finish dinner"), mk("then", "I will", "put my phone in the kitchen"));
+  // POLISH: the title no longer repeats the card's name, the sub says what an if-then plan is, and the examples read as examples
+  body.append(qh(card, "One if-then plan"), h("p", { class: "sub" }, "Tie it to a moment, and it is easier to keep."), mk("when", "When", "e.g. I finish dinner"), mk("then", "I will", "e.g. put my phone away"));
 };
 // APP: what the plan is about, on its own card (Phase D): one pick, saved in the plan as its tag; the rest under More when short
 R.plantag = (card, body, el) => {
@@ -6362,7 +6394,7 @@ R.bathroom = (card, body, el) => {
   const evRow = ({ e, i }, fresh, after) => {
     const d = e.t === "stool" ? (e.bristol ? `Type ${e.bristol}` : "Add details") : (e.urineColour ? `Colour ${e.urineColour}` : "Add details");
     return h("button", { class: "ev" + (i === fresh ? " fresh" : ""), type: "button", onclick: () => openEvent(i, after) },
-      h("span", { class: "t", html: e.at != null ? tH(IW.hm(e.at)) : "–" }), h("span", { class: "k" }, e.t === "stool" ? "Poop" : "Pee"),
+      h("span", { class: "t", html: e.at != null ? tH(IW.hm(e.at)) : "" }), h("span", { class: "k" }, e.t === "stool" ? "Poop" : "Pee"),
       e.t === "urine" && e.urineColour ? h("span", { class: "sw", style: `background:${IW.URINE[e.urineColour - 1]}` }) : null,
       h("span", { class: "d" }, d), h("span", { html: IW.icon("back", "chev", 2) }));
   };
@@ -6394,12 +6426,12 @@ function rMeals(card, el) {
     if (!ents.length) body.append(h("p", { class: "emptynote" }, "No meals yet today. Add one after you eat."));
     const meal = ({ e, i }, after) => h("button", { class: "meal", type: "button", "aria-label": `Edit ${e.meal || "meal"}: ${e.food || ""}`, onclick: () => { if (after) after(); editMeal(i); } },
       h("span", { class: "t", html: e.at != null ? tH(IW.hm(e.at)) : "" }), h("span", { class: "m" }, IW.cap(e.meal || "meal")), h("span", { html: IW.icon("back", "", 2) }),
-      h("span", { class: "f" }, e.food || "No description"), (e.groups || []).length ? h("span", { class: "g" }, e.groups.map(IW.cap).join(", ")) : null);
+      h("span", { class: "f" }, e.food || "No description"), (e.groups || []).length ? h("span", { class: "g" }, IW.cap(e.groups.join(", "))) : null);
     // APP: the latest meals that fit show here; all of them are behind "All meals (n)" (Phase D)
     const list = h("div", { class: "meals-l" }); let room = Infinity;
     const draw = () => { const shown = ents.slice(Math.max(0, ents.length - room)); list.replaceChildren(...shown.map(x => meal(x)), ...(shown.length < ents.length ? [h("button", { class: "more", type: "button", onclick: () => { const box = h("div", {}, ...ents.map(x => meal(x, () => Sheet.close()))); Sheet.open("Meals today", box, null, { cat: "meals" }); } }, "All meals", h("span", {}, `(${ents.length})`), h("span", { html: IW.icon("back", "", 2), style: "display:flex;transform:rotate(180deg);width:16px;height:16px" }))] : [])); };
     if (ents.length) { body.append(list); draw(); (el._lists ||= []).push({ all: () => { room = Infinity; draw(); }, less: () => { const n = Math.min(room, ents.length); if (n <= 0) return false; room = n - 1; draw(); return true; } }); }
-    if (st === "done") body.append(h("p", { class: "hint", style: "margin-top:14px", "data-give": 1 }, "Marked as all for today. Add another any time."));
+    if (st === "done") body.append(h("p", { class: "hint", style: "margin-top:14px", "data-give": 1 }, "That's all for today. You can still add a meal."));
   }
   el.append(body);
 }
@@ -6438,9 +6470,12 @@ function rSummary(card, el) {
   const [a, b] = MU[mid], uNow = arcU(IW.nowMinutes()), u = uNow >= a && uNow <= b ? uNow : (a + b) / 2;
   el.append(h("div", { class: "scape", "aria-hidden": "true", style: `--sl:${(10 + u * 80).toFixed(1)}%;--st:${(72 - 44 * Math.sin(Math.PI * u)).toFixed(1)}px` }, h("div", { class: "s-sun" }), h("div", { class: "s-land" })));
   const body = h("div", { class: "cbody" });
-  const ranges = IW.ranges(eve ? "all" : mid), title = eve ? "Today" : `${IW.momentById(mid).name}, done`;
+  // POLISH: the title says "done" only when every category of the moment is done or skipped; otherwise it counts what is left
+  const mcats = IW.catsIn(mid), fin = mcats.filter(c => { const st = IW.status(c.id); return st === "done" || st === "skipped"; }).length;
+  const left = mcats.length - fin;
+  const ranges = IW.ranges(eve ? "all" : mid), title = eve ? "Today" : left ? `${IW.momentById(mid).name} so far` : `${IW.momentById(mid).name}, done`;
   body.append(h("h2", { class: "q big", id: uid("q"), tabindex: "-1" }, title),
-    h("p", { class: "sub" }, eve ? IW.fmtDay(IW.todayKey, "long") : "Healthy ranges for what you just answered."));
+    h("p", { class: "sub" }, eve ? IW.fmtDay(IW.todayKey, "long") : !fin ? "Nothing logged yet. Tap an icon above to start." : left ? `${fin} of ${mcats.length} done. Tap an icon above to finish ${left === 1 ? "the last one" : "the rest"}.` : "Healthy ranges for what you just answered."));
   if (saved && eve) body.append(h("p", { class: "saved-note", html: IW.icon("check", "", 2.4) + "<span>Saved to History</span>" }));
   const cats = eve ? IW.CATS : IW.catsIn(mid);
   // APP: the card shows at most three headline ranges, as many as fit; everything is on the summary page behind See all (Phase D)
@@ -6454,7 +6489,7 @@ function rSummary(card, el) {
   let room = Math.min(3, ranges.length);
   const drawH = () => heads.replaceChildren(...ranges.slice(0, room).map(r => h("div", { class: "hd" }, h("span", { class: "hd-l" }, r.label), h("span", { class: "hd-v" }, r.value), h("span", { class: "st " + r.status }, h("i"), STW[r.status]))));
   if (ranges.length) { body.append(h("h3", { class: "h3" }, "Healthy ranges"), heads); drawH(); (el._lists ||= []).push({ all: () => { room = Math.min(3, ranges.length); drawH(); }, less: () => { if (room <= 0) return false; room--; drawH(); return true; } }); }
-  else body.append(h("p", { class: "emptynote", "data-give": 1 }, eve ? "Answers you give today show here." : "Nothing with a healthy range yet."));
+  else if (eve || fin) body.append(h("p", { class: "emptynote", "data-give": 1 }, eve ? "Answers you give today show here." : "Nothing with a healthy range yet."));   // POLISH: a fresh moment says it once
   body.append(h("button", { class: "more seeall", type: "button", onclick: all }, eve ? "See all of today" : "See all", h("span", { html: IW.icon("back", "", 2), style: "display:flex;transform:rotate(180deg);width:16px;height:16px" })));
   el.append(body);
 }
@@ -6840,6 +6875,8 @@ function renderHistory() {
   histTab(S.htab || "week");
   renderWeek(wkBox);
 }
+// POLISH: "Compare this day" in All days opens the comparison where it lives, on the Calendar tab
+window.addEventListener("iwl:show-compare", () => { if (S.view !== "history") return; histTab("cal", true); requestAnimationFrame(() => { const w = document.getElementById("cmp-wrap"); if (w) w.scrollIntoView({ block: "start", behavior: RM() ? "auto" : "smooth" }); }); });
 function histTab(k, user) {
   S.htab = k;
   for (const [t] of HTABS) { const on = t === k, b = $(`#ht-${t}`), p = $(`#hp-${t}`); if (b) { b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; } if (p) p.hidden = !on; }
