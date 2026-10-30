@@ -19,9 +19,12 @@
     Object.keys((fixture && fixture.cols) || {}).forEach(p => load(p, fixture.cols[p]));
     const M = { writes: [], queries: [], samples: [], downloads: [], subs: 0, maxSubs: 0, errors: [], cols,
       dump: p => [...col(p)].map(([id, r]) => Object.assign({ id }, clone(r.data))) };
-    let saveTimer = 0;
-    function persist() { clearTimeout(saveTimer); saveTimer = setTimeout(flush, 250); }
-    function flush() { clearTimeout(saveTimer); const out = { v: 1, savedAt: Date.now(), cols: {} };
+    let saveTimer = 0, saveIdle = 0;
+    // Writing the log copies every record, so it waits for a quiet moment (after the card has moved) rather than landing mid-animation.
+    // Leaving the app or hiding it still writes at once.
+    const unqueue = () => { clearTimeout(saveTimer); saveTimer = 0; if (saveIdle && window.cancelIdleCallback) cancelIdleCallback(saveIdle); saveIdle = 0; };
+    function persist() { unqueue(); saveTimer = setTimeout(() => { saveTimer = 0; if (window.requestIdleCallback) saveIdle = requestIdleCallback(flush, { timeout: 2000 }); else flush(); }, 900); }
+    function flush() { unqueue(); const out = { v: 1, savedAt: Date.now(), cols: {} };
       cols.forEach((m, p) => { out.cols[p] = [...m].map(([id, r]) => Object.assign({ id }, r.data)); });
       try { IWLStore.save(JSON.stringify(out)); } catch (e) { console.error("save failed", e); } }
     window.__iwlFlush = flush; window.addEventListener("pagehide", flush); document.addEventListener("visibilitychange", () => { if (document.hidden) flush(); });

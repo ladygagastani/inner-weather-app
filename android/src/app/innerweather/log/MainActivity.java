@@ -18,7 +18,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +63,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Inner Weather Log, standalone. The Daylight app runs from this phone at https://app.innerweather.local/,
@@ -101,6 +106,7 @@ public class MainActivity extends Activity {
         int edge = getColor(R.color.edge);
         topColor = bottomColor = edge;
         goEdgeToEdge(w);
+        preferFastestRefresh(w);
 
         root = new FrameLayout(this);
         root.setBackgroundColor(edge);
@@ -472,7 +478,43 @@ public class MainActivity extends Activity {
         v.setVisibility((width == 0 || height == 0) ? View.GONE : View.VISIBLE);
     }
 
+    // ---------- Refresh rate ----------
+
+    /** Asks for the screen's fastest mode (120 Hz where the phone has it) at the current resolution; many phones keep an app at 60 Hz otherwise. */
+    void preferFastestRefresh(Window w) {
+        try { askFastestMode(w); } catch (RuntimeException ignored) { /* the phone picks, as before */ }
+    }
+
+    void askFastestMode(Window w) {
+        Display d = Build.VERSION.SDK_INT >= 30 ? getDisplay() : getWindowManager().getDefaultDisplay();
+        if (d == null) return;
+        Display.Mode cur = d.getMode(), best = cur;
+        for (Display.Mode m : d.getSupportedModes()) {
+            if (m.getPhysicalWidth() == cur.getPhysicalWidth() && m.getPhysicalHeight() == cur.getPhysicalHeight()
+                && m.getRefreshRate() > best.getRefreshRate() + 0.5f) best = m;
+        }
+        WindowManager.LayoutParams lp = w.getAttributes();
+        if (lp.preferredDisplayModeId == best.getModeId()) return;
+        lp.preferredDisplayModeId = best.getModeId();
+        lp.preferredRefreshRate = best.getRefreshRate();
+        w.setAttributes(lp);
+    }
+
     // ---------- Blending the system bars with the page ----------
+    // Each sample copies pixels back from the screen, which can cost the frame being drawn. So it runs when the page has settled after a touch
+    // (card moves take under 0.8 s), never while a finger is down, and otherwise only every few seconds.
+
+    long touchedAt;
+    boolean fingerDown;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int a = ev.getActionMasked();
+        touchedAt = android.os.SystemClock.uptimeMillis();
+        if (a == MotionEvent.ACTION_DOWN) fingerDown = true;
+        else if (a == MotionEvent.ACTION_UP || a == MotionEvent.ACTION_CANCEL) { fingerDown = false; scheduleSample(800); }
+        return super.dispatchTouchEvent(ev);
+    }
 
     final Runnable sampler = new Runnable() {
         @Override public void run() { sample(); }
@@ -485,6 +527,10 @@ public class MainActivity extends Activity {
 
     void sample() {
         if (!resumed || !loaded) return;
+        if (fingerDown || android.os.SystemClock.uptimeMillis() - touchedAt < 700) {
+            scheduleSample(800);
+            return;
+        }
         if (Build.VERSION.SDK_INT < 26 || web.getWidth() < 8 || web.getHeight() < 8) {
             scheduleSample(500);
             return;
@@ -515,7 +561,7 @@ public class MainActivity extends Activity {
         } catch (IllegalArgumentException ignored) {
             // window surface not ready yet
         }
-        scheduleSample(350);
+        scheduleSample(3000);
     }
 
     /** Most common colour along the row, so a button or card edge doesn't tint the bar. */
@@ -624,7 +670,7 @@ public class MainActivity extends Activity {
             }
         });
         v.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override public void onScrollChange(View view, int a, int b, int c, int d) { scheduleSample(60); }
+            @Override public void onScrollChange(View view, int a, int b, int c, int d) { scheduleSample(400); }
         });
     }
 
@@ -697,10 +743,19 @@ public class MainActivity extends Activity {
 
     File storeFile() { return new File(getFilesDir(), "store.json"); }
 
+    /** The log is written on its own thread: the page used to wait for two synced file writes on every save, which held up its animations. */
+    final ExecutorService io = Executors.newSingleThreadExecutor();
+
+    /** Waits (up to a few seconds) for the log writes already queued. */
+    void drainWrites() {
+        try { io.submit(new Runnable() { @Override public void run() {} }).get(4, TimeUnit.SECONDS); } catch (Exception ignored) {}
+    }
+
     class Store {
         /** The saved log, or on the very first start the records copied in from claude.ai (assets/seed.json). */
         @JavascriptInterface
         public String load() {
+            drainWrites();
             try {
                 File f = storeFile();
                 if (f.exists()) return new String(readAll(new FileInputStream(f)), "UTF-8");
@@ -712,8 +767,13 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void save(String json) {
+            final byte[] b;
+            try { b = json.getBytes("UTF-8"); } catch (Exception e) { return; }
+            io.execute(new Runnable() { @Override public void run() { write(b); } });
+        }
+
+        void write(byte[] b) {
             try {
-                byte[] b = json.getBytes("UTF-8");
                 writeAtomic(storeFile(), b);
                 // One copy per day, the last 14 days.
                 File dir = new File(getFilesDir(), "backups");
@@ -895,6 +955,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         resumed = true;
+        preferFastestRefresh(getWindow());
         web.onResume();
         scheduleSample(200);
     }
@@ -909,8 +970,15 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onStop() {
+        drainWrites();   // the log is on disk before Android may end the app
+        super.onStop();
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration c) {
         super.onConfigurationChanged(c);
+        preferFastestRefresh(getWindow());
         scheduleSample(250);
     }
 
