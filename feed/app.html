@@ -40,6 +40,7 @@
     --ink var(--light-fade) ease, --muted var(--light-fade) ease, --hair var(--light-fade) ease, --tile var(--light-fade) ease, --tile-2 var(--light-fade) ease,
     --sun var(--light-fade) ease, --wash var(--light-fade) ease, --land var(--light-fade) ease, --sky-tint var(--light-fade) ease;
 }
+:root.no-fade { --light-fade: 0s; }   /* SMOOTH: the minute's small step in the light lands at once */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --ground: #121417; --ground-top: #17191D; --card: #1B1E23; --card-back: #17191D;
@@ -190,19 +191,22 @@ svg { display: block; }
 .word:not(.lv *) { margin-top: 6px; font-size: var(--t20); font-weight: 560; min-height: 1.3em; letter-spacing: -.01em; }
 .card.empty .num { color: var(--muted); font-weight: 400; opacity: .45; }
 .card.empty .word { color: var(--muted); font-size: var(--t16); font-weight: 480; }
-.sky { position: relative; flex: 1; min-height: 76px; margin: 0 -20px -20px; --hz: 85%; --base: 74%; --top: 17%; --p: 0; }
-.sun, .glow { left: 30%; top: calc(var(--base) - (var(--base) - var(--top)) * var(--p)); }
+.sky { position: relative; flex: 1; min-height: 76px; margin: 0 -20px -20px; --hz: 85%; --base: 74%; --top: 17%; --p: 0;
+  --hz-n: 85; --base-n: 74; --top-n: 17; container: sky / size; }
+/* SMOOTH: the sun and its glow move by transform (in the sky's own height, cqh), so the compositor moves them; moving top re-laid out and
+   repainted the 560 px glow on every frame of a drag */
+.sun, .glow { left: 30%; top: 0; transform: translateY(calc((var(--base-n) - (var(--base-n) - var(--top-n)) * var(--p)) * 1cqh)); will-change: transform; }
 .sun { position: absolute; z-index: 1; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%;
   background: radial-gradient(circle at 36% 32%, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 50%), var(--sun);
   box-shadow: 0 0 0 9px color-mix(in oklab, var(--sun) 14%, transparent), 0 0 64px 12px color-mix(in oklab, var(--sun) 30%, transparent);
-  transition: top .24s var(--ease); }
+  transition: transform .24s var(--ease); }
 .glow { position: absolute; z-index: 0; width: 560px; height: 560px; margin: -280px 0 0 -280px; border-radius: 50%; pointer-events: none;
   background: radial-gradient(closest-side, color-mix(in oklab, var(--sun) 22%, transparent), color-mix(in oklab, var(--sun) 6%, transparent) 55%, transparent);
-  opacity: calc(.3 + var(--p) * .7); transition: top .24s var(--ease), opacity .3s; }
-.card.empty .sun { top: var(--hz); }   /* APP: the resting handle: the sun on the horizon */
-.card.empty .glow { top: var(--hz); opacity: .45; }
-.sky.dragging .sun, .sky.dragging .glow { transition: top .07s linear; }
-.sky.rise .sun, .sky.rise .glow { transition: top .5s var(--ease), opacity .4s; }
+  opacity: calc(.3 + var(--p) * .7); transition: transform .24s var(--ease), opacity .3s; }
+.card.empty .sun { transform: translateY(calc(var(--hz-n) * 1cqh)); }   /* APP: the resting handle: the sun on the horizon */
+.card.empty .glow { transform: translateY(calc(var(--hz-n) * 1cqh)); opacity: .45; }
+.sky.dragging .sun, .sky.dragging .glow { transition: transform .07s linear; }
+.sky.rise .sun, .sky.rise .glow { transition: transform .5s var(--ease), opacity .4s; }
 /* sun and glow sit in a box clipped at the horizon, so the land can let the card's scene show through */
 .sunbox { position: absolute; inset: 0; z-index: 1; pointer-events: none; clip-path: inset(-480px -480px calc(100% - var(--hz)) -480px); }
 .land { position: absolute; z-index: 2; left: 0; right: 0; top: var(--hz); bottom: 0;
@@ -3127,6 +3131,13 @@ root.IWPager = { load, order, LIMIT, STEP };
 (function(){
 const $=id=>document.getElementById(id);
 const S={entries:[],live:false,col:null,cell:null,pvtLen:180000,res:null,filter:"all"};
+/* SMOOTH: dates are written with one cached formatter per style; toLocaleDateString built a new one for every label, and History writes
+   hundreds of them (the day list, Compare's day menus), which held up its opening. Same text as toLocaleDateString. */
+const DTF=new Map();
+function ldate(d,loc,o){if(!(d instanceof Date))d=new Date(d);if(isNaN(d))return "Invalid Date";
+  const k=(loc||"")+"|"+new Date().getTimezoneOffset()+"|"+JSON.stringify(o||{});let f=DTF.get(k);
+  if(!f){const q=Object.assign({},o);if(q.weekday==null&&q.year==null&&q.month==null&&q.day==null&&q.dateStyle==null){q.year="numeric";q.month="numeric";q.day="numeric"}f=new Intl.DateTimeFormat(loc,q);DTF.set(k,f)}
+  return f.format(d)}
 
 /* ---------- pages ---------- */
 
@@ -3390,7 +3401,7 @@ async function shareCard(title,rows,st){
   const rg=x.createRadialGradient(W-120,120,10,W-120,120,420);rg.addColorStop(0,"rgba(169,190,235,.45)");rg.addColorStop(1,"rgba(169,190,235,0)");x.fillStyle=rg;x.fillRect(0,0,W,H);
   let y=P+30;x.fillStyle="rgba(255,255,255,.7)";x.font='700 26px "Manrope", sans-serif';x.letterSpacing="6px";x.fillText("INNER WEATHER",P,y);x.letterSpacing="0px";
   y+=90;x.fillStyle="#FFFFFF";x.font='600 72px "Manrope", sans-serif';x.fillText(title,P,y);
-  y+=56;x.fillStyle="#A9BEEB";x.font='500 32px "DM Sans", sans-serif';x.fillText(new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"}),P,y);
+  y+=56;x.fillStyle="#A9BEEB";x.font='500 32px "DM Sans", sans-serif';x.fillText(ldate(new Date(),undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"}),P,y);
   y+=50;
   blocks.forEach(b=>{y+=10;x.fillStyle="rgba(255,255,255,.08)";const h=30+b.lines.length*54+20;roundRect(x,P,y,W-2*P,h+16,24);x.fill();
     x.fillStyle="rgba(255,255,255,.62)";x.font=LF;x.fillText(b.k,P+24,y+42);x.fillStyle="#FFFFFF";x.font=VF;b.lines.forEach((l,i)=>x.fillText(l,P+24,y+42+46+i*54));y+=h+16+14});
@@ -3497,7 +3508,7 @@ FILT.forEach(([k,l])=>{const b=document.createElement("button");b.type="button";
   b.addEventListener("click",()=>{S.filter=k;fbox.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");renderHistory()});fbox.appendChild(b)});
 function match(e){if(S.filter==="all")return true;if(e.kind==="skip")return e.cat===S.filter;if(S.filter==="mind")return e.kind==="mood";if(S.filter==="cog")return e.kind==="pvt"||e.kind==="cog";return e.kind===S.filter}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function fmtWhen(t){const d=new Date(t);return esc(d.toLocaleDateString(undefined,{month:"short",day:"numeric"}))+"<br>"+esc(fmtT(d))}
+function fmtWhen(t){const d=new Date(t);return esc(ldate(d,undefined,{month:"short",day:"numeric"}))+"<br>"+esc(fmtT(d))}
 const join=a=>Array.isArray(a)?a.join(", "):a;
 const cap1=s=>{s=String(s);return s.charAt(0).toUpperCase()+s.slice(1)};
 /* POLISH: hours as hours and minutes ("8 h 50 min", short "8h 50"), never "8.83 h"; counts with the right plural ("1 lapse") */
@@ -3540,7 +3551,7 @@ function line(points,{min,max,zero,color}){
   let g=`<line x1="${L}" x2="${W-R}" y1="${sy(max)}" y2="${sy(max)}" stroke="var(--line)"/><line x1="${L}" x2="${W-R}" y1="${sy(min)}" y2="${sy(min)}" stroke="var(--line)"/>`;
   if(zero!=null)g+=`<line x1="${L}" x2="${W-R}" y1="${sy(zero)}" y2="${sy(zero)}" stroke="var(--muted)" stroke-dasharray="3 3"/><text x="${L-4}" y="${sy(zero)+3}" text-anchor="end">0</text>`;
   g+=`<text x="${L-4}" y="${sy(max)+3}" text-anchor="end">${max}</text><text x="${L-4}" y="${sy(min)+3}" text-anchor="end">${min}</text>`;
-  const fd=t=>new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  const fd=t=>ldate(new Date(t),undefined,{month:"short",day:"numeric"});
   g+=`<text x="${L}" y="${H-3}">${fd(t0)}</text><text x="${W-R}" y="${H-3}" text-anchor="end">${fd(t1)}</text>`;
   g+=`<path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/>`+points.map(p=>`<circle cx="${sx(p.x).toFixed(1)}" cy="${sy(p.y).toFixed(1)}" r="2" fill="${color}"/>`).join("");
   g+=`<circle cx="${sx(last.x)}" cy="${sy(last.y)}" r="4" fill="${color}" stroke="var(--surface)" stroke-width="2"/>`;
@@ -3574,6 +3585,21 @@ function chipFor(c,list){
   else if(c==="exercise")v=real.reduce((n,e)=>n+(e.minutes||0),0)?`${real.reduce((n,e)=>n+(e.minutes||0),0)} min`:"✓";/* POLISH: "min", not "m" */
   return `<span class="dchip s-${c}" title="${CAT_LABEL[c]}">${icon(c)}<span>${esc(v)}</span></span>`;
 }
+/* SMOOTH: every save used to redraw the whole History (lists, heatmap, compare, trends) at once, while the next card was sliding in, so the slide
+   stuttered. Off screen, History is now redrawn when the page is idle and no card is moving, and at once when it opens (IWL.flushHistory). */
+let histDirty=false,histT=0;
+const histShown=()=>{const h=document.getElementById("history");return !!h&&!h.hidden};
+const moving=()=>document.getAnimations().some(a=>a.playState==="running"&&a.effect&&a.effect.getComputedTiming().endTime!==Infinity);
+function histSoon(){
+  if(histShown()){histDirty=false;renderHistory();return}
+  histDirty=true;if(!histT)histT=setTimeout(histIdle,250);
+}
+function histIdle(){
+  histT=0;if(!histDirty)return;
+  if(moving()){histT=setTimeout(histIdle,200);return}
+  const run=()=>{if(histDirty){histDirty=false;try{renderHistory()}catch(_){}}};
+  if(window.requestIdleCallback)requestIdleCallback(run,{timeout:1500});else setTimeout(run,0);
+}
 function renderHistory(){
   $("chMood").innerHTML=line(series("mood","v"),{min:-4,max:4,zero:0,color:"var(--accent)"});
   $("chEnergy").innerHTML=line(series("body","energy"),{min:1,max:10,color:"var(--warm)"});
@@ -3589,11 +3615,11 @@ function renderHistory(){
   const today=logDay(Date.now()),yest=keyShift(today,-1);/* DAYLIGHT: today is logDay(now) */
   list.innerHTML=[...days].slice(0,120).map(([k,arr])=>{
     const d=keyDate(k),open=S.openDays.has(k);/* DAYLIGHT: the day's own date (the same as its first entry's date for records without day) */
-    const name=k===today?"Today":k===yest?"Yesterday":d.toLocaleDateString(undefined,{weekday:"long"});
+    const name=k===today?"Today":k===yest?"Yesterday":ldate(d,undefined,{weekday:"long"});
     const by={};arr.forEach(e=>{const c=CAT_OF(e);(by[c]=by[c]||[]).push(e)});
     const chips=CATS.map(c=>by[c]?chipFor(c,by[c]):"").join("");
     const body=dayBody(by);/* DAYLIGHT: the rows come from dayBody, which Daylight's day sheet uses too */
-    return `<article class="day${open?" open":""}${S.freshDay===k?" fresh":""}" data-day="${k}"><button type="button" class="day-head" aria-expanded="${open}"><span class="dname"><b>${esc(name)}</b><span>${esc(d.toLocaleDateString(undefined,{day:"numeric",month:"short"}))}</span></span><span class="dchips">${chips}</span><span class="chev" aria-hidden="true"></span></button><div class="day-body">${body}</div></article>`;
+    return `<article class="day${open?" open":""}${S.freshDay===k?" fresh":""}" data-day="${k}"><button type="button" class="day-head" aria-expanded="${open}"><span class="dname"><b>${esc(name)}</b><span>${esc(ldate(d,undefined,{day:"numeric",month:"short"}))}</span></span><span class="dchips">${chips}</span><span class="chev" aria-hidden="true"></span></button><div class="day-body">${body}</div></article>`;
   }).join("");
   S.freshDay=null;
   list.querySelectorAll(".day-head").forEach(h=>h.addEventListener("click",()=>{const a=h.parentElement,k=a.dataset.day;
@@ -3678,10 +3704,10 @@ function renderHeatmap(){
   $("hmMetrics").querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===m)));
   $("hmMetricHint").textContent=m==="cov"?"Which days are complete":sp.label;
   const y=HM.month.getFullYear(),mo=HM.month.getMonth();
-  $("hmMonth").textContent=HM.month.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  $("hmMonth").textContent=ldate(HM.month,undefined,{month:"long",year:"numeric"});
   $("hmPrev").disabled=HM.month<=first;$("hmNext").disabled=y===now.getFullYear()&&mo===now.getMonth();
   const today=logDay(now.getTime())/* DAYLIGHT: logDay */,nDays=new Date(y,mo+1,0).getDate(),lead=(new Date(y,mo,1).getDay()+6)%7;
-  const wd=[...Array(7)].map((_,i)=>new Date(2024,0,1+i).toLocaleDateString(undefined,{weekday:"narrow"}));
+  const wd=[...Array(7)].map((_,i)=>ldate(new Date(2024,0,1+i),undefined,{weekday:"narrow"}));
   let h=wd.map(w=>`<span class="hm-wd" aria-hidden="true">${esc(w)}</span>`).join("")+"<span></span>".repeat(lead);
   const count={complete:0,skips:0,part:0,none:0};
   for(let i=1;i<=nDays;i++){
@@ -3691,7 +3717,7 @@ function renderHeatmap(){
     if(m==="cov"){if(st!=="none")fill=HM_COV[st]}
     else{const v=d?d.v[m]:null;if(v!=null){fill=hmFill(m,v,dom);val=sp.fmt(v)}
       if(st!=="none")dot=`<span class="hm-dot${st==="complete"?"":st==="skips"?" skip":" part"}" aria-hidden="true"></span>`}
-    const date=new Date(y,mo,i).toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+    const date=ldate(new Date(y,mo,i),undefined,{weekday:"long",day:"numeric",month:"long"});
     const lbl=`${date}: ${HM_STATUS_TXT[st]}${m==="cov"?"":`, ${sp.label.toLowerCase()} ${val||"not logged"}`}`;
     const cls=["hm-cell",fill?"lit":"",st==="skips"&&m==="cov"?"skips":"",k===today?"today":"",future?"future":""].filter(Boolean).join(" ");
     const sty=fill?` style="--hm:${fill.bg};--hm-ink:${fill.strong?"var(--on-accent)":"var(--ink)"}"`:"";
@@ -3711,7 +3737,7 @@ function hmRenderDetail(days){
   const by={};if(d)[...d.list].sort((a,b)=>b.t-a.t).forEach(e=>{const c=CAT_OF(e);(by[c]=by[c]||[]).push(e)});
   const chips=CATS.map(c=>by[c]?chipFor(c,by[c]):"").join("");
   const vals=d?["mood","energy","sleep","rt","stress","exercise","hobby","fresh","tidy","stool"].filter(x=>d.v[x]!=null).map(x=>`${HM_SPEC[x].name} ${HM_SPEC[x].fmt(d.v[x])}`).join(" · "):"";
-  box.innerHTML=`<div class="hm-dh"><b>${esc(dt.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"}))}</b><span>${HM_STATUS_TXT[st]}${d?` · ${d.covered}/${d.total}`:""}</span></div>`+
+  box.innerHTML=`<div class="hm-dh"><b>${esc(ldate(dt,undefined,{weekday:"long",day:"numeric",month:"long"}))}</b><span>${HM_STATUS_TXT[st]}${d?` · ${d.covered}/${d.total}`:""}</span></div>`+
     (chips?`<div class="dchips">${chips}</div>`:"")+(vals?`<p class="hint">${esc(vals)}</p>`:"")+
     (d?`<button type="button" class="ghost" id="hmOpen">Open this day</button>`:`<p class="hint">Nothing was saved on this day.</p>`);
   box.hidden=false;
@@ -3784,8 +3810,8 @@ const TR_AR={up:'<path d="M7 17 17 7M9 7h8v8"/>',down:'<path d="M7 7l10 10M17 9v
 const trAr=s=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TR_AR[s]}</svg>`;
 const trG=(m,v)=>m.band?-Math.abs(v-(m.band[0]+m.band[1])/2):m.dir*v;
 const trSd=a=>{if(a.length<2)return 0;const mu=hmAvg(a);return Math.sqrt(trSum(a.map(x=>(x-mu)**2))/(a.length-1))};
-const trFd=k=>new Date(k+"T12:00").toLocaleDateString(undefined,{day:"numeric",month:"short"});
-const trFdw=k=>new Date(k+"T12:00").toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});
+const trFd=k=>ldate(new Date(k+"T12:00"),undefined,{day:"numeric",month:"short"});
+const trFdw=k=>ldate(new Date(k+"T12:00"),undefined,{weekday:"short",day:"numeric",month:"short"});
 const trSpanTxt=(a,b)=>a===b?trFd(a):`${trFd(a)} – ${trFd(b)}`;
 const trDiff=(a,b)=>Math.round((new Date(b+"T12:00")-new Date(a+"T12:00"))/864e5);
 const trNext=k=>{const d=new Date(k+"T12:00");d.setDate(d.getDate()+1);return dayKey(d.getTime())};
@@ -4090,9 +4116,9 @@ const CMP_SPEC={
 };
 const keyDate=k=>{const[y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
 const keyShift=(k,n)=>{const d=keyDate(k);d.setDate(d.getDate()+n);return dayKey(d.getTime())};
-function cmpLabel(k,long){const d=keyDate(k),t=logDay(Date.now())/* DAYLIGHT: logDay */,dm=d.toLocaleDateString(undefined,{day:"numeric",month:"short"});
+function cmpLabel(k,long){const d=keyDate(k),t=logDay(Date.now())/* DAYLIGHT: logDay */,dm=ldate(d,undefined,{day:"numeric",month:"short"});
   if(k===t)return "Today, "+dm;if(k===keyShift(t,-1))return "Yesterday, "+dm;
-  return d.toLocaleDateString(undefined,{weekday:long?"long":"short"})+" "+dm}
+  return ldate(d,undefined,{weekday:long?"long":"short"})+" "+dm}
 function cmpDays(){const s=new Set();S.entries.forEach(e=>{if(!(e.kind==="cog"&&(e.test==="timing"||e.test==="calib")))s.add(dayOf(e))});return [...s].sort().reverse()}/* DAYLIGHT: dayOf */
 function cmpAgg(c,es){
   const has=k=>es.filter(e=>e[k]!=null&&e[k]!==""&&!isNaN(+e[k]));
@@ -4184,7 +4210,7 @@ function renderCompare(){
   const A=cmpDay(CMP.a),B=cmpDay(CMP.b),pills=[],none=[];let body="";
   CATS.forEach(c=>{const ca=A[c],cb=B[c];if(!ca&&!cb){if(!DL_NEW.includes(c)||CMP.b>=DL_SINCE||CMP.a>=DL_SINCE)none.push(CAT_LABEL[c]);return}/* DAYLIGHT: Daylight's new categories aren't listed as not logged on days before they existed */
     if(c==="intimacy"){/* DAYLIGHT: the owner's pick (24 Oct 2026): Compare shows Intimacy only as "Logged", plus a skip's reason; never its answers or notes */
-      const both=[[ca,CMP.a],[cb,CMP.b]],on=both.filter(([x])=>x&&x.v).map(([,k])=>keyDate(k).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}));
+      const both=[[ca,CMP.a],[cb,CMP.b]],on=both.filter(([x])=>x&&x.v).map(([,k])=>ldate(keyDate(k),undefined,{weekday:"short",day:"numeric",month:"short"}));
       if(CMP.only&&on.length===2)return;
       const sk=both.filter(([x])=>x&&x.skip).map(([x,k])=>`<p class="cmp-skip"><b>${esc(cmpLabel(k))}:</b> skipped · ${esc(x.skip.reason||"no reason")}</p>`).join("");
       body+=`<div class="cmp-cat"><div class="cmp-cat-h"><span class="sic s-${c}">${icon(c)}</span>${CAT_LABEL[c]}</div>${sk}${on.length?`<p class="cmp-skip">${on.length===2?"Logged on both days":"Logged on "+esc(on[0])}</p>`:""}</div>`;return}
@@ -4244,7 +4270,7 @@ const AI_SVC=[
 const AI_ICON={spark:'<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/>',
   out:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'};
 const aiSvg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AI_ICON[k]}</svg>`;
-const aiDate=k=>keyDate(k).toLocaleDateString("en-GB",{weekday:"short"})+" "+k;
+const aiDate=k=>ldate(keyDate(k),"en-GB",{weekday:"short"})+" "+k;
 const aiHM=t=>{const d=new Date(t);return `${pad(d.getHours())}:${pad(d.getMinutes())}`};
 const aiN=v=>typeof v==="number"?String(Math.round(v*10)/10):String(v);
 const aiTxt=s=>String(s).replace(/\s*\n+\s*/g," / ").trim();
@@ -4261,17 +4287,17 @@ const AI_SUGG=[["Spot patterns",AI_Q.range],["What affects my sleep?","What seem
   ["Memory","How is my evening recall going (moments recalled, vividness, ease), and does it relate to sleep, stress or exercise?"]];
 
 /* POLISH: on screen the ranges read in words ("17 Oct to 23 Oct", as ui); the prompt keeps its exact dates (sub) */
-const aiNice=(k,y)=>keyDate(k).toLocaleDateString("en-GB",y?{day:"numeric",month:"short",year:"numeric"}:{day:"numeric",month:"short"});
+const aiNice=(k,y)=>ldate(keyDate(k),"en-GB",y?{day:"numeric",month:"short",year:"numeric"}:{day:"numeric",month:"short"});
 function aiScopes(){
   const days=cmpDays(),today=logDay(Date.now()),out=[];/* DAYLIGHT: logDay */
   const wk=keyShift(today,-((keyDate(today).getDay()+6)%7));
   const mk=HM.month||hmMonthStart(new Date()),ym=`${mk.getFullYear()}-${pad(mk.getMonth()+1)}`;
-  out.push({k:"today",l:"Today",q:"one",sub:aiDate(today),ui:keyDate(today).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}),days:days.filter(k=>k===today)});
+  out.push({k:"today",l:"Today",q:"one",sub:aiDate(today),ui:ldate(keyDate(today),"en-GB",{weekday:"short",day:"numeric",month:"short"}),days:days.filter(k=>k===today)});
   if(CMP.a&&CMP.b&&CMP.a!==CMP.b)out.push({k:"cmp",l:"This comparison",q:"cmp",sub:`${cmpLabel(CMP.a)} → ${cmpLabel(CMP.b)}`,days:[CMP.a,CMP.b],cmp:[CMP.a,CMP.b]});
   if(HM.sel&&HM.sel!==today)out.push({k:"day",l:cmpLabel(HM.sel),q:"one",sub:"The day picked on the calendar",days:days.filter(k=>k===HM.sel)});
   out.push({k:"week",l:"This week",q:"range",sub:`Monday ${wk} to today`,ui:`Since Monday ${aiNice(wk)}`,days:days.filter(k=>k>=wk)});
   out.push({k:"7",l:"Last 7 days",q:"range",sub:`${keyShift(today,-6)} to ${today}`,ui:`${aiNice(keyShift(today,-6))} to ${aiNice(today)}`,days:days.filter(k=>k>keyShift(today,-7))});
-  out.push({k:"month",l:mk.toLocaleDateString(undefined,{month:"long",year:"numeric"}),q:"range",sub:"The month shown on the calendar",days:days.filter(k=>k.startsWith(ym))});
+  out.push({k:"month",l:ldate(mk,undefined,{month:"long",year:"numeric"}),q:"range",sub:"The month shown on the calendar",days:days.filter(k=>k.startsWith(ym))});
   out.push({k:"30",l:"Last 30 days",q:"range",sub:`${keyShift(today,-29)} to ${today}`,ui:`${aiNice(keyShift(today,-29))} to ${aiNice(today)}`,days:days.filter(k=>k>keyShift(today,-30))});
   out.push({k:"all",l:"Everything",q:"range",sub:days.length?`${days[days.length-1]} to ${days[0]}`:"",ui:days.length?`${aiNice(days[days.length-1],1)} to ${aiNice(days[0],1)}`:"",days});
   out.forEach(s=>s.days=[...s.days].sort());
@@ -4526,7 +4552,7 @@ function acInput(c){
   while(size()>250000&&turns.length>3)turns.splice(1,2); // drop the oldest follow-ups, never the data
   return turns}
 function acSay(cls,t){const st=$("acStatus");st.className="status"+(cls?" "+cls:"");st.textContent=t}
-function acWhen(t){const d=new Date(t);return (dayKey(t)===dayKey(Date.now())?"Today":d.toLocaleDateString(undefined,{day:"numeric",month:"short"}))+", "+fmtT(d)}
+function acWhen(t){const d=new Date(t);return (dayKey(t)===dayKey(Date.now())?"Today":ldate(d,undefined,{day:"numeric",month:"short"}))+", "+fmtT(d)}
 const AC_WHO=()=>`<span class="ac-who">${aiSvg("spark")}Claude</span>`;
 function acBot(content,cut){return `<div class="ac-msg ac-bot">${AC_WHO()}<div class="ac-md">${acMd(content)}</div>${cut?`<p class="ac-cut">${cut==="stopped"?"You stopped this answer.":cut==="long"?"Cut short at the length limit. Ask Claude to continue.":"This answer was interrupted."}</p>`:""}</div>`}
 function acCtx(c){const sc=c.scope,n=(sc.days||[]).length;
@@ -4625,7 +4651,7 @@ acPast();
 
 /* EDIT START: History's edit marks and later notes. */
 /* DAYLIGHT: the live edit sheet is gone: Edit opens the entry's Daylight card with its answers, Add note appends to extraNotes (window.iwlEdit, set by Daylight). These History helpers stay. */
-function edStamp(t,ref){const d=new Date(t);return (ref!=null&&dayKey(t)===dayKey(ref)?"":d.toLocaleDateString(undefined,{day:"numeric",month:"short"})+", ")+fmtT(d)}
+function edStamp(t,ref){const d=new Date(t);return (ref!=null&&dayKey(t)===dayKey(ref)?"":ldate(d,undefined,{day:"numeric",month:"short"})+", ")+fmtT(d)}
 function edLabel(e){try{return window.iwlEdit&&iwlEdit.label?iwlEdit.label(e):"Edit"}catch(_){return "Edit"}}/* DAYLIGHT: Daylight says which entries its cards can edit (the others take a note) */
 /* later notes and the edit stamp, under an entry in History */
 function edRowExtra(e){return (e.extraNotes||[]).map(n=>`<br><span class="note ed-add"><b>Added ${esc(edStamp(n.t,e.t))}</b>${esc(n.text)}</span>`).join("")+(e.editedAt?`<br><span class="ed-mark">Edited ${esc(edStamp(e.editedAt,e.t))}</span>`:"")}
@@ -4697,7 +4723,7 @@ window.IWL={entries:()=>S.entries,live:()=>S.live,pager:null,
   size:()=>S.entries.length+(S.live&&AC.col?AC.list.length:0),/* DAYLIGHT: documents stored (log + conversations), for the size warning */
   /* DAYLIGHT: Daylight writes through the engine (save, remove), groups by its day rule, shows its History rows and its clock switch */
   save:(e,id)=>{const st=document.createElement("p");return save(e,st,id).then(r=>({id:r,msg:st.textContent}))},remove:id=>remove(id),
-  dayOf,logDay,dayKey,catOf:CAT_OF,render:()=>renderHistory(),clockSwitch:()=>clockSwitch(),fmtT:t=>fmtT(new Date(t)),
+  dayOf,logDay,dayKey,catOf:CAT_OF,render:()=>{histDirty=false;renderHistory()},flushHistory:()=>{if(histDirty){histDirty=false;renderHistory()}},clockSwitch:()=>clockSwitch(),fmtT:t=>fmtT(new Date(t)),
   dayRows(k,root){const by={};S.entries.filter(e=>dayOf(e)===k).sort((a,b)=>b.t-a.t).forEach(e=>{const c=CAT_OF(e);(by[c]=by[c]||[]).push(e)});root.innerHTML=dayBody(by,{note:true});wireRows(root);return Object.keys(by).length}};
 const iwlTell=info=>{try{window.dispatchEvent(new CustomEvent("iwl:entries",{detail:info||{}}))}catch(_){}};
 (async()=>{
@@ -4706,7 +4732,7 @@ const iwlTell=info=>{try{window.dispatchEvent(new CustomEvent("iwl:entries",{det
   if(db&&owner){
     S.live=true;S.col=db.collection("log");acConnect(db);
     /* DAYLIGHT: the whole log, past the runtime's 1,000-document window and still live (src/pager.js: window 0 is the query that was here, orderBy("t","desc").limit(1000)) */
-    window.IWL.pager=IWPager.load(S.col,es=>{S.entries=es;renderHistory();iwlTell({})},
+    window.IWL.pager=IWPager.load(S.col,es=>{S.entries=es;histSoon();iwlTell({})},/* SMOOTH: History is drawn when it shows, or once the card has moved */
       ()=>{$("histStatus").className="status err";$("histStatus").textContent="Lost the connection to your log. Reload the page."});
   }else{
     S.entries=examples();renderHistory();iwlTell({examples:true});/* DAYLIGHT: was resumeDay(); Daylight resumes the day */$("banner").hidden=false;
@@ -6953,6 +6979,7 @@ function showHistory(o = {}) {
   S.view = "history"; S.htab = o.tab || "week";   // History opens on its Week tab
   sceneHold(SCN.cur, true);
   renderHistory();
+  if (window.IWL && IWL.flushHistory) IWL.flushHistory();   // SMOOTH: the log's History parts are drawn late while Today shows (a no-op when just built)
   const hist = $("#history"), top = $("#top"), today = $("#today");
   const from = o.landing;
   if (from && !RM()) {
@@ -7027,7 +7054,8 @@ IW.on(ev => {
 applyLight();
 buildDeck(IW.due());
 go(S.pos, "jump", { noFocus: true });
-setInterval(() => { if (SCN.still) return; applyLight(); queueChrome(); }, 60000);
+// SMOOTH: the minute's step in the light is too small to see, so it lands without the 1.8 s fade (which restyled and repainted the whole page every frame)
+setInterval(() => { if (SCN.still) return; root.classList.add("no-fade"); applyLight(); getComputedStyle(root).color; root.classList.remove("no-fade"); queueChrome(); }, 60000);
 setInterval(() => { if (!LV.testing() && !S.edit) IW.tick(); }, 30000);   // APP: at 04:00 the next day begins (the owner's decision 2)
 let rz = null;
 window.addEventListener("resize", () => { pathBox = null; clearTimeout(rz); rz = setTimeout(() => { fitDate(); pathBox = null; renderChrome(); if (S.view === "today") refitScene(); fitCard(S.el); if (S.view === "history" && S.drawWeek) S.drawWeek(); }, 80); });
