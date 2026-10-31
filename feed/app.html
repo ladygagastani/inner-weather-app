@@ -7,7 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap">
 <style>
 /* Daylight: the app's light follows the sun, and each question is a card in a deck.
    Layout: the sun's path and the moment's categories at the top, the deck in the middle, one main button under it.
@@ -1583,13 +1583,118 @@ html.ai-lock .lv{overflow:hidden}
 /* an open day's header in All days stays in its place, not stuck over the day's own rows as they scroll by (AUDIT-D rule 9) */
 .lv .day-head { position: relative; top: auto; }
 </style>
+<style>
+/* TIDE (the owner's pick, 30 Oct 2026): calm and light. One question fills the screen; a thin story bar shows every question of the moment;
+   the moment's name opens today at a glance. Colours come from the script (applyLight, one steady palette); this sheet sets the layout. */
+:root { --font: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --t20: 22px; }
+body::before { background: var(--ground); }
+
+/* ---------- header: logo, the moment (opens today), History; the story bar under it ---------- */
+.top .bar { height: 50px; }
+.brand { gap: 6px; flex: 1 1 auto; min-width: 0; }
+.top .bar > :not(.brand) { flex: none; }
+#date { display: none; }
+.tmoment { display: flex; align-items: center; gap: 7px; min-height: 44px; min-width: 0; padding: 0 8px; margin-left: -2px; border-radius: 12px; color: var(--ink); white-space: nowrap; }
+.tmoment b { font-size: var(--t16); font-weight: 680; }
+.tmoment small { font-size: var(--t13); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; padding: 2px 7px; border-radius: 999px; background: var(--tile-2); }
+.tmoment svg { flex: none; width: 16px; height: 16px; color: var(--muted); }
+.tmoment:active { background: var(--tile-2); }
+.path, .crow, .edge, .pile-s, .pilebtn { display: none !important; }
+.tbar { display: flex; gap: 6px; padding: 4px 0 12px; }
+.tg { flex: var(--n) 1 0; display: flex; gap: 2px; min-width: 0; }
+.tg i { flex: 1; height: 4px; border-radius: 2px; background: var(--hair); transition: background-color .3s; }
+.tg i.on { background: var(--sun); }
+.tg i.now { background: color-mix(in oklab, var(--sun) 38%, var(--hair)); }
+.tg i.sk { background: repeating-linear-gradient(90deg, var(--muted) 0 3px, transparent 3px 6px); opacity: .55; }
+html.dl-edit .tbar, html.dl-edit .tmoment { display: none; }
+
+/* ---------- the question: on the page itself, no card edge, no scene ---------- */
+.deck { margin-left: calc(-1 * max(20px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(20px, env(safe-area-inset-right, 0px))); }
+.deck .card { bottom: 0; background: transparent; border-radius: 0; box-shadow: none; }
+.deck .card::after, .deck .card .scene { display: none; }
+.deck .card[data-cat] { --tile: var(--t-sf); --tile-2: color-mix(in oklab, var(--t-sf) 90%, var(--ink)); }
+:root { --t-sf: #F8FBFA; --t-line: #CDDAD6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --t-sf: #1A2B29; --t-line: #2C403D; } }
+:root[data-theme="dark"] { --t-sf: #1A2B29; --t-line: #2C403D; }
+.ctop { min-height: 44px; padding: 0 8px 0 20px; }
+.cname { color: var(--cat-ink, var(--muted)); font-weight: 650; }
+.cname .csub { color: var(--muted); font-weight: 500; }
+.ctop .skip { color: var(--muted); font-weight: 500; }
+.q { font-size: clamp(20px, 6.2cqi, 24px); font-weight: 700; line-height: 1.2; letter-spacing: -.015em; }
+.cbody { padding-top: 2px; }
+
+/* ---------- the action row: Back, the second action, the main one ---------- */
+.acts { gap: 10px; padding: 10px 0 16px; }
+.tback { flex: none; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; background: var(--t-sf); box-shadow: inset 0 0 0 1px var(--t-line); color: var(--ink); }
+.tback svg { width: 22px; height: 22px; }
+.tback:active { background: var(--tile-2); }
+.alt { height: 50px; padding: 0 10px; color: var(--muted); font-weight: 560; }
+.main { flex: 0 1 auto; margin-left: auto; height: 52px; padding: 0 28px; border-radius: 26px; font-weight: 650; }
+.acts > .main:only-child, .acts > .tback[hidden] + .alt[hidden] + .main { min-width: 50%; }
+
+/* ---------- scale: a ladder of answers (five steps), or a grid of numbers (0 to 10) ---------- */
+.tscale { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.tladder { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: clamp(5px, 1.5cqh, 9px); }
+.trung { display: flex; align-items: center; gap: 12px; flex: 0 1 clamp(44px, 12.5cqh, 58px); min-height: 44px; padding: 0 16px; border-radius: 14px; background: var(--t-sf); box-shadow: inset 0 0 0 1px var(--t-line); font-size: var(--t16); font-weight: 560; text-align: left; transition: background-color .15s, box-shadow .15s; }
+.trung .tw { min-width: 0; }
+.tlv { display: flex; gap: 3px; margin-left: auto; flex: none; }
+.tlv i { width: 6px; height: 16px; border-radius: 2px; background: var(--t-line); }
+.tlv i.f { background: var(--sun); }
+.trung[aria-checked="true"] { background: color-mix(in oklab, var(--sun) 14%, var(--t-sf)); box-shadow: inset 0 0 0 2px var(--sun); }
+.trung:active { transform: scale(.99); }
+.tladder.fine { justify-content: center; gap: 8px; }
+.trow { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.tladder.fine .trung { justify-content: center; padding: 0; flex: none; height: clamp(46px, 13cqi, 56px); font-size: 18px; }
+.tends { display: flex; justify-content: space-between; gap: 12px; font-size: var(--t13); color: var(--muted); padding-top: 4px; }
+.tread { font-size: var(--t16); color: var(--muted); min-height: 1.4em; }
+
+/* ---------- the moment's last card: a receipt ---------- */
+.treceipt { display: flex; flex-direction: column; margin-top: 14px; padding: 2px 14px; border-radius: 18px; background: var(--t-sf); box-shadow: inset 0 0 0 1px var(--t-line); }
+.treceipt .rc + .rc { border-top: 1px dashed var(--t-line); }
+.summary .q.big { font-size: clamp(26px, 8cqi, 32px); }
+
+/* ---------- today at a glance (sheet) ---------- */
+.ttoday { display: flex; flex-direction: column; gap: 10px; }
+.ttabs { display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; border-radius: 12px; background: var(--tile-2); }
+.ttabs button { min-height: 40px; border-radius: 9px; font-size: var(--t13); font-weight: 650; color: var(--muted); }
+.ttabs button[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.tcats { display: flex; flex-direction: column; }
+.tcat { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 52px; padding: 6px 0; text-align: left; }
+.tcat + .tcat { border-top: 1px solid var(--hair); }
+.tci { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--tile-2); color: var(--cat-ink, var(--ink)); }
+.tci svg { width: 17px; height: 17px; }
+.tct { min-width: 0; display: flex; flex-direction: column; }
+.tct b { font-size: 15px; font-weight: 620; }
+.tct small { font-size: var(--t13); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tpill { font-size: 12px; font-weight: 650; border-radius: 999px; padding: 4px 9px; white-space: nowrap; }
+.tpill.done { background: color-mix(in oklab, var(--sun) 16%, var(--card)); color: var(--sun); }
+.tpill.now { background: var(--ink); color: var(--card); }
+.tpill.open { background: var(--tile-2); color: var(--muted); }
+.tpill.tskip { background: var(--tile-2); color: var(--muted); font-style: italic; }
+.tlink { flex: 1; min-height: 46px; border-radius: 12px; font-weight: 620; box-shadow: inset 0 0 0 1px var(--hair); }
+#sheetFoot:has(.tlink) { display: flex; gap: 8px; }
+
+/* ---------- History, Insights and the live parts: the same sea-glass surfaces, no navy or sky gradients ---------- */
+.htabs { background: var(--tile-2); padding: 3px; border-radius: 13px; gap: 0; }
+.htab { min-height: 42px; border-radius: 10px; font-weight: 620; }
+.htab[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.lv .tr-fore, .lv .tr-fore.up, .lv .tr-fore.down { background: var(--t-sf) !important; box-shadow: inset 0 0 0 1px var(--t-line) !important; filter: none !important; color: var(--ink); }
+.lv .tr-fore p, .lv .tr-fore .tr-meta { color: var(--muted); }
+.lv .ai-hero { background: var(--t-sf) !important; color: var(--ink) !important; filter: none !important; }
+.lv .ai-hero::before { display: none; }
+.lv .ai-hero .eyebrow { background: var(--tile-2); color: var(--ink); }
+.lv .ai-hero .eyebrow::before { background: var(--sun); }
+.lv .stage { background: radial-gradient(120% 90% at 50% 0%, #1F4A43 0%, #0B1F1C 70%); }
+.lv .summary, .lv .day-card { background: linear-gradient(165deg, #1F4A43 0%, #12332E 60%, #0B1F1C 100%); }
+</style>
 
 <div class="app" id="app">
   <header class="top" id="top">
     <div class="bar">
-      <div class="brand"><span id="logo"></span><span class="date" id="date"></span></div>
+      <div class="brand"><span id="logo"></span><span class="date" id="date"></span><button class="tmoment" type="button" id="tMoment" aria-haspopup="dialog"><b id="tMomentName">Morning</b><small id="tMomentCount"></small><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
       <div class="nav"><button class="tbtn" type="button" id="btnHistory">History</button></div>
     </div>
+    <div class="tbar" id="tBar" role="img" aria-label=""></div><!-- TIDE: the story bar -->
     <div class="path" id="path">
       <svg id="pathSvg" aria-hidden="true" focusable="false"></svg>
       <div class="mtabs" id="mtabs" role="tablist" aria-label="Moments of the day"></div>
@@ -1603,6 +1708,7 @@ html.ai-lock .lv{overflow:hidden}
       <button class="pilebtn" type="button" id="pileBtn" aria-label="Previous card" hidden></button>
     </div>
     <div class="acts" id="acts">
+      <button class="tback" type="button" id="actBack" aria-label="Back" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>
       <button class="alt" type="button" id="actAlt" hidden></button>
       <button class="main" type="button" id="actMain">Next</button>
     </div>
@@ -4800,16 +4906,22 @@ const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y
 /* ---------- light that follows the sun ----------
    Keyframes: minutes after midnight → ground, card, ink. Bright and cool in the morning, dim and warm in the evening.
    The phone's light or dark setting (or the demo's theme) picks the range. */
-const KF = {
+// TIDE: one steady palette all day (the time-of-day light is Daylight's; Tide keeps it calm)
+const TIDE = true;
+const KF_TIDE = { light: [[0, "#E9EFED", "#F8FBFA", "#0F2F2B"]], dark: [[0, "#0D1817", "#152321", "#E2EEEB"]] };
+const SUNK_TIDE = { light: [[0, "#1D7566"]], dark: [[0, "#6CC7B3"]] };
+const KF_DAY = {
   light: [[300, "#DCE3EC", "#F3F6FA", "#152031"], [480, "#E7EFF6", "#FFFFFF", "#132031"], [780, "#F1F1EC", "#FFFFFF", "#17191C"], [1020, "#F2E8DA", "#FFFAF2", "#231A12"], [1230, "#E3D2BE", "#F4EADC", "#2A1D12"], [1410, "#D4C4B2", "#ECE0D1", "#2B1E13"]],
   dark: [[300, "#0C1320", "#141D2D", "#E2E9F3"], [480, "#0E1624", "#162134", "#E5ECF6"], [780, "#121417", "#1B1E23", "#ECEDEF"], [1020, "#15130F", "#1F1C17", "#EFE9E0"], [1230, "#17110C", "#221A13", "#F2E6D6"], [1410, "#120D09", "#1C150F", "#EADCC9"]]
 };
-const SUNK = {
+const SUNK_DAY = {
   light: [[300, "#EBA04C"], [540, "#E8912B"], [960, "#E8912B"], [1170, "#E07A3A"], [1410, "#D8733A"]],
   dark: [[300, "#F2AA55"], [540, "#F0A04A"], [960, "#F0A04A"], [1170, "#EC8A4C"], [1410, "#E58048"]]
 };
+const KF = TIDE ? KF_TIDE : KF_DAY, SUNK = TIDE ? SUNK_TIDE : SUNK_DAY;
 const smooth = t => t * t * (3 - 2 * t);
 function kfAt(list, m) {
+  if (list.length === 1) return list[0].slice(1);   // TIDE
   const L = list.concat([[list[0][0] + 1440, ...list[0].slice(1)]]);
   let x = m; if (x < L[0][0]) x += 1440;
   for (let i = 0; i < L.length - 1; i++) if (x >= L[i][0] && x <= L[i + 1][0]) {
@@ -4869,7 +4981,7 @@ const LOOK = {
 };
 // how much hue tints the card at its top and its bottom: [light theme], [dark theme], with an optional share of the hue's lightness.
 // Mind's card is a sky: clear blue overhead, paler toward the horizon in the light, deep blue in the dark
-const TINT = { def: [[0.07, 0.18], [0.16, 0.34]], tests: [[0.025, 0.06], [0.04, 0.09]], recall: [[0.11, 0.2], [0.14, 0.26]], mind: [[0.44, 0.26], [0.8, 0.45, 0.3]] };
+const TINT = TIDE ? { def: [[0.03, 0.05], [0.05, 0.08]] } : { def: [[0.07, 0.18], [0.16, 0.34]], tests: [[0.025, 0.06], [0.04, 0.09]], recall: [[0.11, 0.2], [0.14, 0.26]], mind: [[0.44, 0.26], [0.8, 0.45, 0.3]] };
 // the tint brings the hue's colour in fully but only part of its lightness, so light cards stay bright and dark cards stay dark
 const TINT_L = [0.55, 0.35];
 // how much of the hour's own colour gives way first, so a cool hue still reads on a warm card (and a warm hue on the dark blue morning)
@@ -4900,7 +5012,7 @@ function looks(P) {
     const chromePick = dk ? mix(neutral(P.card), hue, 0.3) : mix(P.card, hue, 0.2);
     const chromeInk = readable(hue, [P.card, P.ground, mix(P.ground, hue, 0.14), chromePick], P.ink, 4.9);   // APP: also on its own pick (History's day chips)
     let t;
-    if (id === "sleep") {
+    if (id === "sleep" && !TIDE) {
       const [top, bot] = NIGHT[dk ? "dark" : "light"], mid = mix(top, bot, 0.5), pick = mix(mid, NIGHT.moon, 0.3);
       t = { top, bot, mid, ink: NIGHT.ink, muted: readable(NIGHT.muted, [top, bot], NIGHT.ink, 4.6), cat: NIGHT.moon, pick,
         catInk: readable("#C4CDFF", [top, bot, pick], NIGHT.ink, 4.6), hair: mix(mid, NIGHT.ink, 0.2), tile: mix(mid, NIGHT.ink, 0.08), tile2: mix(mid, NIGHT.ink, 0.15),
@@ -5043,6 +5155,46 @@ function renderPath() {
       onclick: () => { if (S.view !== "today") showToday(); if (M.id !== S.mid) switchMoment(M.id); } }, h("span", { class: "mlab" }, M.name, fin ? h("span", { class: "mdone", html: IW.icon("check", "", 2.8) }) : null)));
   }
 }
+function renderTide() {   // TIDE
+  const M = IW.momentById(S.mid), cats = IW.catsIn(S.mid);
+  const fin = cats.filter(c => { const st = IW.status(c.id); return st === "done" || st === "skipped"; }).length;
+  $("#tMomentName").textContent = M.name;
+  $("#tMomentCount").textContent = `${fin}/${cats.length}`;
+  $("#tMoment").setAttribute("aria-label", `${M.name}, ${fin} of ${cats.length} done. Show today`);
+  const bar = $("#tBar"); bar.replaceChildren();
+  const cur = S.cards[S.pos];
+  let qs = 0, at = 0;
+  for (const c of cats) {
+    const st = IW.status(c.id), idx = [];
+    S.cards.forEach((k, i) => { if (k.kind === "q" && k.cat.id === c.id && visible(k)) idx.push(i); });
+    const n = Math.max(1, idx.length), g = h("span", { class: "tg" + (cur && catOf(cur) === c.id ? " cur" : ""), style: `--n:${n}`, "data-cat": c.id });
+    for (let j = 0; j < n; j++) {
+      const i = idx[j];
+      const on = st === "done" || (i != null && answered(A(S.cards[i]), S.cards[i].q));   // answered, not just passed
+      g.append(h("i", { class: st === "skipped" ? "sk" : on ? "on" : i === S.pos ? "now" : "" }));
+      qs++; if (on || st === "skipped") at++;
+    }
+    bar.append(g);
+  }
+  bar.setAttribute("aria-label", `${at} of ${qs} questions answered in the ${M.name.toLowerCase()}`);
+}
+function openToday(mid = S.mid) {   // TIDE: the moment button opens today at a glance: each category, what you said, and where it stands
+  const list = h("div", { class: "tcats" }), tabs = h("div", { class: "ttabs", role: "tablist" });
+  const draw = m => {
+    tabs.replaceChildren(...IW.MOMENTS.map(M => h("button", { type: "button", role: "tab", "aria-selected": String(M.id === m), onclick: () => draw(M.id) }, M.name)));
+    const curCat = S.mid === m ? catOf(S.cards[S.pos]) : null;
+    list.replaceChildren(...IW.catsIn(m).map(c => {
+      const st = IW.status(c.id), s = IW.summary(c.id), here = c.id === curCat && st !== "done" && st !== "skipped";
+      const pill = st === "done" ? ["done", "Done"] : st === "skipped" ? ["tskip", "Skipped"] : here ? ["now", "Now"] : st === "started" ? ["open", "Started"] : ["open", "To do"];
+      const what = st === "skipped" ? (IW.cat(c.id).reason || "Skipped") : s.length ? s.join(" · ") : "Not yet";
+      return h("button", { class: "tcat", type: "button", "data-cat": c.id, onclick: async () => { await Sheet.close(); if (S.view !== "today") showToday(); if (c.id === "meals" || IW.catById(c.id).moment !== S.mid) switchMoment(IW.catById(c.id).moment); jumpToCat(c.id); } },
+        h("span", { class: "tci", html: ic(c.icon, 1.8) }), h("span", { class: "tct" }, h("b", {}, c.name), h("small", {}, what)), h("span", { class: "tpill " + pill[0] }, pill[1]));
+    }));
+  };
+  draw(mid);
+  const foot = [h("button", { class: "tlink", type: "button", onclick: async () => { await Sheet.close(); showHistory(); } }, "History"), h("button", { class: "tlink", type: "button", onclick: async () => { await Sheet.close(); openSettings(); } }, "Settings")];
+  Sheet.open(IW.fmtDay(IW.todayKey, "long"), h("div", { class: "ttoday" }, tabs, list), foot);
+}
 function renderCatRow() {
   const row = $("#crow"); row.replaceChildren();
   const cur = S.cards[S.pos];
@@ -5064,7 +5216,7 @@ function renderStack() {
   $("#pileBtn").hidden = filed === 0;
 }
 let chromeQueued = false;
-function renderChrome() { chromeQueued = false; if (S.view !== "today") return; renderPath(); renderCatRow(); renderStack(); }
+function renderChrome() { chromeQueued = false; if (S.view !== "today") return; if (TIDE) { renderTide(); renderStack(); return; } renderPath(); renderCatRow(); renderStack(); }   // TIDE
 function queueChrome() { if (chromeQueued) return; chromeQueued = true; requestAnimationFrame(renderChrome); }
 
 /* ---------- card shell ---------- */
@@ -5158,7 +5310,7 @@ function makeScene(cid, card, W, H) {
   const el = h("div", { class: "scene sc-" + cid, "aria-hidden": "true" });
   if (SCENE_K !== 1) el.style.opacity = SCENE_K;
   const sc = { cid, el, card, W, H, v: h("div", { class: "sv" }), r: rng([...cid].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)), loops: [], anims: [], parts: {} };
-  (BUILD[cid] || (() => {}))(sc);
+  if (!TIDE) (BUILD[cid] || (() => {}))(sc);   // TIDE: no scene
   // washes sit in the scene itself; the shapes that cross the card sit in its moving layer, which the veil masks
   if (sc.v.childElementCount) el.append(sc.v);
   return sc;
@@ -5285,6 +5437,7 @@ function restingBoxes(el) {
 // settled (content still moving in when it was first read), and after a change.
 // The first veil waits one more frame: its mask is an image the browser takes a while to build, so it gets a frame to itself
 function fitScene(el, why, first) {
+  if (TIDE) return;
   const sc = el._scene;
   if (!sc || !el.isConnected) return;
   if (SCN.still) { sc.refit = true; return; }   // APP: nothing is measured or redrawn while a test runs; refitted after
@@ -5673,7 +5826,8 @@ BUILD.plan = sc => {
 /* entrances: about 0.7 s × ENTER_X, ease cubic-bezier(.2,.8,.2,1), no overshoot. The card is usable at once: covers never take a tap.
    Every part starts at once (with delays, not chains), so the walkthrough can stop the clock and look at any frame. */
 const D = ms => Math.round(ms * ENTER_X);
-const DECK = "translateY(14px) scale(.955)", FILED = "translateX(calc(-100% - 14px)) rotate(-3deg) scale(.94)";
+// TIDE: the next question slides in from the right, the answered one slides away to the left
+const DECK = TIDE ? "translateX(36px)" : "translateY(14px) scale(.955)", FILED = TIDE ? "translateX(-36px)" : "translateX(calc(-100% - 14px)) rotate(-3deg) scale(.94)";
 const rise = (el, dur = 560, from = DECK, op = 0.5) => el.animate([{ transform: from, opacity: op }, { transform: "none", opacity: 1 }], { duration: D(dur), delay: 30, easing: EASE, fill: "backwards" });
 function fx(host, cls, css, html) { const f = h("div", { class: "fx " + cls, style: css || null, html: html || null, "aria-hidden": "true" }); host.append(f); return f; }
 const gone = (a, f) => { a.finished.then(() => f.remove(), () => f.remove()); return a; };
@@ -5689,7 +5843,7 @@ function heartD(x, y, s) {
 // what an entrance can work out ahead of time, done once the page is idle after a card has come in
 const AHEAD = { private: (W, H) => heartFits(W, H, W / 2, H * 0.5) };
 const idle = fn => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 1000 }) : setTimeout(fn, 200));
-function ahead(box) { if (RM()) return; for (const c of new Set(S.cards.map(catOf))) if (AHEAD[c]) AHEAD[c](box.W, box.H); }
+function ahead(box) { if (RM() || TIDE) return; for (const c of new Set(S.cards.map(catOf))) if (AHEAD[c]) AHEAD[c](box.W, box.H); }
 // the smallest heart around (x, y) that holds the whole card; kept by size, and worked out ahead (AHEAD) while an earlier card is read
 function heartFits(W, H, x, y) {
   const memo = (heartFits.m ||= new Map()), key = `${W} ${H} ${x} ${y}`;
@@ -5871,7 +6025,39 @@ function fileOut(old, cur, oc, leavingCat) {
 const R = {};
 
 /* scale: drag anywhere up or down; a sun rises with the answer */
-R.scale = (card, body, el) => {
+R.scale = (card, body, el) => TIDE ? tideScale(card, body, el) : dayScale(card, body, el);
+function tideScale(card, body, el) {   // TIDE
+  const q = card.q, min = q.min, max = q.max, n = max - min + 1, fine = n > 6;
+  let v = A(card)[q.id] ?? null;
+  const [lo, hi] = IW.ends(q);
+  const box = h("div", { class: "tladder" + (fine ? " fine" : ""), role: "radiogroup", "aria-labelledby": "" });
+  const read = h("p", { class: "tread", "aria-hidden": "true" });
+  const rungs = [];
+  const mk = x => {
+    const word = IW.word(q, x);
+    const b = h("button", { class: "trung", type: "button", role: "radio", "data-v": x, "aria-label": fine ? `${x}, ${word}` : word, onclick: () => pick(x) },
+      fine ? h("b", {}, String(x)) : h("span", { class: "tw" }, word),
+      fine ? null : h("span", { class: "tlv", "aria-hidden": "true" }, ...Array.from({ length: n }, (_, k) => h("i", { class: k <= x - min ? "f" : "" }))));
+    rungs.push(b); return b;
+  };
+  if (fine) {
+    const half = Math.ceil(n / 2);
+    const r1 = h("div", { class: "trow" }), r2 = h("div", { class: "trow" });
+    for (let x = min; x <= max; x++) (x - min < half ? r1 : r2).append(mk(x));
+    box.append(r1, r2, h("div", { class: "tends", "aria-hidden": "true" }, h("span", {}, `${min} ${lo}`), h("span", {}, `${max} ${hi}`)));
+  } else for (let x = max; x >= min; x--) box.append(mk(x));
+  const show = () => {
+    rungs.forEach(b => b.setAttribute("aria-checked", String(+b.dataset.v === v)));
+    read.textContent = v == null ? (fine ? "Tap a number" : "") : fine ? `${v} · ${IW.word(q, v)}` : "";
+    el.classList.toggle("empty", v == null);
+  };
+  function pick(x) { v = x; show(); setA(card, q.id, x); IW.haptic(6); autoNext(card); }
+  const t = qh(card); box.setAttribute("aria-labelledby", t.id);
+  body.append(h("div", { class: "tscale" }, t, fine ? read : null, box));
+  show();
+  return {};
+}
+function dayScale(card, body, el) {
   const q = card.q, min = q.min, max = q.max, n = max - min + 1, five = n <= 6;
   const v0 = A(card)[q.id] ?? null;
   const num = h("span", { class: "num" }), word = h("span", { class: "word" });
@@ -5914,7 +6100,7 @@ R.scale = (card, body, el) => {
   ladder.addEventListener("click", ev => { const st = ev.target.closest(".step"); if (!st) return; const v = +st.dataset.v; slider.set(v); setA(card, q.id, v); IW.haptic(6); });
   show(v0, v0 == null ? 0 : frac(v0), false);
   return { slider };
-};
+}
 
 /* 24-hour sleep dial: drag the moon (fell asleep) and the sun (woke up) */
 function usualSleep() {
@@ -6494,14 +6680,14 @@ function rSummary(card, el) {
   const mid = card.mid, eve = mid === "evening", saved = IW.day().saved;
   // the sun stands where it is now for the moment that's due, or mid-way through the moment's stretch of the path
   const [a, b] = MU[mid], uNow = arcU(IW.nowMinutes()), u = uNow >= a && uNow <= b ? uNow : (a + b) / 2;
-  el.append(h("div", { class: "scape", "aria-hidden": "true", style: `--sl:${(10 + u * 80).toFixed(1)}%;--st:${(72 - 44 * Math.sin(Math.PI * u)).toFixed(1)}px` }, h("div", { class: "s-sun" }), h("div", { class: "s-land" })));
+  if (!TIDE) el.append(h("div", { class: "scape", "aria-hidden": "true", style: `--sl:${(10 + u * 80).toFixed(1)}%;--st:${(72 - 44 * Math.sin(Math.PI * u)).toFixed(1)}px` }, h("div", { class: "s-sun" }), h("div", { class: "s-land" })));
   const body = h("div", { class: "cbody" });
   // POLISH: the title says "done" only when every category of the moment is done or skipped; otherwise it counts what is left
   const mcats = IW.catsIn(mid), fin = mcats.filter(c => { const st = IW.status(c.id); return st === "done" || st === "skipped"; }).length;
   const left = mcats.length - fin;
   const ranges = IW.ranges(eve ? "all" : mid), title = eve ? "Today" : left ? `${IW.momentById(mid).name} so far` : `${IW.momentById(mid).name}, done`;
   body.append(h("h2", { class: "q big", id: uid("q"), tabindex: "-1" }, title),
-    h("p", { class: "sub" }, eve ? IW.fmtDay(IW.todayKey, "long") : !fin ? "Nothing logged yet. Tap an icon above to start." : left ? `${fin} of ${mcats.length} done. Tap an icon above to finish ${left === 1 ? "the last one" : "the rest"}.` : "Healthy ranges for what you just answered."));
+    h("p", { class: "sub" }, eve ? IW.fmtDay(IW.todayKey, "long") : !fin ? (TIDE ? "Nothing logged yet. Tap a category to start." : "Nothing logged yet. Tap an icon above to start.") : left ? (TIDE ? `${fin} of ${mcats.length} done. Tap one to finish it.` : `${fin} of ${mcats.length} done. Tap an icon above to finish ${left === 1 ? "the last one" : "the rest"}.`) : (TIDE ? "Saved. Tap a line to change it." : "Healthy ranges for what you just answered.")));
   if (saved && eve) body.append(h("p", { class: "saved-note", html: IW.icon("check", "", 2.4) + "<span>Saved to History</span>" }));
   const cats = eve ? IW.CATS : IW.catsIn(mid);
   // APP: the card shows at most three headline ranges, as many as fit; everything is on the summary page behind See all (Phase D)
@@ -6514,7 +6700,12 @@ function rSummary(card, el) {
   const heads = h("div", { class: "heads" });
   let room = Math.min(3, ranges.length);
   const drawH = () => heads.replaceChildren(...ranges.slice(0, room).map(r => h("div", { class: "hd" }, h("span", { class: "hd-l" }, r.label), h("span", { class: "hd-v" }, r.value), h("span", { class: "st " + r.status }, h("i"), STW[r.status]))));
-  if (ranges.length) { body.append(h("h3", { class: "h3" }, "Healthy ranges"), heads); drawH(); (el._lists ||= []).push({ all: () => { room = Math.min(3, ranges.length); drawH(); }, less: () => { if (room <= 0) return false; room--; drawH(); return true; } }); }
+  if (TIDE) {   // TIDE: a receipt of the moment, one line per category, each one opens it again
+    const rc = h("div", { class: "treceipt" }); let rows = cats.length;
+    const drawR = () => rc.replaceChildren(...cats.slice(0, rows).map(c => recapRow(c)));
+    body.append(rc); drawR();
+    (el._lists ||= []).push({ all: () => { rows = cats.length; drawR(); }, less: () => { if (rows <= 1) return false; rows--; drawR(); return true; } });
+  } else if (ranges.length) { body.append(h("h3", { class: "h3" }, "Healthy ranges"), heads); drawH(); (el._lists ||= []).push({ all: () => { room = Math.min(3, ranges.length); drawH(); }, less: () => { if (room <= 0) return false; room--; drawH(); return true; } }); }
   else if (eve || fin) body.append(h("p", { class: "emptynote", "data-give": 1 }, eve ? "Answers you give today show here." : "Nothing with a healthy range yet."));   // POLISH: a fresh moment says it once
   body.append(h("button", { class: "more seeall", type: "button", onclick: all }, eve ? "See all of today" : "See all", h("span", { html: IW.icon("back", "", 2), style: "display:flex;transform:rotate(180deg);width:16px;height:16px" })));
   el.append(body);
@@ -6538,6 +6729,7 @@ function actionsFor(card) {
 }
 function renderActs() {
   const a = actionsFor(S.cards[S.pos]), main = $("#actMain"), alt = $("#actAlt");
+  if (TIDE) $("#actBack").hidden = prevIndex(S.pos) < 0 || !!S.edit;   // TIDE
   main.textContent = a.main.label; main.onclick = a.main.fn;
   if (a.alt) { alt.hidden = false; alt.textContent = a.alt.label; alt.onclick = a.alt.fn; } else alt.hidden = true;
 }
@@ -6636,7 +6828,7 @@ function restFrom(old) { const t = getComputedStyle(old).transform; return !t ||
    and the leaving category's exit; going back is the plain deck motion with a short fade of the scene. Reduced motion: a 200 ms cross-fade. */
 function swap(old, el, dir, oc, nc, cur) {
   const rm = RM(), fwd = dir === "next" || dir === "jump", fresh = !!nc && nc !== oc;
-  const enter = !rm && fwd && fresh && ENTER[nc] && el._scene;
+  const enter = !TIDE && !rm && fwd && fresh && ENTER[nc] && el._scene;
   if (!old || dir === "none") {
     if (old) dropCard(old);
     if (dir === "none") return;
@@ -6651,10 +6843,10 @@ function swap(old, el, dir, oc, nc, cur) {
   if (rm) { a1 = old.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "forwards" }); el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 }); }
   else if (fwd) {
     old.style.zIndex = 7;
-    if (oc && oc !== nc && old._scene && EXIT[oc]) EXIT[oc](old, old._scene);
-    a1 = dir === "jump" ? old.animate([{ opacity: 1, transform: cur }, { opacity: 0, transform: "translateY(-10px) scale(.98)" }], { duration: 200, easing: EASE, fill: "forwards" }) : fileOut(old, cur, oc, oc !== nc);
+    if (!TIDE && oc && oc !== nc && old._scene && EXIT[oc]) EXIT[oc](old, old._scene);
+    a1 = dir === "jump" ? old.animate([{ opacity: 1, transform: cur }, { opacity: 0, transform: "translateY(-10px) scale(.98)" }], { duration: 200, easing: EASE, fill: "forwards" }) : TIDE ? old.animate([{ transform: cur, opacity: 1 }, { transform: FILED, opacity: 0 }], { duration: 260, easing: EASE, fill: "forwards" }) : fileOut(old, cur, oc, oc !== nc);
     if (enter) ENTER[nc](el, el._scene);
-    else if (dir === "next" && nc === "recall") pageIn(el, 600);
+    else if (dir === "next" && nc === "recall" && !TIDE) pageIn(el, 600);
     else if (dir === "next") el.animate([{ transform: DECK, opacity: .4 }, { transform: "none", opacity: 1 }], { duration: 300, delay: 30, easing: EASE, fill: "backwards" });
     else el.animate([{ opacity: 0, transform: "translateY(20px) scale(.97)" }, { opacity: 1, transform: "none" }], { duration: 340, delay: 50, easing: EASE, fill: "backwards" });
   } else {
@@ -6667,6 +6859,7 @@ function swap(old, el, dir, oc, nc, cur) {
 }
 // a finished category's dot flies from its card to its icon: where from and where to are read first (tuckFrom), then it flies (tuck)
 function tuckFrom(cid, fromEl) {
+  if (TIDE) return null;   // TIDE: the story bar fills in instead
   const target = $(`#crow [data-cat="${cid}"]`);
   if (!target || !fromEl) return null;
   const r0 = fromEl.getBoundingClientRect(), r1 = target.getBoundingClientRect();
@@ -7043,6 +7236,8 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fi
 $("#btnHistory").addEventListener("click", () => showHistory());
 $("#editCancel").addEventListener("click", () => editDone(false));   // APP: leave an edit without saving
 $("#pileBtn").addEventListener("click", back);
+$("#actBack").addEventListener("click", back);   // TIDE
+$("#tMoment").addEventListener("click", () => openToday());
 setupFlick();
 IW.on(ev => {
   if (ev.type === "reset") { if (ev.newDay) { IW.day().saved = closedToday(); fitDate(); } applyLight(); freshStart(); if (S.view === "history") renderHistory(); }
