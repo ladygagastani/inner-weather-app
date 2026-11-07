@@ -1522,6 +1522,94 @@ html.ai-lock .lv{overflow:hidden}
 .lv .tr-empty p{margin:0}
 </style>
 <style>
+/* INNER (the owner, 6–7 Nov 2026): the opening screen (Inner weather, Biomarkers), the Inner weather page and its entry flow */
+:root { --iw-a1: #E6E5F4; --iw-a2: #F4EFF7; --iw-ai: #2F2C5C; --iw-am: #5D5986; --iw-b1: #D8EAE4; --iw-b2: #EEF6F3; --iw-bi: #0F2F2B; --iw-bm: #3F5F59; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --iw-a1: #24223D; --iw-a2: #1C1B30; --iw-ai: #E6E3FA; --iw-am: #B4B0D6; --iw-b1: #17302C; --iw-b2: #122220; --iw-bi: #E2EEEB; --iw-bm: #A6C2BC; } }
+:root[data-theme="dark"] { --iw-a1: #24223D; --iw-a2: #1C1B30; --iw-ai: #E6E3FA; --iw-am: #B4B0D6; --iw-b1: #17302C; --iw-b2: #122220; --iw-bi: #E2EEEB; --iw-bm: #A6C2BC; }
+
+.iwlayer { position: fixed; inset: 0; z-index: 30; display: flex; flex-direction: column; background: var(--ground); color: var(--ink);
+  padding: env(safe-area-inset-top, 0px) max(20px, env(safe-area-inset-right, 0px)) 0 max(20px, env(safe-area-inset-left, 0px)); }
+.iwlayer[hidden] { display: none; }
+.iwlayer > * { width: 100%; max-width: 520px; margin-left: auto; margin-right: auto; }
+.iwflow { z-index: 32; }
+
+/* the opening screen: two big buttons and nothing else */
+.iwtop { flex: none; display: flex; align-items: center; gap: 10px; height: 56px; }
+.iwlogo { display: inline-flex; flex: none; }
+.iwdate { flex: 1; min-width: 0; margin: 0; font-size: var(--t16); font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.iwdate:focus { outline: none; }
+.iwtag { flex: none; font-size: var(--t13); font-weight: 600; color: var(--muted); padding: 3px 9px; border-radius: 999px; background: var(--tile-2); }
+.iwbigs { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; padding: 6px 0 calc(20px + env(safe-area-inset-bottom, 0px)); }
+.iwbig { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: clamp(18px, 4.5vh, 28px) 22px clamp(16px, 3.5vh, 22px);
+  border-radius: 28px; text-align: left; overflow: hidden; transition: transform .14s var(--ease, ease); }
+.iwbig:active { transform: scale(.985); }
+.iwbig.inner { background: linear-gradient(160deg, var(--iw-a1), var(--iw-a2)); color: var(--iw-ai); --iw-fill: var(--iw-a1); --iw-m: var(--iw-am); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--iw-ai) 9%, transparent); }
+.iwbig.bio { background: linear-gradient(160deg, var(--iw-b1), var(--iw-b2)); color: var(--iw-bi); --iw-fill: var(--iw-b1); --iw-m: var(--iw-bm); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--iw-bi) 9%, transparent); }
+.iwglyph { display: block; width: clamp(44px, 9vh, 64px); height: clamp(44px, 9vh, 64px); margin-bottom: auto; opacity: .9; }
+.iwglyph svg { width: 100%; height: 100%; }
+.iwtext { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.iwtext b { font-size: clamp(26px, 4.4vh, 32px); font-weight: 720; letter-spacing: -.02em; line-height: 1.1; }
+.iwwhat { font-size: var(--t16); font-weight: 520; color: var(--iw-m); }
+.iwsub { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin-top: 6px; padding-top: 10px; border-top: 1px solid color-mix(in oklab, currentColor 14%, transparent);
+  font-size: var(--t14, 14px); font-weight: 600; color: var(--iw-m); font-variant-numeric: tabular-nums; }
+.iwgo { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: color-mix(in oklab, currentColor 10%, transparent); color: currentColor; }
+.iwgo svg { width: 18px; height: 18px; transform: scaleX(-1); }
+@media (max-height: 600px) { .iwglyph { display: none; } .iwbig { justify-content: flex-end; } }
+
+/* the Inner weather page */
+.iwhead { flex: none; display: flex; flex-direction: column; align-items: flex-start; padding-top: 4px; }
+.iwhead h1 { margin: 2px 0 10px; font-size: var(--t28); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+.iwhead h1:focus { outline: none; }
+.iwbody { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 0 calc(28px + env(safe-area-inset-bottom, 0px)); scrollbar-width: none; }
+.iwbody::-webkit-scrollbar { display: none; }
+.iwnew { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 4px 0 6px; }
+.iwnew span { display: inline-flex; }
+.iwnew svg { width: 20px; height: 20px; }
+.iwempty { margin: 18px 2px 0; color: var(--muted); }
+.iwdh { margin: 22px 0 6px; font-size: var(--t13); font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.iwday { display: flex; flex-direction: column; border-radius: 18px; background: var(--t-sf); box-shadow: inset 0 0 0 1px var(--t-line); overflow: hidden; }
+.iwrow { display: flex; align-items: flex-start; gap: 14px; width: 100%; padding: 13px 16px; text-align: left; border-top: 1px solid var(--t-line); }
+.iwrow:first-child { border-top: 0; }
+.iwrow:active { background: var(--tile-2); }
+.iwtime { flex: none; min-width: 44px; padding-top: 1px; font-size: var(--t14, 14px); font-weight: 650; color: var(--muted); font-variant-numeric: tabular-nums; }
+.iwmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.iwmain b { font-weight: 650; }
+.iwwords { font-size: var(--t14, 14px); color: var(--muted); }
+.iwex { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px; font-size: var(--t14, 14px); line-height: 1.4; overflow-wrap: anywhere; }
+.iwolder { margin-top: 16px; }
+
+/* reading one entry (a full page) */
+.iwread { display: flex; flex-direction: column; gap: 12px; padding-top: 4px; }
+.iwwhen { margin: 0; color: var(--muted); font-weight: 560; }
+.iwmood { margin: 0; font-size: var(--t20, 20px); font-weight: 700; }
+.iwchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.iwchips span { padding: 5px 12px; border-radius: 999px; background: var(--tile-2); font-size: var(--t14, 14px); font-weight: 560; }
+.iwtextfull p { margin: 0 0 8px; font-size: var(--t16); line-height: 1.55; overflow-wrap: anywhere; }
+.iwkvs { display: flex; flex-direction: column; border-top: 1px solid var(--hair); }
+.iwkv { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--hair); }
+.iwkv span { color: var(--muted); }
+.iwnote { margin: 0; color: var(--muted); }
+.iwreadacts { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin-top: 10px; }
+.iwreadacts .linkish { align-self: center; }
+.iwreadacts .main { width: 100%; margin-left: 0; }
+
+/* the entry flow */
+.iwfhead { flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 50px; }
+.iwfhead .tbtn { justify-self: start; margin-left: -10px; color: var(--ink); }
+.iwftitle { margin: 0; font-size: var(--t16); font-weight: 680; }
+.iwftitle:focus { outline: none; }
+.iwfwhen { justify-self: end; font-size: var(--t13); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.iwdeck { flex: 1; min-height: 0; }
+.iwflow .acts { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+.iwflow .acts .alt[hidden], .iwflow .acts .tback[hidden] { display: none; }
+.iwta { flex: 1; min-height: 120px; margin-top: 12px; }
+
+/* Biomarkers: the way home sits before the logo */
+.iwhomebtn { flex: none; display: inline-flex; align-items: center; gap: 0; min-height: 44px; min-width: 44px; margin-left: -10px; padding: 0 2px 0 4px; border-radius: 12px; color: var(--muted); }
+.iwhomebtn > svg { width: 17px; height: 17px; }
+.iwhomebtn:active { background: var(--tile-2); }
+</style>
+<style>
 /* Daylight's adjustments to the live parts (History, the AI export, Ask Claude, the tests' controls), placed after the live CSS so
    they win where the selectors weigh the same. Each one answers a finding of test/full.js. */
 
@@ -1715,6 +1803,7 @@ html.dl-edit .tbar, html.dl-edit .tmoment { display: none; }
   </main>
   <section class="history" id="history" aria-label="History" hidden></section>
 </div>
+<section class="iwlayer" id="iwHome" aria-label="Home"></section><section class="iwlayer" id="iwInner" aria-label="Inner weather" hidden></section><section class="iwlayer iwflow" id="iwFlow" aria-label="Inner weather entry" hidden></section><!-- INNER -->
 <div class="scrim" id="scrim" hidden></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grab" aria-hidden="true"></div>
@@ -1884,7 +1973,7 @@ html.dl-edit .tbar, html.dl-edit .tmoment { display: none; }
       <div class="ai-sec"><span class="hlabel">Also include</span><div class="chips" id="aiOpts" role="group" aria-label="Also include">
         <button type="button" class="chip" data-o="notes" aria-pressed="true">Notes and written answers</button><button type="button" class="chip" data-o="rts" aria-pressed="false">Every reaction time</button></div></div>
       <div class="ai-sec"><span class="hlabel">Private: tick to include</span><div class="chips" id="aiPriv" role="group" aria-label="Private categories, left out unless ticked"><!-- DAYLIGHT: AI export privacy (the owner, 24 Oct 2026) -->
-        <button type="button" class="chip" data-p="intimacy" aria-pressed="false">Intimacy</button><button type="button" class="chip" data-p="mind" aria-pressed="false">Mind and mood</button></div><!-- DAYLIGHT: AI export privacy (the owner, 24 Oct 2026) -->
+        <button type="button" class="chip" data-p="intimacy" aria-pressed="false">Intimacy</button><button type="button" class="chip" data-p="mind" aria-pressed="false">Mind and mood</button><button type="button" class="chip" data-p="diary" aria-pressed="false">Diary</button><!-- INNER: diary text --></div><!-- DAYLIGHT: AI export privacy (the owner, 24 Oct 2026) -->
         <p class="calc">Left out unless you tick them, and unticked again every time you open this.</p></div><!-- DAYLIGHT: AI export privacy (the owner, 24 Oct 2026) -->
       <!-- ASK CLAUDE START -->
       <div class="ac-ask" id="acAsk" hidden><button type="button" class="primary" id="acGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg>Ask Claude here</button>
@@ -2130,7 +2219,7 @@ const CATS = [
       { id: "temp", t: "number", unit: "°C", min: 34, max: 42, step: 0.1, dec: 1, start: 36.6, label: "Temperature", q: "Temperature, on waking", src: "Same time and conditions each day" },
       { id: "note", t: "text", placeholder: "Anything worth remembering", label: "Note", q: "A note", app: true }   // APP: the live app's optional note on every category, saved as note
     ] },
-  { id: "mind", name: "Mind", moment: "morning", icon: "mind",
+  { id: "mind", name: "Mind", moment: "inner", icon: "mind",   // INNER: Mind lives in Inner weather now, not in the morning flow
     skip: ["Didn't want to check in"],
     quick: [
       { id: "mental", t: "scale", min: 1, max: 5, words: W.health, label: "Mental health", q: "In general, how would you rate your mental health today, including your mood and your ability to think?", src: "PROMIS Global Health, item Global04, asked about today", isNew: true },
@@ -2603,7 +2692,7 @@ IW.suggestions = kind => {
 /* ---------- progress ---------- */
 IW.isRepeatDone = cid => IW.status(cid) === "done" || IW.status(cid) === "skipped";
 IW.progress = (mid = null, k = IW.todayKey) => {
-  const cats = (mid ? IW.catsIn(mid) : CATS).map(c => ({ id: c.id, status: IW.status(c.id, k) }));
+  const cats = (mid ? IW.catsIn(mid) : CATS.filter(c => c.moment !== "inner")/* INNER */).map(c => ({ id: c.id, status: IW.status(c.id, k) }));
   const done = cats.filter(c => c.status === "done" || c.status === "skipped").length;
   return { done, total: cats.length, frac: cats.length ? done / cats.length : 0, cats };
 };
@@ -3627,7 +3716,7 @@ function summary(e){
     case"body":add(e.physical!=null,`Physical health ${e.physical}/5`);/* DAYLIGHT: + physical */add(e.energy!=null,`Energy ${e.energy}/10`);add(e.pain!=null,`Pain ${e.pain}/10`);add(e.rhr,`RHR ${e.rhr}`);add(e.hrv,`HRV ${e.hrv} ms`);add(e.sys,`BP ${e.sys}/${e.dia}`);add(e.weight,`${e.weight} kg`);add(e.temp,`${e.temp} °C`);
       return p.join(" · ")+(e.symptoms?`<br>${esc(join(e.symptoms))}`:"");
     case"mood":add(e.mental!=null,`Mental health ${e.mental}/5`);if(e.v!=null||e.a!=null||e.mental==null)p.push(`Pleasantness ${fmtS(e.v)} · Activation ${fmtS(e.a)}`);/* DAYLIGHT: + mental; the grid line as before unless a record has only the new question */add(e.clarity!=null,`Clarity ${e.clarity}`);add(e.stress!=null,`Stress ${e.stress}`);add(e.worth!=null,`Self-worth ${e.worth}`);add(e.urge!=null,`Urges ${e.urge}`);
-      return p.join(" · ")+(e.words?`<br>${esc(join(e.words))}`:"");
+      return p.join(" · ")+(e.words?`<br>${esc(join(e.words))}`:"")+(e.diary?`<br><i>${esc(e.diary.length>160?e.diary.slice(0,157)+"…":e.diary)}</i>`:"");/* INNER: diary */
     case"cog":if(e.test==="calib")return `Hardware delay for ${esc(e.phone||"phone")}: ${e.offset} ms`;if(e.test==="timing")return `Timing check: ${e.hz??"–"} Hz, ${e.inputLag} ms code delay, ${e.dropped}% dropped frames`;return e.test==="number"?`Number memory: ${e.score} digits`:e.test==="verbal"?`Verbal memory: ${e.score} words`:e.test==="visual"?`Visual memory: level ${e.score}`:`Colour-word: ${e.interference??"–"} ms interference, ${e.accuracy}% correct`;
     case"pvt":return `Median ${e.medianCorr!=null?e.medianCorr+" ms corrected, raw "+e.median:e.median??"–"} ms · ${nOf(e.lapses,"lapse")} · ${nOf(e.fs,"false start")} · ${Math.round(e.dur/60)} min${e.hz?` · ${e.hz} Hz`:""}`;/* POLISH: plurals */
     case"diet":add(e.meal,esc(cap1(e.meal)));/* POLISH: sentence case */add(e.food,esc(e.food));add(e.caffeine,`${e.caffeine} caffeine`);add(e.alcohol,`${e.alcohol} alcohol`);add(e.water,`${e.water} water`);
@@ -4368,6 +4457,8 @@ const AI={scope:null,notes:true,rts:false,inc:{intimacy:false,mind:false},qEdite
 /* DAYLIGHT: privacy: Intimacy and Mind are left out of every AI export unless ticked, and the ticks reset each time the sheet opens */
 const AI_PRIV=["intimacy","mind"];
 const aiHide=()=>new Set(AI_PRIV.filter(c=>!AI.inc[c]));
+/* INNER: diary text goes only when Diary is ticked; with Mind left out, a ticked diary goes without the ratings */
+const aiDiary=(e,hide)=>{if(e.kind!=="mood")return e;let r=e;if(!AI.inc.diary&&r.diary!=null){r=Object.assign({},r);delete r.diary}if(hide.has("mind"))r={id:r.id,kind:"mood",t:r.t,day:r.day,diary:r.diary};return r};
 const AI_URL_MAX=7000;
 const AI_SVC=[
   {k:"claude",n:"Claude",url:"https://claude.ai/new",pre:q=>"https://claude.ai/new?q="+q},
@@ -4440,7 +4531,7 @@ function aiEntry(e){
     case"body":add("physical",`physical health ${e.physical}/5`);/* DAYLIGHT: + physical */add("energy",`energy ${e.energy}/10`);add("pain",`pain ${e.pain}/10`);add("rhr",`resting HR ${e.rhr} bpm`);add("hrv",`HRV ${e.hrv} ms`);
       add("sys",`blood pressure ${e.sys}/${e.dia??"?"} mmHg`);add("weight",`weight ${e.weight} kg`);add("temp",`temperature ${e.temp} °C`);add("symptoms",`symptoms: ${L(e.symptoms)}`);break;
     case"mood":add("mental",`mental health ${e.mental}/5`);/* DAYLIGHT: + mental */add("v",`pleasantness ${fmtS(e.v)}`);add("a",`activation ${fmtS(e.a)}`);add("clarity",`clarity ${e.clarity}/10`);add("stress",`stress ${e.stress}/10`);
-      add("worth",`self-worth ${e.worth}/10`);add("urge",`urges ${e.urge}/10`);add("words",`words: ${L(e.words)}`);break;
+      add("worth",`self-worth ${e.worth}/10`);add("urge",`urges ${e.urge}/10`);add("words",`words: ${L(e.words)}`);add("diary",`diary: "${String(e.diary).replace(/\s*\n\s*/g," / ")}"`);break;/* INNER: diary, only when ticked */
     case"pvt":p.push(e.medianCorr!=null?`median ${e.medianCorr} ms corrected (raw ${e.median} ms; ${e.offset} ms hardware delay removed${e.phone?" for "+e.phone:""})`:`median ${e.median??"–"} ms raw`);
       add("lapses",`${e.lapses} lapse${e.lapses==1?"":"s"}`);add("fs",`${e.fs} false start${e.fs==1?"":"s"}`);if(has("dur"))p.push(e.dur>=180?"3-min standard run":`${Math.round(e.dur/60)}-min practice run`);
       add("n",`${e.n} responses`);add("hz",`${e.hz} Hz screen`);add("dropped",`${e.dropped}% dropped frames`);add("device",`device ${e.device}`);
@@ -4508,7 +4599,7 @@ function aiCompare(a,b){
   return out.join("\n")}
 
 function aiBuild(sc,question){
-  const set=new Set(sc.days),hide=aiHide(),es=S.entries.filter(e=>set.has(dayOf(e))&&!hide.has(CAT_OF(e))).sort((a,b)=>dayOf(a)<dayOf(b)?-1:dayOf(a)>dayOf(b)?1:a.t-b.t);/* DAYLIGHT: by dayOf, then time (the same order as before for records without day) */
+  const set=new Set(sc.days),hide=aiHide(),es=S.entries.filter(e=>set.has(dayOf(e))&&(!hide.has(CAT_OF(e))||(e.kind==="mood"&&AI.inc.diary&&e.diary))).map(e=>aiDiary(e,hide))/* INNER */.sort((a,b)=>dayOf(a)<dayOf(b)?-1:dayOf(a)>dayOf(b)?1:a.t-b.t);/* DAYLIGHT: by dayOf, then time (the same order as before for records without day) */
   const kinds=new Set(es.map(e=>e.kind)),hm=hmDays(),tz=(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone}catch(_){return ""}})();
   const L=[`# Inner Weather Log: ${sc.k==="cmp"?"comparing two days":sc.l}`,"",
     `I keep a private daily self-tracking log called Inner Weather Log. Each day I log my body, mind (mood), a few short cognition tests, what I ate, bathroom visits (urine and bowel movements), last night's sleep, exercise, hobbies, intimacy, personal and bedroom hygiene, and an evening memory exercise. Below is my data for ${sc.k==="cmp"?"two days I want to compare":sc.days.length===1?"one day":`${sc.days.length} logged days`} (${sc.sub}). Please help me understand it.`,
@@ -4520,7 +4611,8 @@ function aiBuild(sc,question){
     "- This is self-observation, not a medical record. Don't diagnose; if something looks worth raising with a doctor, say so plainly.",
     "","## How to read the data",
     `- Units are metric. Times are 24-hour local time${tz?` (${tz})`:""}. Dates are YYYY-MM-DD.`,
-    ...["body","mood","pvt","cog","diet","dietday","bathroom","sleep","exercise","hobby","intimacy","hygiene","recall","plan","skip"].filter(k=>kinds.has(k)).map(k=>"- "+AI_GLOSS[k]),/* DAYLIGHT: + dietday, plan */...(es.some(e=>["physical","mental","waso","intensity"].some(k=>e[k]!=null))?["- "+AI_GLOSS.daylight]:[]),...(es.some(e=>e.day&&e.day!==dayKey(e.t))?["- "+AI_GLOSS.lateday]:[]),/* DAYLIGHT: the new fields and the late-evening rule, only when the export has them */...(es.some(e=>e.intention||e.intentionMet)?["- "+AI_GLOSS.intention]:[]),...(es.some(e=>e.editedAt||(e.extraNotes&&e.extraNotes.length))?["- "+AI_GLOSS.later]:[]),
+    ...["body","mood","pvt","cog","diet","dietday","bathroom","sleep","exercise","hobby","intimacy","hygiene","recall","plan","skip"].filter(k=>kinds.has(k)&&!(k==="mood"&&hide.has("mind"))/* INNER: a diary-only export has no Mind ratings to explain */).map(k=>"- "+AI_GLOSS[k]),/* DAYLIGHT: + dietday, plan */...(es.some(e=>["physical","mental","waso","intensity"].some(k=>e[k]!=null))?["- "+AI_GLOSS.daylight]:[]),...(es.some(e=>e.day&&e.day!==dayKey(e.t))?["- "+AI_GLOSS.lateday]:[]),/* DAYLIGHT: the new fields and the late-evening rule, only when the export has them */...(es.some(e=>e.intention||e.intentionMet)?["- "+AI_GLOSS.intention]:[]),...(es.some(e=>e.editedAt||(e.extraNotes&&e.extraNotes.length))?["- "+AI_GLOSS.later]:[]),
+    ...(AI.inc.diary&&es.some(e=>e.diary)?["- Diary: free writing from my Inner weather diary, quoted after the entry's other answers (diary: \"…\"; a slash marks a new line)."]:[]),...(!AI.inc.diary?["- For privacy, this export leaves out my diary writing."]:[]),/* INNER */
     ...(hide.size?[`- For privacy, this export leaves out my ${[...hide].map(c=>CAT_LABEL[c]).join(" and ")} entries${hide.has("mind")?" (pleasantness, activation, stress, self-worth, urges and feeling words)":""}. Missing data there is not a gap in my logging.`]:[]),/* DAYLIGHT: privacy */
     "","Things to keep in mind:",...AI_CAVEATS.map(c=>"- "+c)];
   if(!S.live)L.push("- These are example entries generated by the app, not real data.");
@@ -4563,7 +4655,7 @@ function aiNoCopy(){aiSay("err","Copying isn't allowed in this view. Open the pr
 function aiOpen(pref,from){
   const scopes=aiScopes(),has=k=>scopes.some(s=>s.k===k);
   AI.scope=pref==="cmp"&&has("cmp")?"cmp":pref==="day"&&HM.sel?(has("day")?"day":"today"):pref==="auto"&&!CMP.auto&&has("cmp")?"cmp":"7";
-  AI.qEdited=false;AI.opener=from||null;AI.inc={intimacy:false,mind:false};/* DAYLIGHT: privacy: asked again every time */aiSay("","");$("aiPrev").open=false;
+  AI.qEdited=false;AI.opener=from||null;AI.inc={intimacy:false,mind:false,diary:false};/* INNER *//* DAYLIGHT: privacy: asked again every time */aiSay("","");$("aiPrev").open=false;
   $("aiSugg").innerHTML=AI_SUGG.map(([l,,need],i)=>`<button type="button" class="chip" data-q="${i}"${need?` data-need="${need}"`:""}>${esc(l)}</button>`).join("");
   aiRender();
   const back=$("aiBack");back.hidden=false;document.documentElement.classList.add("ai-lock");
@@ -5053,11 +5145,13 @@ const answered = (a, q) => {
   }
 };
 function A(card) {
+  if (card.iw) return card.iw.a;   // INNER: an Inner weather entry
   const c = IW.cat(card.cat.id);
   if (!card.cat.repeat) return c.a;
   return card.ref.i == null ? {} : (c.entries[card.ref.i] || {});
 }
 function setA(card, qid, v) {
+  if (card.iw) { if (v === undefined || v === "") delete card.iw.a[qid]; else card.iw.a[qid] = v; card.iw.changed(qid); return; }   // INNER
   const cid = card.cat.id;
   if (card.cat.repeat && card.ref.i == null) card.ref.i = IW.newEntry(cid, { at: IW.nowMinutes() });   // APP: every meal and session starts with "When" = now
   IW.target(cid, card.cat.repeat ? card.ref.i : null).set(qid, v);
@@ -6321,7 +6415,7 @@ function roomList(el, opts, isOn, make, onMore, max = 6) {
 R.tiles = (card, body, el) => {
   const q = card.q, single = !!q.single;
   const cur = () => [].concat(A(card)[q.id] ?? []);
-  const ranked = IW.ranked(card.cat.id, q.id);
+  const ranked = q.rankFn ? q.rankFn() : IW.ranked(card.cat.id, q.id);   // INNER: words that fit the mood first
   const grid = h("div", { class: "tiles", role: "group", "aria-label": q.q });
   // a tile is made once and kept, so a tap that changes nothing else keeps its focus
   const tile = (o, b) => { b = b || h("button", { class: "tile", type: "button", "data-o": o, html: TICK, onclick: () => pick(o) }, IW.optLabel(o)); b.setAttribute("aria-pressed", String(cur().includes(o))); return b; };
@@ -6689,7 +6783,7 @@ function rSummary(card, el) {
   body.append(h("h2", { class: "q big", id: uid("q"), tabindex: "-1" }, title),
     h("p", { class: "sub" }, eve ? IW.fmtDay(IW.todayKey, "long") : !fin ? (TIDE ? "Nothing logged yet. Tap a category to start." : "Nothing logged yet. Tap an icon above to start.") : left ? (TIDE ? `${fin} of ${mcats.length} done. Tap one to finish it.` : `${fin} of ${mcats.length} done. Tap an icon above to finish ${left === 1 ? "the last one" : "the rest"}.`) : (TIDE ? "Saved. Tap a line to change it." : "Healthy ranges for what you just answered.")));
   if (saved && eve) body.append(h("p", { class: "saved-note", html: IW.icon("check", "", 2.4) + "<span>Saved to History</span>" }));
-  const cats = eve ? IW.CATS : IW.catsIn(mid);
+  const cats = eve ? IW.CATS.filter(c => c.moment !== "inner") : IW.catsIn(mid);   // INNER
   // APP: the card shows at most three headline ranges, as many as fit; everything is on the summary page behind See all (Phase D)
   const all = () => {
     const page = h("div", { class: "sumpage" }, h("p", { class: "sub", style: "margin:0" }, eve ? IW.fmtDay(IW.todayKey, "long") : "Healthy ranges for what you just answered."));
@@ -6735,7 +6829,7 @@ function renderActs() {
 }
 let autoT = null;
 // a single pick files the card by itself, except on the last card of a category, where Done and Add detail wait
-function autoNext(card) { clearTimeout(autoT); if (isLastOfEntry(S.cards.indexOf(card))) return; autoT = setTimeout(() => { if (S.cards[S.pos] === card && S.view === "today") next(); }, 380); }
+function autoNext(card) { clearTimeout(autoT); if (card.iw) { autoT = setTimeout(() => card.iw.auto(card), 380); return; }   /* INNER */ if (isLastOfEntry(S.cards.indexOf(card))) return; autoT = setTimeout(() => { if (S.cards[S.pos] === card && S.view === "today") next(); }, 380); }
 function next() {
   clearTimeout(autoT);
   const cur = S.cards[S.pos];
@@ -7609,6 +7703,267 @@ new MutationObserver(ms => { for (const m of ms) for (const n of m.removedNodes)
   if (b) new MutationObserver(() => { sync(); fitDate(); }).observe(b, { attributes: true, attributeFilter: ["hidden"], childList: true, characterData: true, subtree: true });
   sync(); fitDate();
 })();
+/* INNER START: Inner weather (the owner, 6–7 Nov 2026). The app opens on two big buttons, Inner weather and Biomarkers.
+   Inner weather is a diary with feelings: write any time, as often as you like; each entry is one "mood" record with its own time
+   (v, a, words, diary, and the optional Mind detail), so History, the calendar, trends and Compare read it as Mind always was.
+   The Mind card left the morning flow (its moment is "inner"). Diary text stays out of every AI export unless Diary is ticked. */
+const IWX = { entries: [], view: "home", flow: null, open: 30 };
+const iwMind = () => IW.catById("mind");
+const iwT = t => (window.IWL && IWL.fmtT ? IWL.fmtT(t) : IW.hm(new Date(t).getHours() * 60 + new Date(t).getMinutes()));
+const iwDayOf = e => (window.IWL && IWL.dayOf ? IWL.dayOf(e) : e.day || IW.todayKey);
+const iwWord = e => (e.v != null && e.a != null ? IW.moodWord(e.v + 5, e.a + 5) : null);
+const iwHas = e => e.diary || e.v != null || (e.words && e.words.length) || e.mental != null || e.stress != null;
+function iwList() {
+  const all = window.IWL && IWL.entries ? IWL.entries() : [];
+  IWX.entries = all.filter(e => e.kind === "mood" && iwHas(e)).sort((a, b) => b.t - a.t);
+  return IWX.entries;
+}
+function iwDayLabel(k) {
+  if (k === IW.todayKey) return "Today";
+  const y = IW.pastKeys ? IW.pastKeys(IW.todayKey, 1)[0] : null;
+  if (k === y) return "Yesterday";
+  return IW.fmtDay(k, "long");
+}
+const QUAD = {
+  hiP: ["joyful", "excited", "hopeful", "curious", "focused", "grateful"],
+  loP: ["calm", "content", "grateful", "hopeful", "focused", "curious"],
+  hiN: ["anxious", "restless", "irritable", "angry", "overwhelmed", "ashamed"],
+  loN: ["sad", "lonely", "flat", "tired", "ashamed", "overwhelmed"],
+  hiM: ["focused", "restless", "curious", "anxious", "excited", "irritable"],
+  loM: ["calm", "tired", "flat", "content", "sad", "lonely"]
+};
+function iwRank(a) {
+  const all = IW.ranked("mind", "words");
+  if (a.v == null) return all;
+  const k = (a.a >= 6 ? "hi" : "lo") + (a.v >= 6 ? "P" : a.v <= 4 ? "N" : "M");
+  const top = QUAD[k].filter(w => all.includes(w));
+  return [...top, ...all.filter(w => !top.includes(w))];
+}
+
+/* ---------- the layers ---------- */
+const iwHome = $("#iwHome"), iwInner = $("#iwInner"), iwFlowEl = $("#iwFlow");
+const appEl = $("#app");
+function iwShow(view, o = {}) {
+  const from = IWX.view; IWX.view = view;
+  iwHome.hidden = view !== "home"; iwInner.hidden = view !== "inner";
+  appEl.inert = view !== "bio";
+  root.classList.toggle("iw-up", view !== "bio");
+  if (view === "home") iwRenderHome();
+  if (view === "inner") iwRenderInner(o);
+  if (view === "bio") {
+    showToday();
+    if (S.el) { fitCard(S.el); refitScene(); }
+  }
+  const el = view === "home" ? iwHome : view === "inner" ? iwInner : appEl;
+  if (!RM() && from !== view && !o.still) el.animate(view === "home" ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: "translateX(24px)" }, { opacity: 1, transform: "none" }], { duration: 260, easing: EASE });
+  if (!o.noFocus) requestAnimationFrame(() => { const t = el.querySelector("h1, h2"); if (t) t.focus({ preventScroll: true }); });
+}
+const SVG_WEATHER = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="40" cy="22" r="9"/><path d="M40 6v4M54 9l-3 3M58 22h-4M26 9l3 3"/><path d="M17 50h28a9 9 0 0 0 0-18 13 13 0 0 0-25 3.5A7.3 7.3 0 0 0 17 50Z" fill="var(--iw-fill)"/></svg>';
+const SVG_PULSE = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="12" width="48" height="40" rx="12" fill="var(--iw-fill)"/><path d="M14 33h9l4-9 6 17 5-12 3 4h9"/></svg>';
+function iwRenderHome() {
+  const list = iwList(), today = list.filter(e => iwDayOf(e) === IW.todayKey);
+  const mid = IW.due(), M = IW.momentById(mid), p = IW.progress(mid), all = IW.progress(null);
+  const innerSub = today.length ? `${today.length} ${today.length === 1 ? "entry" : "entries"} today · last at ${iwT(today[0].t)}` : list.length ? `Last entry ${iwDayLabel(iwDayOf(list[0])).toLowerCase()}` : "Nothing written yet";
+  const bioSub = all.done >= all.total ? "Today is complete" : `${M.name} · ${p.done} of ${p.total} done`;
+  const btn = (id, cls, svg, title, what, sub, fn) => h("button", { class: "iwbig " + cls, type: "button", id, onclick: fn },
+    h("span", { class: "iwglyph", html: svg }),
+    h("span", { class: "iwtext" }, h("b", {}, title), h("span", { class: "iwwhat" }, what)),
+    h("span", { class: "iwsub" }, sub, h("span", { class: "iwgo", html: ic("back", 2.2) })));
+  iwHome.replaceChildren(
+    h("div", { class: "iwtop" }, h("span", { class: "iwlogo", html: IW.logo(26, "iwh") }), h("h1", { class: "iwdate", tabindex: "-1" }, IW.fmtDay(IW.todayKey, "long")), PRACTICE ? h("span", { class: "iwtag" }, "Practice") : null),
+    h("div", { class: "iwbigs" },
+      btn("iwGoInner", "inner", SVG_WEATHER, "Inner weather", "Diary and feelings", innerSub, () => iwShow("inner")),
+      btn("iwGoBio", "bio", SVG_PULSE, "Biomarkers", "Body, sleep, tests, food and more", bioSub, () => iwShow("bio"))));
+}
+
+/* ---------- Inner weather: a new entry, and every entry newest first ---------- */
+function iwRow(e) {
+  const w = iwWord(e), words = (e.words || []).map(IW.optLabel).join(", ");
+  return h("button", { class: "iwrow", type: "button", "data-id": e.id || "", onclick: () => iwRead(e) },
+    h("span", { class: "iwtime" }, iwT(e.t)),
+    h("span", { class: "iwmain" },
+      h("b", {}, w || (e.diary ? "Diary" : "Check-in")),
+      words ? h("span", { class: "iwwords" }, words) : null,
+      e.diary ? h("span", { class: "iwex" }, e.diary) : null));
+}
+function iwRenderInner(o = {}) {
+  const list = iwList();
+  const body = h("div", { class: "iwbody" });
+  const add = h("button", { class: "main iwnew", type: "button", id: "iwNew", onclick: () => iwStart() }, h("span", { html: IW.icon("plus", "", 2.2) }), "New entry");
+  body.append(add);
+  if (!list.length) body.append(h("p", { class: "iwempty" }, "Write whenever you like. Your entries appear here, newest first, and only you can see them."));
+  let cur = null, n = 0, box = null;
+  const days = new Set();
+  for (const e of list) {
+    const k = iwDayOf(e);
+    if (k !== cur) { days.add(k); if (days.size > IWX.open) break; cur = k; box = h("div", { class: "iwday" }); body.append(h("h3", { class: "iwdh" }, iwDayLabel(k)), box); }
+    box.append(iwRow(e)); n++;
+  }
+  if (days.size > IWX.open) body.append(h("button", { class: "linkish iwolder", type: "button", onclick: () => { IWX.open += 30; iwRenderInner({ keep: true }); } }, "Show older entries"));
+  const keep = o.keep ? (iwInner.querySelector(".iwbody") || {}).scrollTop : 0;
+  iwInner.replaceChildren(
+    h("div", { class: "iwhead" },
+      h("button", { class: "pg-back", type: "button", id: "iwBackHome", onclick: () => iwShow("home"), html: IW.icon("back", "", 2) + "<span>Home</span>" }),
+      h("h1", { tabindex: "-1" }, "Inner weather")),
+    body);
+  if (keep) body.scrollTop = keep;
+  if (o.flash) { const r = body.querySelector(`.iwrow[data-id="${o.flash}"]`); if (r && !RM()) r.animate([{ background: "color-mix(in oklab, var(--sun) 22%, transparent)" }, { background: "transparent" }], { duration: 1400, easing: "ease-out" }); }
+}
+function iwRead(e) {
+  const w = iwWord(e), mind = iwMind();
+  const rows = [];
+  const all = [...mind.quick, ...mind.detail].filter(q => q.t === "scale" && e[q.id] != null);
+  for (const q of all) rows.push(h("div", { class: "iwkv" }, h("span", {}, q.label), h("b", {}, `${e[q.id]} · ${IW.word(q, e[q.id])}`)));
+  const del = h("button", { class: "linkish danger", type: "button", onclick: async () => {
+    if (!del.dataset.arm) { del.dataset.arm = "1"; del.textContent = "Tap again to delete this entry"; setTimeout(() => { if (del.isConnected) { delete del.dataset.arm; del.textContent = "Delete entry"; } }, 4000); return; }
+    del.disabled = true;
+    const ok = e.id && window.IWL && IWL.remove ? await IWL.remove(e.id) : false;
+    if (!ok) { del.disabled = false; del.textContent = "Couldn't delete. Try again"; return; }
+    await Page.close(); iwRenderInner({ keep: true });
+  } }, "Delete entry");
+  const content = h("div", { class: "iwread" },
+    h("p", { class: "iwwhen" }, `${iwDayLabel(iwDayOf(e))} at ${iwT(e.t)}`),
+    w ? h("p", { class: "iwmood" }, w) : null,
+    e.words && e.words.length ? h("div", { class: "iwchips" }, ...e.words.map(x => h("span", {}, IW.optLabel(x)))) : null,
+    e.diary ? h("div", { class: "iwtextfull" }, ...e.diary.split(/\n/).map(l => h("p", {}, l || " "))) : null,
+    rows.length ? h("div", { class: "iwkvs" }, ...rows) : null,
+    e.note ? h("p", { class: "iwnote" }, e.note) : null,
+    h("div", { class: "iwreadacts" },
+      e.ex ? null : h("button", { class: "main", type: "button", onclick: async () => { await Page.close(); iwStart(e); } }, "Edit"),
+      e.ex ? null : del));
+  Page.open("Entry", content, { cat: "mind" });
+}
+
+/* ---------- the entry flow: one question per screen, the way Biomarkers asks ---------- */
+const IW_STEPS = () => {
+  const m = iwMind(), q = id => [...m.quick, ...m.detail].find(x => x.id === id);
+  return {
+    quick: [Object.assign({}, q("mood"), { q: "How do you feel right now?" }),
+            Object.assign({}, q("words"), { q: "Which words fit?", rank: true }),
+            { id: "diary", t: "diary", label: "Diary", q: "What's on your mind?" }],
+    detail: ["mental", "stress", "clarity", "worth", "urge"].map(q).filter(Boolean)
+  };
+};
+function iwStart(e) {
+  const a = {};
+  if (e) {
+    if (e.v != null) a.v = e.v + 5; if (e.a != null) a.a = e.a + 5;
+    for (const k of ["words", "diary", "mental", "stress", "clarity", "worth", "urge"]) if (e[k] != null) a[k] = Array.isArray(e[k]) ? e[k].slice() : e[k];
+  }
+  const st = IW_STEPS();
+  const detail = st.detail.some(q => a[q.id] != null);
+  const F = IWX.flow = { e: e || null, a, steps: [...st.quick, ...(detail ? st.detail : [])], detail: st.detail, open: detail, pos: 0, el: null, dirty: false, busy: false };
+  F.iw = { a, changed: () => { F.dirty = true; iwActs(); }, auto: card => { if (IWX.flow === F && F.card === card && F.pos < F.steps.length - 1) iwGo(F.pos + 1, "next"); } };
+  iwFlowEl.replaceChildren(
+    h("div", { class: "iwfhead" },
+      h("button", { class: "tbtn", type: "button", id: "iwClose", onclick: iwCloseAsk }, "Close"),
+      h("h2", { class: "iwftitle", tabindex: "-1" }, e ? "Edit entry" : "New entry"),
+      h("span", { class: "iwfwhen" }, e ? iwT(e.t) : iwT(Date.now()))),
+    h("div", { class: "tbar iwbar", id: "iwBar", "aria-hidden": "true" }),
+    h("div", { class: "deck iwdeck", id: "iwDeck" }),
+    h("div", { class: "acts", id: "iwActs" },
+      h("button", { class: "tback", type: "button", id: "iwBack", "aria-label": "Back", html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>', onclick: () => iwGo(F.pos - 1, "back") }),
+      h("button", { class: "alt", type: "button", id: "iwAlt", hidden: true }),
+      h("button", { class: "main", type: "button", id: "iwMain" }, "Next")));
+  iwFlowEl.hidden = false; iwInner.inert = true;
+  if (!RM()) iwFlowEl.animate([{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }], { duration: 300, easing: EASE });
+  iwGo(0, "none");
+}
+function iwBar() {
+  const F = IWX.flow, bar = $("#iwBar"); if (!F || !bar) return;
+  const g = h("div", { class: "tg", style: `--n:${F.steps.length}` });
+  F.steps.forEach((q, i) => { const v = F.a[q.id === "mood" ? "v" : q.id]; g.append(h("i", { class: i === F.pos ? "now" : v != null && v !== "" && !(Array.isArray(v) && !v.length) ? "on" : "" })); });
+  bar.replaceChildren(g);
+}
+function iwGo(i, dir) {
+  const F = IWX.flow; if (!F || i < 0 || i >= F.steps.length) return;
+  clearTimeout(autoT);
+  const deck = $("#iwDeck"), old = F.el;
+  F.pos = i;
+  const q = F.steps[i], cat = iwMind();
+  const card = F.card = { kind: "q", cat, q: q.rank ? Object.assign({}, q, { rankFn: () => iwRank(F.a) }) : q, iw: F.iw, tier: "quick" };
+  const el = h("section", { class: "card t-" + q.t, "data-cat": "mind", "aria-roledescription": "card" });
+  el.append(h("div", { class: "ctop" }, h("span", { class: "cname" }, h("span", { class: "ci", html: ic("mind", 1.9) }), h("span", {}, "Inner weather"), F.steps.length > 1 ? h("span", { class: "csub" }, `${i + 1} of ${F.steps.length}`) : null)));
+  const body = h("div", { class: "cbody" }); el.append(body);
+  el._ctl = (q.t === "diary" ? iwDiary(card, body, el) : (R[q.t] || R.info)(card, body, el)) || {};
+  deck.append(el); F.el = el;
+  requestAnimationFrame(() => fitCard(el));
+  if (old) {
+    if (RM() || dir === "none") old.remove();
+    else { old.classList.add("leaving"); old.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: dir === "back" ? "translateX(36px)" : "translateX(-36px)" }], { duration: 220, easing: EASE }).finished.then(() => old.remove(), () => old.remove()); }
+  }
+  if (!RM() && dir !== "none") el.animate([{ opacity: 0, transform: dir === "back" ? "translateX(-36px)" : "translateX(36px)" }, { opacity: 1, transform: "none" }], { duration: 300, easing: EASE });
+  iwActs(); iwBar();
+  requestAnimationFrame(() => { const t = el.querySelector("h2"); if (t && !Sheet.isOpen && q.t !== "diary") t.focus({ preventScroll: true }); });
+}
+function iwDiary(card, body, el) {
+  const F = IWX.flow;
+  const ta = h("textarea", { class: "lined iwta", id: uid("iwta"), placeholder: "Write freely. Only you can see this.", "aria-label": card.q.q });
+  ta.value = F.a.diary || "";
+  ta.addEventListener("input", () => setA(card, "diary", ta.value.trim() ? ta.value : undefined));
+  body.append(qh(card), ta);
+  return { fit: () => {} };
+}
+const iwEmpty = a => !Object.keys(a).some(k => a[k] != null && a[k] !== "" && !(Array.isArray(a[k]) && !a[k].length));
+function iwActs() {
+  const F = IWX.flow; if (!F) return;
+  const last = F.pos === F.steps.length - 1, main = $("#iwMain"), alt = $("#iwAlt"), back = $("#iwBack");
+  back.hidden = F.pos === 0;
+  main.textContent = last ? (F.busy ? "Saving…" : "Save") : "Next";
+  main.disabled = F.busy || (last && iwEmpty(F.a));
+  main.onclick = last ? iwSave : () => iwGo(F.pos + 1, "next");
+  const canDetail = F.steps[F.pos].id === "diary" && !F.open;
+  alt.hidden = !canDetail; alt.textContent = "Add detail";
+  alt.onclick = () => { F.open = true; F.steps.push(...F.detail); iwGo(F.pos + 1, "next"); };
+}
+async function iwSave() {
+  const F = IWX.flow; if (!F || F.busy || iwEmpty(F.a)) return;
+  F.busy = true; iwActs();
+  const a = F.a, now = Date.now();
+  const data = F.e ? Object.assign({}, F.e) : { kind: "mood", t: now, day: IW.todayKey, via: "inner" };
+  delete data.id; delete data.ex;
+  for (const k of ["v", "a", "words", "diary", "mental", "stress", "clarity", "worth", "urge"]) delete data[k];
+  if (a.v != null) { data.v = a.v - 5; data.a = a.a - 5; }
+  for (const k of ["words", "diary", "mental", "stress", "clarity", "worth", "urge"]) if (a[k] != null && !(Array.isArray(a[k]) && !a[k].length)) data[k] = a[k];
+  if (F.e) data.editedAt = now;
+  const r = window.IWL && IWL.save ? await IWL.save(data, F.e ? F.e.id : undefined) : null;
+  if (!r || !r.id) {
+    F.busy = false; iwActs();
+    Sheet.open("Not saved", h("p", { class: "sub", style: "margin:0" }, (r && r.msg) || "That entry couldn't be saved. Your words are still here, so try again in a moment."), h("button", { class: "main", type: "button", onclick: () => Sheet.close() }, "OK"));
+    return;
+  }
+  IW.haptic(10);
+  iwFlowClose();
+  iwRenderInner({ flash: r.id });
+}
+function iwFlowClose() {
+  const F = IWX.flow; IWX.flow = null; clearTimeout(autoT);
+  iwInner.inert = false;
+  const done = () => { iwFlowEl.hidden = true; iwFlowEl.replaceChildren(); };
+  if (RM() || !F) done(); else iwFlowEl.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(18px)" }], { duration: 200, easing: "ease-in" }).finished.then(done, done);
+  requestAnimationFrame(() => { const b = $("#iwNew"); if (b) b.focus({ preventScroll: true }); });
+}
+function iwCloseAsk() {
+  const F = IWX.flow; if (!F) return;
+  if (!F.dirty) return iwFlowClose();
+  Sheet.open(F.e ? "Leave without saving?" : "Discard this entry?", h("p", { class: "sub", style: "margin:0" }, F.e ? "Your changes to this entry will be lost." : "What you wrote here will be lost."),
+    [h("button", { class: "alt", type: "button", onclick: () => Sheet.close() }, "Keep writing"),
+     h("button", { class: "main", type: "button", onclick: async () => { await Sheet.close(); iwFlowClose(); } }, F.e ? "Leave" : "Discard")]);
+}
+document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !ev.defaultPrevented && IWX.flow && !Sheet.isOpen && !Page.isOpen) iwCloseAsk(); });
+
+/* ---------- Biomarkers: a way home from its header ---------- */
+(() => {
+  const logo = $("#logo");
+  const b = h("button", { class: "iwhomebtn", type: "button", id: "btnHome", "aria-label": "Home", html: ic("back", 2.2) });
+  logo.before(b); b.append(logo);
+  b.addEventListener("click", () => iwShow("home"));
+})();
+window.addEventListener("iwl:entries", () => { clearTimeout(IWX.rt); IWX.rt = setTimeout(() => { if (IWX.view === "home") iwRenderHome(); else if (IWX.view === "inner" && !IWX.flow) iwRenderInner({ keep: true }); }, 160); });
+IW.on(ev => { if ((ev.type === "reset" || ev.type === "status") && IWX.view === "home") iwRenderHome(); });
+iwShow(window.__IW_SKIP_HOME ? "bio" : "home", { still: true, noFocus: true });   // the older checks drive Biomarkers directly
+window.__inner = { show: v => iwShow(v), start: () => iwStart(), go: i => iwGo(i, "none"), flow: () => IWX.flow && { pos: IWX.flow.pos, steps: IWX.flow.steps.map(s => s.id), a: IWX.flow.a }, save: () => iwSave(), list: () => iwList() };
+/* INNER END */
 window.__daylight = {
   prep(cid) { const i = catFirst(cid); if (i < 0) return false; const p = prevIndex(i); go(p >= 0 ? p : i, "none", { noFocus: true }); if (p < 0) { if (S.ctl && S.ctl.dispose) S.ctl.dispose(); dropCard(S.el); S.el = null; S.ctl = null; } return true; },
   show(cid) { const i = S.cards.findIndex(c => catOf(c) === cid && visible(c)); if (i < 0) return false; go(i, prevIndex(i) >= 0 ? "next" : "jump", { noFocus: true }); return true; },
